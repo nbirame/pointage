@@ -325,8 +325,7 @@ class Agent(models.Model):
         equipe = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
         for employee in equipe:
             # print(employee.mission_id.state)
-            if employee.mission_id.state == "en_cours" and employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date() or (
-                    employee.mission_id.state == "terminer" and employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date()):
+            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date():
                 print(f"Date depart mission {employee.mission_id.date_depart}")
                 # print(f"Date retour mission {employee.mission_id.date_retour}")
                 date_debut = employee.mission_id.date_depart
