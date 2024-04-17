@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!--Email template -->
+        <record id="email_template_pointage_notification" model="mail.template">
+            <field name="name">Nombre d'heures de la semaine</field>
+            <field name="email_from">fayediame575@gmail.com</field>
+            <field name="email_to">{{object.user_id.work_email or ''}}</field>
+            <field name="subject">Nombre d'heure travailler dans la semaine</field>
+            <!--<field name="report_name">Rapport Pointage</field>-->
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <!--<field name="report_template" ref="pointage.report_pointage_presence"/>-->
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+            <h4>Présence dernier semaine </h4>
+                    <div>Bonjour, <br/>
+                       <span style="font-weight: bold;" t-out="object.name or ''"></span><br/>
+                       <p>Vous avez travaillé
+                            <t t-set="hours" t-value="int(object.hours_last_week)"/>
+                            <t t-set="minutes" t-value="int((object.hours_last_week - hours) * 60)"/>
+                            <t t-esc="hours"/>:<t t-esc="minutes"/>
+                            heures du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
+                       </p>
+                        <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                            <thead style="background-color:#800000;">
+                                <tr>
+                                    <th></th>
+                                    <th style="color:white;">Lundi</th>
+                                    <th style="color:white;">Mardi</th>
+                                    <th style="color:white;">Mercredi</th>
+                                    <th style="color:white;">Jeudi</th>
+                                    <th style="color:white;">Vendredi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                            <td style="background-color:#800000;"><p style="text-align:center;color:white;">Entrée<p></td>
+                                <td t-if="object.get_work_hours_week()[0][0]">
+                                    <span t-if="object.get_work_hours_week()[0][0].strftime('%H:%M:%S') == '00:00:00'">
+                                        Absent
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[0][0].strftime('%H:%M:%S') == '03:00:00'">
+                                        En congé
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[0][0].strftime('%H:%M:%S') == '02:00:00'">
+                                        En mission
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[0][0].strftime('%H:%M:%S') == '23:59:59'">
+                                        Jour férié
+                                    </span>
+                                    <span t-else="">
+                                        <t t-esc="object.get_work_hours_week()[0][0].strftime('%H:%M:%S')"/>
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[1][:-1]">
+                                    <span t-if="object.get_work_hours_week()[1][0].strftime('%H:%M:%S') == '00:00:00'">
+                                        Absent
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[1][0].strftime('%H:%M:%S') == '03:00:00'">
+                                        En congé
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[1][0].strftime('%H:%M:%S') == '02:00:00'">
+                                        En mission
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[1][0].strftime('%H:%M:%S') == '23:59:59'">
+                                       Jour férié
+                                    </span>
+                                    <span t-else="">
+                                        <t t-esc="object.get_work_hours_week()[1][0].strftime('%H:%M:%S')"/>
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[2][:-1]">
+                                    <span t-if="object.get_work_hours_week()[2][0].strftime('%H:%M:%S') == '00:00:00'">
+                                        Absent
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[2][0].strftime('%H:%M:%S') == '23:59:59'">
+                                        Jour férié
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[2][0].strftime('%H:%M:%S') == '03:00:00'">
+                                        En congé
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[2][0].strftime('%H:%M:%S') == '02:00:00'">
+                                        En mission
+                                    </span>
+                                    <span t-else="">
+                                        <t t-esc="object.get_work_hours_week()[2][0].strftime('%H:%M:%S')"/>
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[3][:-1]">
+                                    <span t-if="object.get_work_hours_week()[3][0].strftime('%H:%M:%S') == '00:00:00'">
+                                        Absent
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[3][0].strftime('%H:%M:%S') == '23:59:59'">
+                                        Jour férié
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[3][0].strftime('%H:%M:%S') == '03:00:00'">
+                                        En congé
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[3][0].strftime('%H:%M:%S') == '02:00:00'">
+                                        En mission
+                                    </span>
+                                    <span t-else="">
+                                        <t t-esc="object.get_work_hours_week()[3][0].strftime('%H:%M:%S')"/>
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[4][:-1]">
+                                    <span t-if="object.get_work_hours_week()[4][0].strftime('%H:%M:%S') == '00:00:00'">
+                                        Absent
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[4][0].strftime('%H:%M:%S') == '23:59:59'">
+                                        Jour férié
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[4][0].strftime('%H:%M:%S') == '03:00:00'">
+                                         En congé
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[4][0].strftime('%H:%M:%S') == '02:00:00'">
+                                         En mission
+                                    </span>
+                                    <span t-else="">
+                                        <t t-esc="object.get_work_hours_week()[4][0].strftime('%H:%M:%S')"/>
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                            <td style="background-color:#800000;"><p style="text-align:center;color:white;">Sortie<p></td>
+                                <td t-if="object.get_work_hours_week()[0][1]">
+                                    <span t-if="object.get_work_hours_week()[0][1].strftime('%H:%M:%S') == '00:00:00'">
+
+                                    </span>
+                                    <span t-elif="object.get_work_hours_week()[0][1].strftime('%H:%M:%S') == '23:59:59'"></span>
+                                    <span t-elif="object.get_work_hours_week()[0][1].strftime('%H:%M:%S') == '03:00:00'"></span>
+                                    <span t-elif="object.get_work_hours_week()[0][1].strftime('%H:%M:%S') == '02:00:00'"></span>
+                                    <span t-else="">
+                                        <t t-esc="object.get_work_hours_week()[0][1].strftime('%H:%M:%S')"/>
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[1]">
+                                    <span t-if="object.get_work_hours_week()[1][1]">
+                                        <span t-if="object.get_work_hours_week()[1][1].strftime('%H:%M:%S') == '00:00:00'">
+                                        </span>
+                                        <span t-elif="object.get_work_hours_week()[1][1].strftime('%H:%M:%S') == '23:59:59'">
+                                        </span>
+                                        <span t-elif="object.get_work_hours_week()[1][1].strftime('%H:%M:%S') == '03:00:00'"></span>
+                                        <span t-elif="object.get_work_hours_week()[1][1].strftime('%H:%M:%S') == '02:00:00'">
+                                        </span>
+                                        <span t-else="">
+                                            <t t-esc="object.get_work_hours_week()[1][1].strftime('%H:%M:%S')"/>
+                                        </span>
+                                    </span>
+                                    <span t-else=""></span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[2]">
+                                    <span t-if="object.get_work_hours_week()[2][1]">
+                                        <span t-if="object.get_work_hours_week()[2][1].strftime('%H:%M:%S') == '00:00:00'">
+                                        </span>
+                                        <span t-elif="object.get_work_hours_week()[2][1].strftime('%H:%M:%S') == '23:59:59'">
+                                        </span>
+                                        <span t-elif="object.get_work_hours_week()[2][1].strftime('%H:%M:%S') == '03:00:00'">
+                                        </span>
+                                        <span t-elif="object.get_work_hours_week()[2][1].strftime('%H:%M:%S') == '02:00:00'">
+                                        </span>
+                                        <span t-else="">
+                                            <t t-esc="object.get_work_hours_week()[2][1].strftime('%H:%M:%S')"/>
+                                        </span>
+                                    </span>
+                                    <span t-else=""></span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[3]">
+                                    <span t-if="object.get_work_hours_week()[3][1]">
+                                        <span t-if="object.get_work_hours_week()[3][1].strftime('%H:%M:%S') == '00:00:00'">
+                                        </span>
+                                         <span t-elif="object.get_work_hours_week()[3][1].strftime('%H:%M:%S') == '23:59:59'">
+                                        </span>
+                                        <span t-elif="object.get_work_hours_week()[3][1].strftime('%H:%M:%S') == '03:00:00'">
+                                        </span>
+                                        <span t-elif="object.get_work_hours_week()[3][1].strftime('%H:%M:%S') == '02:00:00'">
+                                        </span>
+                                        <span t-else="">
+                                            <t t-esc="object.get_work_hours_week()[3][1].strftime('%H:%M:%S')"/>
+                                        </span>
+                                    </span>
+                                    <span t-else=""></span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[4]">
+                                    <span t-if="object.get_work_hours_week()[4][1]">
+                                        <span t-if="object.get_work_hours_week()[4][1].strftime('%H:%M:%S') == '00:00:00'">
+                                        </span>
+                                         <span t-elif="object.get_work_hours_week()[4][1].strftime('%H:%M:%S') == '23:59:59'">
+                                        </span>
+                                        <span t-elif="object.get_work_hours_week()[4][1].strftime('%H:%M:%S') == '03:00:00'">
+                                        </span>
+                                        <span t-elif="object.get_work_hours_week()[4][1].strftime('%H:%M:%S') == '02:00:00'">
+                                        </span>
+                                        <span t-else="">
+                                            <t t-esc="object.get_work_hours_week()[4][1].strftime('%H:%M:%S')"/>
+                                        </span>
+                                    </span>
+                                    <span t-else=""></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                            <td style="background-color:#800000;"><p style="text-align:center;color:white;">Durée<p></td>
+                                <td t-if="object.get_work_hours_week()[0]">
+                                    <span t-if="object.get_work_hours_week()[0][-1] !=''">
+                                        <t t-esc="object.get_work_hours_week()[0][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                    </span>
+                                    <span t-else="">
+
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[1]">
+                                    <span t-if="object.get_work_hours_week()[1][-1] !=''">
+                                        <t t-esc="object.get_work_hours_week()[1][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                    </span>
+                                    <span t-else="">
+
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[2]">
+                                    <span t-if="object.get_work_hours_week()[2][-1] !=''">
+                                        <t t-esc="object.get_work_hours_week()[2][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                    </span>
+                                    <span t-else="">
+
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[3]">
+                                    <span t-if="object.get_work_hours_week()[3][-1] !=''">
+                                        <t t-esc="object.get_work_hours_week()[3][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                    </span>
+                                    <span t-else=""></span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[4]">
+                                    <span t-if="object.get_work_hours_week()[4][-1] !=''">
+                                        <t t-esc="object.get_work_hours_week()[4][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                    </span>
+                                </td>
+                                <span t-else=""></span>
+                            </tr>
+                            <tr>
+                            <td style="background-color:#800000;"><p style="text-align:center;color:white;">Ecart<p></td>
+                                <td t-if="object.get_work_hours_week()[0]">
+                                    <span t-if="object.get_work_hours_week()[0][-2]">
+                                        <t t-esc="object.get_work_hours_week()[0][-2]" t-options='{"widget": "float", "precision": 2}'/>
+                                    </span>
+                                    <span t-else=""></span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[1]">
+                                    <span t-if="object.get_work_hours_week()[1][-2]">
+
+                                        <t t-esc="object.get_work_hours_week()[1][-2]" t-options='{"widget": "float", "precision": 2}'/>
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[2]">
+                                    <span t-if="object.get_work_hours_week()[2][-2]">
+                                        <t t-esc="object.get_work_hours_week()[2][-2]" t-options='{"widget": "float", "precision": 2}'/>
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[3]">
+                                    <span t-if="object.get_work_hours_week()[3][-1]">
+                                        <span>
+                                            <t t-esc="object.get_work_hours_week()[3][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td t-if="object.get_work_hours_week()[4]">
+                                    <span t-if="object.get_work_hours_week()[4][-1]">
+                                        <span>
+                                            <t t-esc="object.get_work_hours_week()[4][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="background-color:#800000;"><p style="text-align:center;color:white;">Total presence<p></td>
+
+                                    <t t-set="hours" t-value="int(object.hours_last_week)"/>
+                                    <t t-set="minutes" t-value="int((object.hours_last_week - hours) * 60)"/>
+                                    <t t-esc="hours"/>:<t t-esc="minutes"/>
+                                    /
+                                    <t t-esc="object.total_hours_of_week()" t-options="{'widget': 'float_time'}"/>H
+
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    </t>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_pointage_notification_report_month" model="mail.template">
+            <field name="name">Nombre d'heures de la semaine</field>
+            <field name="email_from">fayediame575@gmail.com</field>
+            <field name="email_to">{{object.user_id.work_email or ''}}</field>
+            <field name="subject">Nombre d'heure travailler dans la semaine</field>
+            <field name="report_name">Rapport Pointage</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="report_template" ref="pointage.report_pointage_presence"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+            <h4>Présence dernier mois </h4>
+                    <div>Bonjour, <br/>
+                       <span t-out="object.name or ''"></span><br/>
+                       <p>Vous avez travaillé c-joint la fiche récaputilative des pointages
+
+                        <p>
+                            Cordialement le Directeur des ressources Humaines
+                        </p>
+                    </div>
+                    </t>
+                        ]]>
+            </field>
+        </record>
+    </data>
+</odoo>

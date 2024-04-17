@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+            string="Présence"
+            id="report_pointage_presence"
+            model="hr.employee"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_presence"
+            file="pointage.report_presence"
+            print_report_name="('Présence de '+object.name)"
+    />
+    <report
+            string="Rapport Présence"
+            id="report_pointage_presence_wizard"
+            model="pointage.rapport.wizard"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_presence_wizard"
+            file="pointage.report_presence_wizard"
+            print_report_name="('Présence de '+object.employee_id.name)"
+    />
+</odoo>
