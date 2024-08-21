@@ -25,16 +25,20 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        # 'wizard/rapport_absence_wizard_views.xml',
         'views/agent_views.xml',
         # 'views/pointagedata_views.xml',
         # 'views/originaldata_views.xml',
         'data/notification_email.xml',
         'wizard/data_pointage_wizard.xml',
+        'wizard/rapport_absence_wizard_views.xml',
         'wizard/rapport_wizard_views.xml',
         'views/working_hours_views.xml',
         'report/presence.xml',
         'report/presence_template.xml',
         'report/presence_template_personaliser.xml',
+        'report/rapport_absence_template.xml',
+        'views/attendance_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

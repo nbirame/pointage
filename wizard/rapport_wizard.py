@@ -8,7 +8,7 @@ class RapportWizard(models.TransientModel):
     _description = "Rapport présence employée"
     _rec_name = "employee_id"
 
-    employee_id = fields.Many2one("hr.employee", string="Emplyé")
+    employee_id = fields.Many2one("hr.employee", string="Emplyé", default=lambda self: self.env.context.get('active_id', None), store=True)
     date_in_get_rapport = fields.Date(string="Date de début")
     date_end_get_rapport = fields.Date(string="Date de fin")
     # number_of_working_hours = fields.Float(string="Heure de travail")
@@ -171,3 +171,6 @@ class RapportWizard(models.TransientModel):
                 pass
 
         return liste_dates
+
+    def calculate_ecart_worked(self):
+        return self.get_total_work() - self.total_number_of_working_hours

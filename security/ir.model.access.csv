@@ -5,3 +5,4 @@ access_pointage_originaldata,pointage.originaldata,model_pointage_originaldata,b
 access_pointage_donnees_pointage_wizard,pointage.donnees_pointage_wizard,model_pointage_donnees_pointage_wizard,base.group_user,1,1,1,1
 access_pointage_working_hours,pointage.working_hours,model_pointage_working_hours,base.group_user,1,1,1,1
 access_pointage_rapport_wizard,pointage.rapport_wizard,model_pointage_rapport_wizard,base.group_user,1,1,1,1
+access_pointage_rapport_absence_wizard,pointage.rapport_absence_wizard,model_pointage_absence_report_wizard,base.group_user,1,1,1,1

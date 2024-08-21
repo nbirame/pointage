@@ -11,7 +11,7 @@
                     <field name="date_generated"/>
                     <field name="date_to"/>
                     <field name="date_from"/>
-                    <field name="fichier_id" filename="filename"/>
+                    <field name="fichier_id" widget="binary" filename="filename"/>
                     <field name="filename" invisible="1"/>
                 </tree>
             </field>
@@ -58,9 +58,9 @@
                                 </field>
                             </page>
                         </notebook>
-                        <group>
-                            <field name="validation"/>
-                        </group>
+<!--                        <group>-->
+<!--                            <field name="validation"/>-->
+<!--                        </group>-->
                     </sheet>
                 </form>
             </field>

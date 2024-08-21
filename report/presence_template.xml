@@ -99,7 +99,7 @@
                                         <span t-if="minutes > 0" t-esc="minutes"/>
                                         <br/>
                                     </td>
-                                    <td>
+                                    <td t-if="pair[-2]">
                                         <span t-esc="pair[-2]" t-options="{'widget':'float_time'}"/>
                                     </td>
                                 </tr>

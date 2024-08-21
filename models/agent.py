@@ -396,3 +396,6 @@ class Agent(models.Model):
                 pass
         # print(f"liste dates: {liste_dates}")
         return liste_dates
+
+    def ecart_worked_week(self):
+        return self.total_hours_of_week() - self.hours_last_week

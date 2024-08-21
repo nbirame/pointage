@@ -21,9 +21,10 @@
                             <t t-set="minutes" t-value="int((object.hours_last_week - hours) * 60)"/>
                             <t t-esc="hours"/>:<t t-esc="minutes"/>
                             heures du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
+                            avec une ecart de <t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/>
                        </p>
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
-                            <thead style="background-color:#800000;">
+                            <thead class="thead-light" style="background-color:#800000;">
                                 <tr>
                                     <th></th>
                                     <th style="color:white;">Lundi</th>
@@ -274,14 +275,18 @@
                                     </span>
                                 </td>
                             </tr>
-                            <tr>
-                                <td style="background-color:#800000;"><p style="text-align:center;color:white;">Total presence<p></td>
+                            <tr style="background-color:#800000;">
 
-                                    <t t-set="hours" t-value="int(object.hours_last_week)"/>
-                                    <t t-set="minutes" t-value="int((object.hours_last_week - hours) * 60)"/>
-                                    <t t-esc="hours"/>:<t t-esc="minutes"/>
-                                    /
-                                    <t t-esc="object.total_hours_of_week()" t-options="{'widget': 'float_time'}"/>H
+                                <td colspan="6" style="text-align:center;color:white;">
+                                    Total présence:<t t-set="hours" t-value="int(object.hours_last_week)"/>
+                                <t t-set="minutes" t-value="int((object.hours_last_week - hours) * 60)"/>
+                                <t t-esc="hours"/>:<t t-esc="minutes"/>
+                                /
+                                <t t-esc="object.total_hours_of_week()" t-options="{'widget': 'float_time'}"/>
+                                (<t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/> Ecart)
+                                </td>
+
+
 
                             </tr>
 
@@ -294,7 +299,7 @@
         </record>
         <record id="email_template_pointage_notification_report_month" model="mail.template">
             <field name="name">Nombre d'heures de la semaine</field>
-            <field name="email_from">fayediame575@gmail.com</field>
+            <field name="email_from">nbirame559@gmail.com</field>
             <field name="email_to">{{object.user_id.work_email or ''}}</field>
             <field name="subject">Nombre d'heure travailler dans la semaine</field>
             <field name="report_name">Rapport Pointage</field>

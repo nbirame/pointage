@@ -14,8 +14,7 @@
                 <group class="oe_title">
                     <field name="employee_id"/>
                     <field name="date_in_get_rapport"/>
-                    <field name="date_end_get_rapport"/><!--
-                    <field name="number_of_working_hours"/>-->
+                    <field name="date_end_get_rapport"/>
                 </group>
                 <footer>
                     <button name="print_rapport" string="GENERER" type="object" class="btn-primary"/>

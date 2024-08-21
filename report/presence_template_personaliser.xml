@@ -111,7 +111,7 @@
                                 <td></td>
                                 <td></td>
                                 <td><t t-esc="object.get_total_work()"/></td>
-                                <td></td>
+                                <td><t t-esc="object.calculate_ecart_worked()"/></td>
                             </tr>
                         </table>
                         <p class="text-right">
