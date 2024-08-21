@@ -57,6 +57,11 @@
                         type="action"
                         icon="fa-pencil"
                         class="oe_highlight"/>
+                <button name="%(pointage.pointage_absence_rapport_wizard_form)d"
+                        string="Rapport Absence"
+                        type="action"
+                        icon="fa-print"
+                        class="oe_highlight"/>
 
             </div>
 
