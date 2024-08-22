@@ -55,7 +55,7 @@
                                                 Absent
                                             </span>
                                             <span t-elif="pair[:-1][0].strftime('%H:%M:%S') == '23:59:59'">
-                                                Jour férié
+                                                <span t-esc="pair[:-1][-2]"/>
                                             </span>
                                             <span t-elif="pair[:-1][0].strftime('%H:%M:%S') == '03:00:00'">
                                                 En congé

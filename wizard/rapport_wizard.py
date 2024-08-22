@@ -127,10 +127,14 @@ class RapportWizard(models.TransientModel):
         for fete in fetes:
             date_debut = fete.date_star
             date_fin = fete.date_end
+            nom_fete = fete.party_id.name
+            print(nom_fete)
             # Créer une liste de toutes les dates entre date_debut et date_fin
             fete_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
+            print(fete_liste)
             for jour_fete in fete_liste:
-                fete_listes.append(jour_fete)
+                fete_listes.append([jour_fete, nom_fete])
+        print(fete_listes)
         # Trouver la date de début et de fin dans la liste existante
         date_debut = self.date_in_get_rapport
         date_fin = self.date_end_get_rapport
@@ -141,34 +145,34 @@ class RapportWizard(models.TransientModel):
         print(f"Date m {dates_manquantes}")
         # Ajouter les dates manquantes dans la liste d'origine
         for date in dates_manquantes:
-            if date.strftime('%A') != "samedi" and date.strftime('%A') != "dimanche" and date not in fete_listes and date not in conge_listes and date not in mission_listes:
+            if date.strftime('%A') != "samedi" and date.strftime('%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes:
                 print('Helloo')
                 # Créer une entrée vide pour chaque date manquante
                 nouvelle_entree = [datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.min.time()),
                                    0.0, 0.0]
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
-            elif date in fete_listes:
+            elif date in [f[0] for f in fete_listes]:
                 nouvelle_entree = [datetime.combine(date, datetime.max.time()),
                                    datetime.combine(date, datetime.max.time()),
-                                   0.0, '']
+                                   next(f[1] for f in fete_listes if date == f[0]), 0.0, '']
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             elif date in conge_listes:
                 nouvelle_entree = [datetime.combine(date, time(3, 0, 0)),
                                    datetime.combine(date, time(3, 0, 0)),
-                                   0.0, '']
+                                   'En conge', 0.0, '']
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             elif date in mission_listes:
-                print("World")
                 nouvelle_entree = [datetime.combine(date, time(2, 0, 0)),
                                    datetime.combine(date, time(2, 0, 0)),
-                                   0.0, '']
+                                   'En mission', 0.0, '']
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             else:
                 pass
+        print(f"Liste presence {liste_dates}")
 
         return liste_dates
 
