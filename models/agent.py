@@ -135,7 +135,7 @@ class Agent(models.Model):
         if template:
             # template.write({'email_to': email_to})
             self.env["mail.template"].browse(template.id).sudo().send_mail(
-                self.id, force_send=True, email_values={'email_to': 'savelife.gnafal@gmail.com'}
+                self.id, force_send=True, email_values={'email_to': 'nbirame559@gmail.com'}
             )
             self.env["mail.mail"].sudo().process_email_queue()
 
@@ -392,4 +392,4 @@ class Agent(models.Model):
         return liste_dates
 
     def ecart_worked_week(self):
-        return self.total_hours_of_week() - self.hours_last_week
+        return self.hours_last_week - self.total_hours_of_week()
