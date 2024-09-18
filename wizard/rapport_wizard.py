@@ -107,6 +107,17 @@ class RapportWizard(models.TransientModel):
                 for jour_mission in mission_liste:
                     mission_listes.append(jour_mission)
         print(f"Date mission {mission_listes}")
+        participants_listes = []
+        participants = self.env["pointage.participants"].search([('employee_id', '=', self.employee_id.id)])
+        print(f"Participants: {participants}")
+        for employee in participants:
+            print(f"List des participants: {employee}")
+            date_debut = employee.atelier_id.date_from
+            date_fin = employee.atelier_id.date_to
+            participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
+            for jour_atelier in participants_liste:
+                print(f"Jour atelier: {jour_atelier}")
+                participants_listes.append(jour_atelier)
         conge_listes = []
         holidays = self.env['hr.leave'].sudo().search([
             ('employee_id', '=', self.employee_id.id),
@@ -145,7 +156,7 @@ class RapportWizard(models.TransientModel):
         print(f"Date m {dates_manquantes}")
         # Ajouter les dates manquantes dans la liste d'origine
         for date in dates_manquantes:
-            if date.strftime('%A') != "samedi" and date.strftime('%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes:
+            if date.strftime('%A') != "samedi" and date.strftime('%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes and date not in participants_listes:
                 print('Helloo')
                 # Créer une entrée vide pour chaque date manquante
                 nouvelle_entree = [datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.min.time()),
@@ -162,6 +173,13 @@ class RapportWizard(models.TransientModel):
                 nouvelle_entree = [datetime.combine(date, time(3, 0, 0)),
                                    datetime.combine(date, time(3, 0, 0)),
                                    'En conge', 0.0, '']
+                if nouvelle_entree not in liste_dates:
+                    liste_dates.append(nouvelle_entree)
+            elif date in participants_listes:
+                print(f"List des participants: {date}")
+                nouvelle_entree = [datetime.combine(date, time(4, 0, 0)),
+                                   datetime.combine(date, time(4, 0, 0)),
+                                   'En atelier', 0.0, '']
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             elif date in mission_listes:

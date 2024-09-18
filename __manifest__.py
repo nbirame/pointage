@@ -38,7 +38,7 @@
         'report/presence_template.xml',
         'report/presence_template_personaliser.xml',
         'report/rapport_absence_template.xml',
-        # 'views/attendance_view.xml',
+        'views/atelier_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

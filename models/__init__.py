@@ -5,3 +5,5 @@ from . import originaldata
 from . import pointagedata
 from . import presence
 from . import working_hours
+from . import participants
+from . import atelier

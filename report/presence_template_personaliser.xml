@@ -60,6 +60,9 @@
                                             <span t-elif="pair[:-1][0].strftime('%H:%M:%S') == '03:00:00'">
                                                 En congé
                                             </span>
+                                            <span t-elif="pair[:-1][0].strftime('%H:%M:%S') == '04:00:00'">
+                                                En atelié
+                                            </span>
                                             <span t-elif="pair[:-1][0].strftime('%H:%M:%S') == '02:00:00'">
                                                 En mission
                                             </span>
@@ -79,6 +82,9 @@
 
                                             </span>
                                             <span t-elif="pair[:-1][1].strftime('%H:%M:%S') == '03:00:00'">
+
+                                            </span>
+                                            <span t-elif="pair[:-1][1].strftime('%H:%M:%S') == '04:00:00'">
 
                                             </span>
                                             <span t-elif="pair[:-1][1].strftime('%H:%M:%S') == '02:00:00'">

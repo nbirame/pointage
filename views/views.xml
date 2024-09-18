@@ -33,12 +33,14 @@
                         <group>
                             <field name="employee_id"/>
                             <field name="date"/>
-                            <field name="fichier_id"/>
                         </group>
                         <group>
                             <field name="date_generated"/>
                             <field name="date_to"/>
                             <field name="date_from"/>
+                        </group>
+                        <group>
+                            <field name="fichier_id"/>
                         </group>
                         <notebook>
                             <page name="page_lines" string="Pointage Biometrique">
@@ -58,9 +60,6 @@
                                 </field>
                             </page>
                         </notebook>
-<!--                        <group>-->
-<!--                            <field name="validation"/>-->
-<!--                        </group>-->
                     </sheet>
                 </form>
             </field>
