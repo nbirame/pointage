@@ -6,6 +6,7 @@ class Atelier(models.Model):
     _description = "Les personnes qui sont en atelier"
 
     participant_ids = fields.One2many("pointage.participants", "atelier_id", string="Participant(s)")
+    description = fields.Char(string="Description atelier")
     type_jour = fields.Selection([
         ('journee', 'Journée'),
         ('demi_journee', 'Demi-journée'),
@@ -25,10 +26,12 @@ class Atelier(models.Model):
     def _compute_name(self):
         for record in self:
             if record.date_start and record.date_end:
-                start_date_str = record.date_start.strftime('%Y-%m-%d')
-                end_date_str = record.date_end.strftime('%Y-%m-%d')
+                start_date_str = fields.Date.to_string(record.date_start)
+                end_date_str = fields.Date.to_string(record.date_end)
                 record.name = "ATELIER-%s-%s" % (start_date_str, end_date_str)
-                # record.name = "ATELIER-%s-%s" % (record.date_start, record.date_end)
+            else:
+                # Sinon, on doit s'assurer que `record.name` reçoit une valeur vide ou par défaut
+                record.name = "ATELIER-SANS-DATE"
 
     @api.depends("date_start")
     def _compute_date_from(self):

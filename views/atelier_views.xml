@@ -29,6 +29,7 @@
                         <group>
                             <field name="name"/>
                             <field name="type_jour"/>
+                            <field name="description"/>
                         </group>
                         <group>
                             <field name="date_start"/>

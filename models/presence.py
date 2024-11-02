@@ -1,4 +1,4 @@
-from odoo import models, api, exceptions, _
+from odoo import models, api, exceptions, fields,  _
 from odoo.tools import format_datetime
 
 
