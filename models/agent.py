@@ -122,23 +122,23 @@ class Agent(models.Model):
 
     def send_email_notification(self, temp):
         employees = self.env['hr.employee'].sudo().search([])
-        # for employee in employees:
-        #     email_to = employee.work_email
-        #     template = self.env.ref("pointage.%s" % temp)
-        #     # template = self.env.ref("pointage.email_template_pointage_notification")
-        #     if template:
-        #         # template.write({'email_to': email_to})
-        #         self.env["mail.template"].browse(template.id).sudo().send_mail(
-        #             employee.id, force_send=True, email_values={'email_to': email_to}
-        #         )
-        #         self.env["mail.mail"].sudo().process_email_queue()
-        template = self.env.ref("pointage.email_template_pointage_notification")
-        if template:
-            # template.write({'email_to': email_to})
-            self.env["mail.template"].browse(template.id).sudo().send_mail(
-                self.id, force_send=True, email_values={'email_to': 'nbirame559@gmail.com'}
-            )
-            self.env["mail.mail"].sudo().process_email_queue()
+        for employee in employees:
+            email_to = employee.work_email
+            template = self.env.ref("pointage.%s" % temp)
+            # template = self.env.ref("pointage.email_template_pointage_notification")
+            if template:
+                # template.write({'email_to': email_to})
+                self.env["mail.template"].browse(template.id).sudo().send_mail(
+                    employee.id, force_send=True, email_values={'email_to': email_to}
+                )
+                self.env["mail.mail"].sudo().process_email_queue()
+        # template = self.env.ref("pointage.email_template_pointage_notification")
+        # if template:
+        #     # template.write({'email_to': email_to})
+        #     self.env["mail.template"].browse(template.id).sudo().send_mail(
+        #         self.id, force_send=True, email_values={'email_to': 'nbirame559@gmail.com'}
+        #     )
+        #     self.env["mail.mail"].sudo().process_email_queue()
 
     def email_notification_send_woork_week(self):
         self.send_email_notification("email_template_pointage_notification")
