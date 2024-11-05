@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta, time
 
 from odoo import models, api, fields
 
@@ -26,7 +26,6 @@ class Pointagedata(models.Model):
 
     @api.depends('date_time', 'employee_id', 'date')
     def _compute_date_of_pointing(self):
-        # pass
         liste_employe = []
         personal_pointage = []
         for record in self:
@@ -54,6 +53,8 @@ class Pointagedata(models.Model):
             print(new_liste)
             date_object_in = datetime.strptime(new_liste[i][1][0], '%d/%m/%Y %H:%M:%S')
             date_odoo_format_in = date_object_in.strftime('%Y-%m-%d %H:%M:%S')
+            date_default_in = datetime.combine(date_object_in.date(), time(8, 30, 0))
+            date_default_out = datetime.combine(date_object_in.date(), time(17, 30, 0))
             if len(new_liste[i][1]) != 1:
                 # print("Entrer SORTIE")
                 date_object_out = datetime.strptime(new_liste[i][1][1], '%d/%m/%Y %H:%M:%S')
@@ -70,6 +71,7 @@ class Pointagedata(models.Model):
                     print("Entrer")
                     presence_valide = {
                         'matricule': int(new_liste[i][0]),
+                        'date_in': date_default_in,
                         'date_out': date_odoo_format_in,
                     }
                     personal_pointage.append(presence_valide)
@@ -77,6 +79,7 @@ class Pointagedata(models.Model):
                     presence_valide = {
                         'matricule': int(new_liste[i][0]),
                         'date_in': date_odoo_format_in,
+                        'date_out': date_default_out,
                     }
                     personal_pointage.append(presence_valide)
 
