@@ -13,7 +13,7 @@
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
             <t t-call="web.html_container">
-            <h4>Présence dernier semaine </h4>
+            <h4>Présence dernière semaine</h4>
                     <div>Bonjour, <br/>
                        <span style="font-weight: bold;" t-out="object.name or ''"></span><br/>
                        <p>Vous avez travaillé
@@ -24,7 +24,7 @@
                             avec une ecart de <t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/>
                        </p>
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
-                            <thead class="thead-light" style="background-color:#800000;">
+                            <thead class="thead-light" style="background-color:#5e1714;">
                                 <tr>
                                     <th></th>
                                     <th style="color:white;">Lundi</th>
@@ -36,7 +36,7 @@
                             </thead>
                             <tbody>
                             <tr>
-                            <td style="background-color:#800000;"><p style="text-align:center;color:white;">Entrée<p></td>
+                            <td style="background-color:#5e1714;"><p style="text-align:center;color:white;">Entrée<p></td>
                                 <td t-if="object.get_work_hours_week()[0][0]">
                                     <span t-if="object.get_work_hours_week()[0][0].strftime('%H:%M:%S') == '00:00:00'">
                                         Absent
@@ -141,7 +141,7 @@
                             </tr>
 
                             <tr>
-                            <td style="background-color:#800000;"><p style="text-align:center;color:white;">Sortie<p></td>
+                            <td style="background-color:#5e1714;"><p style="text-align:center;color:white;">Sortie<p></td>
                                 <td t-if="object.get_work_hours_week()[0][1]">
                                     <span t-if="object.get_work_hours_week()[0][1].strftime('%H:%M:%S') == '00:00:00'">
 
@@ -227,10 +227,10 @@
                             </tr>
 
                             <tr>
-                            <td style="background-color:#800000;"><p style="text-align:center;color:white;">Durée<p></td>
+                            <td style="background-color:#5e1714;"><p style="text-align:center;color:white;">Durée<p></td>
                                 <td t-if="object.get_work_hours_week()[0]">
                                     <span t-if="object.get_work_hours_week()[0][-1] !=''">
-                                        <t t-esc="object.get_work_hours_week()[0][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                        <t t-esc="object.get_work_hours_week()[0][-1]" t-options="{'widget': 'float_time'}"/>
                                     </span>
                                     <span t-else="">
 
@@ -238,7 +238,7 @@
                                 </td>
                                 <td t-if="object.get_work_hours_week()[1]">
                                     <span t-if="object.get_work_hours_week()[1][-1] !=''">
-                                        <t t-esc="object.get_work_hours_week()[1][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                        <t t-esc="object.get_work_hours_week()[1][-1]" t-options="{'widget': 'float_time'}"/>
                                     </span>
                                     <span t-else="">
 
@@ -246,7 +246,7 @@
                                 </td>
                                 <td t-if="object.get_work_hours_week()[2]">
                                     <span t-if="object.get_work_hours_week()[2][-1] !=''">
-                                        <t t-esc="object.get_work_hours_week()[2][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                        <t t-esc="object.get_work_hours_week()[2][-1]" t-options="{'widget': 'float_time'}"/>
                                     </span>
                                     <span t-else="">
 
@@ -254,52 +254,52 @@
                                 </td>
                                 <td t-if="object.get_work_hours_week()[3]">
                                     <span t-if="object.get_work_hours_week()[3][-1] !=''">
-                                        <t t-esc="object.get_work_hours_week()[3][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                        <t t-esc="object.get_work_hours_week()[3][-1]" t-options="{'widget': 'float_time'}"/>
                                     </span>
                                     <span t-else=""></span>
                                 </td>
                                 <td t-if="object.get_work_hours_week()[4]">
                                     <span t-if="object.get_work_hours_week()[4][-1] !=''">
-                                        <t t-esc="object.get_work_hours_week()[4][-1]" t-options='{"widget": "float", "precision": 2}'/>
+                                        <t t-esc="object.get_work_hours_week()[4][-1]" t-options="{'widget': 'float_time'}"/>
                                     </span>
                                 </td>
                                 <span t-else=""></span>
                             </tr>
                             <tr>
-                            <td style="background-color:#800000;"><p style="text-align:center;color:white;">Ecart<p></td>
+                            <td style="background-color:#5e1714;"><p style="text-align:center;color:white;">Ecart<p></td>
                                 <td t-if="object.get_work_hours_week()[0]">
                                     <span t-if="object.get_work_hours_week()[0][-2]">
-                                        <t t-esc="object.get_work_hours_week()[0][-2]" t-options='{"widget": "float", "precision": 2}'/>
+                                        <t t-esc="object.get_work_hours_week()[0][-2]" t-options="{'widget': 'float_time'}"/>
                                     </span>
                                     <span t-else=""></span>
                                 </td>
                                 <td t-if="object.get_work_hours_week()[1]">
                                     <span t-if="object.get_work_hours_week()[1][-2]">
 
-                                        <t t-esc="object.get_work_hours_week()[1][-2]" t-options='{"widget": "float", "precision": 2}'/>
+                                        <t t-esc="object.get_work_hours_week()[1][-2]" t-options="{'widget': 'float_time'}"/>
                                     </span>
                                 </td>
                                 <td t-if="object.get_work_hours_week()[2]">
                                     <span t-if="object.get_work_hours_week()[2][-2]">
-                                        <t t-esc="object.get_work_hours_week()[2][-2]" t-options='{"widget": "float", "precision": 2}'/>
+                                        <t t-esc="object.get_work_hours_week()[2][-2]" t-options="{'widget': 'float_time'}"/>
                                     </span>
                                 </td>
                                 <td t-if="object.get_work_hours_week()[3]">
                                     <span t-if="object.get_work_hours_week()[3][-2]">
                                         <span>
-                                            <t t-esc="object.get_work_hours_week()[3][-2]" t-options='{"widget": "float", "precision": 2}'/>
+                                            <t t-esc="object.get_work_hours_week()[3][-2]" t-options="{'widget': 'float_time'}"/>
                                         </span>
                                     </span>
                                 </td>
                                 <td t-if="object.get_work_hours_week()[4]">
                                     <span t-if="object.get_work_hours_week()[4][-2]">
                                         <span>
-                                            <t t-esc="object.get_work_hours_week()[4][-2]" t-options='{"widget": "float", "precision": 2}'/>
+                                            <t t-esc="object.get_work_hours_week()[4][-2]" t-options="{'widget': 'float_time'}"/>
                                         </span>
                                     </span>
                                 </td>
                             </tr>
-                            <tr style="background-color:#800000;">
+                            <tr style="background-color:#5e1714;">
 
                                 <td colspan="6" style="text-align:center;color:white;">
                                     Total présence:<t t-set="hours" t-value="int(object.hours_last_week)"/>
