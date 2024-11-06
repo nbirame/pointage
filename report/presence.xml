@@ -30,4 +30,14 @@
             file="pointage.report_absence_wizard"
             print_report_name="('Rapport liste des absences')"
     />
+    <report
+            string="Rapport Présence"
+            id="report_pointage_presence_of_day_wizard"
+            model="pointage.absence.report.wizard"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_presence_of_day_wizard"
+            file="pointage.report_presence_of_day_wizard"
+            print_report_name="('Rapport liste de présence')"
+    />
 </odoo>

@@ -21,16 +21,21 @@ class AbsenceReportWizard(models.TransientModel):
 
     def get_employees_with_absences(self):
         employees = self.env['hr.employee'].search([])
-        result = []
         liste_absent = []
         number_day_of_mission = 0
         for employee in employees:
+            entree = ""
+            sortie = ""
             heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
             attendance_records = self.env['hr.attendance'].search([
                 ('employee_id', '=', employee.id),
                 ('check_in', '>=', self.start_date),
                 ('check_out', '<=', self.end_date),
             ])
+            if attendance_records:
+                for presence_hours in attendance_records:
+                    entree = presence_hours.check_in.time()
+                    sortie = presence_hours.check_out.time()
             total_worked_hours = round(sum(attendance.worked_hours for attendance in attendance_records), 2)
             absence_days_hollidays = self.env['hr.leave'].search_count([
                 ('employee_id', '=', employee.id),
@@ -54,10 +59,12 @@ class AbsenceReportWizard(models.TransientModel):
                                                                                 self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
             total_number_of_missing_hours = total_number_of_working_hours - total_worked_hours
             jours_absence = int(total_number_of_missing_hours / 8)
-            if total_number_of_missing_hours != 0:
-                liste_absent.append([employee.name, employee.job_title, employee.department_id.name, total_worked_hours,
-                                     total_number_of_working_hours, jours_absence])
-        return sorted(liste_absent, key=lambda absence: absence[-1], reverse=True)
+            # if total_number_of_missing_hours != 0:
+            # if jours_absence != 0:
+            liste_absent.append([employee.name, employee.job_title, employee.department_id.name,
+                                 entree, sortie, total_worked_hours,
+                                 total_number_of_working_hours, jours_absence])
+        return sorted(liste_absent, key=lambda absence: absence[-1], reverse=False)
 
     def action_generate_report(self):
         return self.env.ref('pointage.report_pointage_absence_wizard').report_action(self)
