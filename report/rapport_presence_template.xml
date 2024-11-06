@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="report_presence_of_day_wizard">
+    <template id="report_absence_wizard">
         <div class="header" style="margin-top: 0px;">
             <img src="/pointage/static/src/img/fon.jpeg" alt="Logo" class="w-910 h-3"/>
         </div>
@@ -25,12 +25,14 @@
                                     <th>Employé</th>
                                     <th>Fonction</th>
                                     <th>Service</th>
+                                    <th>Entrée</th>
+                                    <th>Sortie</th>
                                     <th>Présence(en heures)</th>
                                     <th>Horaire à faire (en heures)</th>
                                     <th>Absence (en jours)</th>
                                 </tr>
                             </thead>
-                            <tbody t-foreach="object.get_employees_with_presence()" t-as="absence">
+                            <tbody t-foreach="object.get_employees_with_absences()" t-as="absence">
                                 <tr>
                                     <td>
                                        <span t-esc="absence_index+1"/>
@@ -46,14 +48,20 @@
                                         <span t-esc="absence[2]"/>
                                     </td>
                                     <td >
-                                        <span t-esc="absence[3]" t-options="{'widget': 'float_time'}"/>
+                                        <span t-esc="absence[3]"/>
                                     </td>
                                     <td >
                                         <span t-esc="absence[4]"/>
                                     </td>
+                                    <td >
+                                        <span t-esc="absence[5]" t-options="{'widget': 'float_time'}"/>
+                                    </td>
+                                    <td >
+                                        <span t-esc="absence[6]"/>
+                                    </td>
 
                                     <td >
-                                        <span t-esc="absence[5]"/>
+                                        <span t-esc="absence[7]"/>
                                     </td>
                                 </tr>
                             </tbody>

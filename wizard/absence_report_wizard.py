@@ -68,3 +68,46 @@ class AbsenceReportWizard(models.TransientModel):
 
     def action_generate_report(self):
         return self.env.ref('pointage.report_pointage_absence_wizard').report_action(self)
+
+    def get_employees_with_presence(self):
+        employees = self.env['hr.employee'].search([])
+        liste_absent = []
+        number_day_of_mission = 0
+        for employee in employees:
+            heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
+            attendance_records = self.env['hr.attendance'].search([
+                ('employee_id', '=', employee.id),
+                ('check_in', '>=', self.start_date),
+                ('check_out', '<=', self.end_date),
+            ])
+            total_worked_hours = round(sum(attendance.worked_hours for attendance in attendance_records), 2)
+            absence_days_hollidays = self.env['hr.leave'].search_count([
+                ('employee_id', '=', employee.id),
+                ('state', '=', 'validate'),
+                ('request_date_from', '>=', self.start_date),
+                ('request_date_to', '<=', self.end_date),
+            ])
+            equipe_mission = self.env["mission.equipe"].search([
+                ('employee_id', '=', employee.id),
+            ])
+            for agent in equipe_mission:
+                if (
+                        agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour <= self.end_date:
+                    number_day_of_mission += number_day_of_mission
+            number_day_of_party = self.env["vacances.ferier"].sudo().search_count([
+                ('date_star', '>=', self.start_date),
+                ('date_end', '<=', self.end_date),
+            ])
+            number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
+            total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
+                                                                                self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
+            total_number_of_missing_hours = total_number_of_working_hours - total_worked_hours
+            jours_absence = int(total_number_of_missing_hours / 8)
+            # if total_number_of_missing_hours != 0:
+            # if jours_absence != 0:
+            liste_absent.append([employee.name, employee.job_title, employee.department_id.name, total_worked_hours,
+                                 total_number_of_working_hours, jours_absence])
+        return sorted(liste_absent, key=lambda absence: absence[-1], reverse=False)
+
+    def action_generate_report_presence(self):
+        return self.env.ref('pointage.report_pointage_presence_of_day_wizard').report_action(self)

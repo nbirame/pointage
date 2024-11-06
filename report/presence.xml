@@ -21,7 +21,7 @@
             print_report_name="('Présence de '+object.employee_id.name)"
     />
     <report
-            string="Rapport Absence"
+            string="Rapport Présence"
             id="report_pointage_absence_wizard"
             model="pointage.absence.report.wizard"
             report_type="qweb-pdf"
@@ -31,13 +31,13 @@
             print_report_name="('Rapport liste des absences')"
     />
     <report
-            string="Rapport Présence"
+            string="Rapport Absence"
             id="report_pointage_presence_of_day_wizard"
-            model="pointage.absence.report.wizard"
+            model="pointage.absence.wizard"
             report_type="qweb-pdf"
             menu="False"
             name="pointage.report_presence_of_day_wizard"
             file="pointage.report_presence_of_day_wizard"
-            print_report_name="('Rapport liste de présence')"
+            print_report_name="('Rapport liste des absences'')"
     />
 </odoo>

@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <odoo>
     <record model="ir.actions.act_window" id="pointage_presence_of_day_rapport_wizard_form">
-        <field name="name">Rapport presence</field>
-        <field name="res_model">pointage.absence.report.wizard</field>
+        <field name="name">Rapport Absences</field>
+        <field name="res_model">pointage.absence.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
     <record id="pointage_presence_of_day_rapport_wizard_view_form" model="ir.ui.view">
-        <field name="name">pointage.absence.report.wizard.form</field>
-        <field name="model">pointage.absence.report.wizard</field>
+        <field name="name">pointage.absence.wizard.form</field>
+        <field name="model">pointage.absence.wizard</field>
         <field name="arch" type="xml">
             <form string="Rapport de pointage">
                 <group class="oe_title">
@@ -16,7 +16,7 @@
                     <field name="end_date"/>
                 </group>
                 <footer>
-                    <button name="action_generate_report_presence" string="Rapport Presence" type="object" class="btn-primary"/>
+                    <button name="action_generate_report_presence" string="Rapport des absences" type="object" class="btn-primary"/>
                     <button string="Annuler" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

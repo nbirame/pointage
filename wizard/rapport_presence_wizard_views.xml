@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <odoo>
     <record model="ir.actions.act_window" id="pointage_absence_rapport_wizard_form">
-        <field name="name">Rapport Absence</field>
+        <field name="name">Rapport Présence</field>
         <field name="res_model">pointage.absence.report.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
