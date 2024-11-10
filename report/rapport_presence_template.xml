@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="report_absence_wizard">
+    <template id="report_presence_day_wizard">
         <div class="header" style="margin-top: 0px;">
             <img src="/pointage/static/src/img/fon.jpeg" alt="Logo" class="w-910 h-3"/>
         </div>
@@ -9,10 +9,9 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h3 style="text-align:center;color:#800000;margin-top:0px; font-weight: bold;">
-                            Liste de présence
+                            Pointage du jour
                         </h3>
                         <p style="text-align:center; color:#800000; font-weight: 200;">
-                            La date du
                             <span t-esc="object.start_date" t-options='{"widget": "date"}'/>.
                         </p>
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
@@ -28,10 +27,12 @@
                                     <th>Sortie</th>
                                     <th>Présence(en heures)</th>
                                     <th>Horaire à faire (en heures)</th>
-                                    <th>Absence (en jours)</th>
+                                    <th>Ecart (en heures)</th>
+                                    <th>Observation</th>
+                                    <th></th>
                                 </tr>
                             </thead>
-                            <tbody t-foreach="object.get_employees_with_absences()" t-as="absence">
+                            <tbody t-foreach="object.get_employees_with_presence()" t-as="absence">
                                 <tr>
                                     <td>
                                        <span t-esc="absence_index+1"/>
@@ -56,15 +57,20 @@
                                         <span t-esc="absence[5]" t-options="{'widget': 'float_time'}"/>
                                     </td>
                                     <td >
-                                            <span t-esc="absence[6]"/>
+                                        <span t-esc="absence[6]"/>
                                     </td>
-
                                     <td >
-                                         <span t-if="absence[7]==1">
-                                            Absent
-                                        </span>
-                                        <span t-else="">
+                                        <span t-esc="absence[7]" t-options="{'widget': 'float_time'}"/>
+                                    </td>
+                                    <td >
+                                        <span t-esc="absence[9]"/>
+                                    </td>
+                                    <td >
+                                        <span t-if="absence[3]" style="background-color: green;">
                                             Présent
+                                        </span>
+                                        <span t-else="" style="background-color: red;">
+                                            Absent(e)
                                         </span>
                                     </td>
                                 </tr>

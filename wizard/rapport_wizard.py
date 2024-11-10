@@ -33,10 +33,8 @@ class RapportWizard(models.TransientModel):
                 number_of_day = self.nombre_jours_sans_weekend(record.date_in_get_rapport, record.date_end_get_rapport)
                 for number_of_liste in self.get_presence_employee():
                     # i = 0
-                    if number_of_liste[-1] == '':
+                    if number_of_liste[-1] == 0:
                         nombre_jours.append(nombre_jours)
-                print(len(nombre_jours))
-                # print(number_of_day)
                 record.total_number_of_working_hours = int(number_of_day) * heure_travail.worked_hours - (len(nombre_jours) * heure_travail.worked_hours)
 
     def get_total_work(self):
@@ -84,7 +82,7 @@ class RapportWizard(models.TransientModel):
         return sorted(self.ajouter_dates_manquantes(liste_presences), key=lambda x: x[0])
 
     def print_rapport(self):
-        return self.env.ref("pointage.report_pointage_presence_wizard").report_action(self)
+        return self.env.ref("pointage.report_pointage_presence_person_wizard").report_action(self)
 
     def ajouter_dates_manquantes(self, liste_dates):
         # Extraire les dates de la liste donnée
@@ -166,26 +164,26 @@ class RapportWizard(models.TransientModel):
             elif date in [f[0] for f in fete_listes]:
                 nouvelle_entree = [datetime.combine(date, datetime.max.time()),
                                    datetime.combine(date, datetime.max.time()),
-                                   next(f[1] for f in fete_listes if date == f[0]), 0.0, '']
+                                   next(f[1] for f in fete_listes if date == f[0]), 0.0, 0]
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             elif date in conge_listes:
                 nouvelle_entree = [datetime.combine(date, time(3, 0, 0)),
                                    datetime.combine(date, time(3, 0, 0)),
-                                   'En conge', 0.0, '']
+                                   'En conge', 0.0, 0]
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             elif date in participants_listes:
                 print(f"List des participants: {date}")
                 nouvelle_entree = [datetime.combine(date, time(4, 0, 0)),
                                    datetime.combine(date, time(4, 0, 0)),
-                                   'En atelier', 0.0, '']
+                                   'En atelier', 0.0, 0]
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             elif date in mission_listes:
                 nouvelle_entree = [datetime.combine(date, time(2, 0, 0)),
                                    datetime.combine(date, time(2, 0, 0)),
-                                   'En mission', 0.0, '']
+                                   'En mission', 0.0, 0]
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             else:

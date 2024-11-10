@@ -57,13 +57,13 @@
                         type="action"
                         icon="fa-pencil"
                         class="oe_highlight"/>
-                <button name="%(pointage.pointage_absence_rapport_wizard_form)d"
+                <button name="%(pointage.pointage_presence_rapport_wizard_form)d"
                         string="Liste de presence"
                         type="action"
                         icon="fa-print"
                         class="oe_highlight"/>
                 <button name="%(pointage.pointage_presence_of_day_rapport_wizard_form)d"
-                        string="Rapport Absence"
+                        string="Heures Pointage"
                         type="action"
                         icon="fa-print"
                         class="oe_highlight"/>

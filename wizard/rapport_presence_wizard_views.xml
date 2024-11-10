@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <odoo>
-    <record model="ir.actions.act_window" id="pointage_absence_rapport_wizard_form">
+    <record model="ir.actions.act_window" id="pointage_presence_rapport_wizard_form">
         <field name="name">Rapport Présence</field>
-        <field name="res_model">pointage.absence.report.wizard</field>
+        <field name="res_model">pointage.presence.report.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
     <record id="pointage_absence_rapport_wizard_view_form" model="ir.ui.view">
-        <field name="name">pointage.absence.report.wizard.form</field>
-        <field name="model">pointage.absence.report.wizard</field>
+        <field name="name">pointage.presence.report.wizard.form</field>
+        <field name="model">pointage.presence.report.wizard</field>
         <field name="arch" type="xml">
             <form string="Rapport de pointage">
                 <group class="oe_title">

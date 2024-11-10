@@ -12,26 +12,26 @@
     />
     <report
             string="Rapport Présence"
-            id="report_pointage_presence_wizard"
+            id="report_pointage_presence_person_wizard"
             model="pointage.rapport.wizard"
             report_type="qweb-pdf"
             menu="False"
-            name="pointage.report_presence_wizard"
-            file="pointage.report_presence_wizard"
+            name="pointage.report_presence_person_wizard"
+            file="pointage.report_presence_person_wizard"
             print_report_name="('Présence de '+object.employee_id.name)"
     />
     <report
             string="Rapport Présence"
-            id="report_pointage_absence_wizard"
-            model="pointage.absence.report.wizard"
+            id="report_pointage_presence_wizard"
+            model="pointage.presence.report.wizard"
             report_type="qweb-pdf"
-            menu="False"
-            name="pointage.report_absence_wizard"
-            file="pointage.report_absence_wizard"
+            menu="True"
+            name="pointage.report_presence_day_wizard"
+            file="pointage.report_presence_day_wizard"
             print_report_name="('Rapport liste de présence')"
     />
     <report
-            string="Rapport Absence"
+            string="Rapport Pointage"
             id="report_pointage_presence_of_day_wizard"
             model="pointage.absence.wizard"
             report_type="qweb-pdf"

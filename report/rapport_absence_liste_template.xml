@@ -9,10 +9,10 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h3 style="text-align:center;color:#800000;margin-top:0px; font-weight: bold;">
-                            Liste des empoyés ayant au moins une absence non justifiée
+                            Pointage
                         </h3>
                         <p style="text-align:center; color:#800000; font-weight: 200;">
-                            Allant de la date du
+                             du
                             <span t-esc="object.start_date" t-options='{"widget": "date"}'/>
                             au <span t-esc="object.end_date" t-options='{"widget": "date"}'/>.
                         </p>
@@ -27,10 +27,11 @@
                                     <th>Service</th>
                                     <th>Présence(en heures)</th>
                                     <th>Horaire à faire (en heures)</th>
+                                    <th>Ecart (en heures)</th>
                                     <th>Absence (en jours)</th>
                                 </tr>
                             </thead>
-                            <tbody t-foreach="object.get_employees_with_presence()" t-as="absence">
+                            <tbody t-foreach="object.get_employees_with_absences()" t-as="absence">
                                 <tr>
                                     <td>
                                        <span t-esc="absence_index+1"/>
@@ -51,9 +52,11 @@
                                     <td >
                                         <span t-esc="absence[4]" t-options="{'widget': 'float_time'}"/>
                                     </td>
-
                                     <td >
-                                        <span t-esc="absence[5]"/>
+                                        <span t-esc="absence[5]" t-options="{'widget': 'float_time'}"/>
+                                    </td>
+                                    <td >
+                                        <span t-esc="absence[6]"/>
                                     </td>
                                 </tr>
                             </tbody>

@@ -7,15 +7,24 @@ class Presence(models.Model):
     _description = "Présence"
     _order = 'check_in asc'
 
+    # @api.depends('check_in', 'check_out')
+    # def _compute_worked_hours(self):
+    #     for attendance in self:
+    #         if attendance.check_out and attendance.check_in:
+    #             delta = attendance.check_out - attendance.check_in
+    #             if (delta.total_seconds() / 3600.0) > 0: # if (delta.total_seconds() / 3600.0) > 0:
+    #                 attendance.worked_hours = (delta.total_seconds() / 3600.0) - 1
+    #             else:
+    #                 attendance.worked_hours = (delta.total_seconds() / 3600.0)
+    #         else:
+    #             attendance.worked_hours = False
+
     @api.depends('check_in', 'check_out')
     def _compute_worked_hours(self):
         for attendance in self:
             if attendance.check_out and attendance.check_in:
                 delta = attendance.check_out - attendance.check_in
-                if (delta.total_seconds() / 3600.0) != 0:
-                    attendance.worked_hours = (delta.total_seconds() / 3600.0) - 1
-                else:
-                    attendance.worked_hours = (delta.total_seconds() / 3600.0)
+                attendance.worked_hours = delta.total_seconds() / 3600.0
             else:
                 attendance.worked_hours = False
 
