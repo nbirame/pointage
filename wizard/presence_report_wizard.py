@@ -60,12 +60,12 @@ class PresenceReportWizard(models.TransientModel):
             # total_number_of_missing_hours = total_number_of_working_hours - total_worked_hours
             jours_absence = self.nombre_jours_sans_weekend(self.start_date, self.end_date) - len(attendance_records) - number_of_days_absence_legal # int(total_number_of_missing_hours / 8)
             ecart = total_worked_hours - heure_travail.worked_hours
-            if entree and total_worked_hours< 5:
+            if entree and total_worked_hours< 1:
                 observation = "Erreur de pointage"
             elif sortie == time(17, 30, 0):
-                observation = "Vous n'avez pointer a la sortie. Ce cici est la sortie par défauts"
+                observation = "Absence de pointage en sortie"
             elif entree == time(8, 30, 0):
-                observation = "Vous n'avez pointer a l'entré. Ce cici est l'entré par défauts"
+                observation = "Absence de pointage en entré."
             else:
                 observation = ""
             if total_worked_hours < 0:
