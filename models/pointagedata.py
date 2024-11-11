@@ -54,7 +54,10 @@ class Pointagedata(models.Model):
             date_object_in = datetime.strptime(new_liste[i][1][0], '%d/%m/%Y %H:%M:%S')
             date_odoo_format_in = date_object_in.strftime('%Y-%m-%d %H:%M:%S')
             date_default_in = datetime.combine(date_object_in.date(), time(8, 30, 0))
-            date_default_out = datetime.combine(date_object_in.date(), time(17, 30, 0))
+            if date_object_in.weekday() == 4:
+                date_default_out = datetime.combine(date_object_in.date(), time(16, 30, 0))
+            else:
+                date_default_out = datetime.combine(date_object_in.date(), time(17, 30, 0))
             if len(new_liste[i][1]) != 1:
                 # print("Entrer SORTIE")
                 date_object_out = datetime.strptime(new_liste[i][1][1], '%d/%m/%Y %H:%M:%S')
