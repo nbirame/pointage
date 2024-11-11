@@ -62,7 +62,7 @@ class PresenceReportWizard(models.TransientModel):
             ecart = total_worked_hours - heure_travail.worked_hours
             if entree and total_worked_hours< 1:
                 observation = "Erreur de pointage"
-            elif sortie == time(17, 30, 0):
+            elif sortie == time(17, 30, 0) or sortie == time(16, 30, 0):
                 observation = "Absence de pointage en sortie"
             elif entree == time(8, 30, 0):
                 observation = "Absence de pointage en entré."
