@@ -19,7 +19,7 @@ class Agent(models.Model):
         # Boucle à travers chaque employé
         for employee in self:
             start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
-            end_last_week_naive = datetime.combine(self.last_week_end_date(), time(0, 0, 0))
+            end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 0, 0))
             # Recherchez les présences de l'employé pendant la semaine précédente
             attendances = employee.env['hr.attendance'].search([
                 ('employee_id', '=', employee.id),
@@ -60,7 +60,7 @@ class Agent(models.Model):
     def get_work_hours_week(self):
         liste_presences = []
         start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
-        end_last_week_naive = datetime.combine(self.last_week_end_date(), time(0, 0, 0))
+        end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 0, 0))
         # Recherchez les présences de l'employé pendant la semaine précédente
         attendances = self.env['hr.attendance'].search([
             ('employee_id', '=', self.id),
