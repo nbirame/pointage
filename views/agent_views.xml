@@ -29,7 +29,7 @@
                         help="Worked hours last week">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_value">
-                            <field name="hours_last_week_display" widget="float_time"/>
+                            <field name="hours_last_week" widget="float_time"/>
                             Heures
                         </span>
                         <span class="o_stat_text">
