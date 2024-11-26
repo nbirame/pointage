@@ -26,17 +26,37 @@ class RapportWizard(models.TransientModel):
 
     @api.depends("date_in_get_rapport", "date_end_get_rapport", "employee_id")
     def _compute_total_number_of_working_hours(self):
-        heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
-        nombre_jours = []
-        for record in self:
-            if record.date_in_get_rapport and record.date_end_get_rapport:
-                number_of_day = self.nombre_jours_sans_weekend(record.date_in_get_rapport, record.date_end_get_rapport)
-                for number_of_liste in self.get_presence_employee():
-                    # i = 0
-                    if number_of_liste[-1] == 0:
-                        nombre_jours.append(nombre_jours)
-                record.total_number_of_working_hours = int(number_of_day) * heure_travail.worked_hours - (len(nombre_jours) * heure_travail.worked_hours)
-
+        employees = self.env['hr.employee'].search([])
+        number_day_of_mission = 0
+        for employee in employees:
+            heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
+            attendance_records = self.env['hr.attendance'].search([
+                ('employee_id', '=', employee.id),
+                ('check_in', '>=', self.date_in_get_rapport),
+                ('check_out', '<=', self.date_end_get_rapport),
+            ])
+            # total_worked_hours = round(sum(attendance.worked_hours for attendance in attendance_records), 2)
+            absence_days_hollidays = self.env['hr.leave'].search_count([
+                ('employee_id', '=', employee.id),
+                ('state', '=', 'validate'),
+                ('request_date_from', '>=', self.date_in_get_rapport),
+                ('request_date_to', '<=', self.date_end_get_rapport),
+            ])
+            equipe_mission = self.env["mission.equipe"].search([
+                ('employee_id', '=', employee.id),
+            ])
+            for agent in equipe_mission:
+                if (
+                        agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport:
+                    number_day_of_mission += number_day_of_mission
+            number_day_of_party = self.env["vacances.ferier"].sudo().search_count([
+                ('date_star', '>=', self.date_in_get_rapport),
+                ('date_end', '<=', self.date_end_get_rapport),
+            ])
+            number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
+            self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
+                                                                                self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
+        
     def get_total_work(self):
         total_heure = 0
         attendances = self.env['hr.attendance'].search([

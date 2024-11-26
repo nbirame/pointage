@@ -118,7 +118,7 @@ class Agent(models.Model):
                 hours += ((check_out - check_in).total_seconds() / 3600.0)
 
             employee.hours_last_month = round(hours, 2)
-            # employee.hours_last_month_display = "%g" % employee.hours_last_month
+            employee.hours_last_month_display = "%g" % employee.hours_last_month
 
     def send_email_notification(self, temp):
         employees = self.env['hr.employee'].sudo().search([])
