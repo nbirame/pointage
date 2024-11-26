@@ -11,12 +11,13 @@ class Agent(models.Model):
 
     participant_ids = fields.One2many("pointage.participants", "employee_id", string="Participants")
     hours_last_week = fields.Float(string="Nombre d'heure dernier Semaine", compute='_compute_hours_last_week')
-    hours_last_week_display = fields.Char(string="Nombre d'heure dernier Semaine", compute='_compute_hours_last_week')
+    # hours_last_week_display = fields.Char(string="Nombre d'heure dernier Semaine", compute='_compute_hours_last_week')
     matricule = fields.Integer(string="Matricule")
 
     # Supposez que self représente une liste d'objets employés
     def _compute_hours_last_week(self):
         # Boucle à travers chaque employé
+        hours = 0
         for employee in self:
             start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
             end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 0, 0))
@@ -27,17 +28,16 @@ class Agent(models.Model):
                 ('check_in', '<=', end_last_week_naive),
                 ('check_out', '>=', start_last_week_naive),
             ])
-            hours = 0
             # Calculez le nombre total d'heures travaillées pendant la semaine précédente
             for attendance in attendances:
                 check_in = max(attendance.check_in, start_last_week_naive)
                 check_out = min(attendance.check_out, end_last_week_naive)
-                hours += ((check_out - check_in).total_seconds() / 3600.0) - 1
+                hours += ((check_out - check_in).total_seconds() / 3600.0)
             # Enregistrez le nombre total d'heures travaillées la semaine précédente pour cet employé
-            if round(hours, 2):
-                employee.hours_last_week = round(hours, 2)
+            # if round(hours, 2):
+            employee.hours_last_week = round(hours, 2)
             # Enregistrez une version formatée des heures travaillées la semaine dernière pour l'affichage
-            employee.hours_last_week_display = "%g" % employee.hours_last_week
+            # employee.hours_last_week_display = "%g" % employee.hours_last_week
 
     def week_start_date(self):
         today = fields.Date.today()
@@ -60,7 +60,7 @@ class Agent(models.Model):
     def get_work_hours_week(self):
         liste_presences = []
         start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
-        end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 0, 0))
+        end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 59, 59))
         # Recherchez les présences de l'employé pendant la semaine précédente
         attendances = self.env['hr.attendance'].search([
             ('employee_id', '=', self.id),
@@ -115,10 +115,10 @@ class Agent(models.Model):
             for attendance in attendances:
                 check_in = max(attendance.check_in, start_naive)
                 check_out = min(attendance.check_out, end_naive)
-                hours += ((check_out - check_in).total_seconds() / 3600.0) - 1
+                hours += ((check_out - check_in).total_seconds() / 3600.0)
 
             employee.hours_last_month = round(hours, 2)
-            employee.hours_last_month_display = "%g" % employee.hours_last_month
+            # employee.hours_last_month_display = "%g" % employee.hours_last_month
 
     def send_email_notification(self, temp):
         employees = self.env['hr.employee'].sudo().search([])
