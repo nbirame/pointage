@@ -3,23 +3,22 @@
     <data noupdate="0">
         <!--Email template -->
         <record id="email_template_pointage_notification" model="mail.template">
-            <field name="name">Nombre d'heures de la semaine</field>
+            <field name="name">Présence de la semaine du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.user_id.work_email or ''}}</field>
-            <field name="subject">Nombre d'heure travailler dans la semaine</field>
+            <field name="subject">Présence de la semaine du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
             <!--<field name="report_name">Rapport Pointage</field>-->
             <field name="model_id" ref="hr.model_hr_employee"/>
             <!--<field name="report_template" ref="pointage.report_pointage_presence"/>-->
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
             <t t-call="web.html_container">
-            <h4>Présence dernière semaine</h4>
                     <div>Bonjour, <br/>
                        <span style="font-weight: bold;" t-out="object.name or ''"></span><br/>
                        <p>Vous avez travaillé
                             <t t-esc="object.hours_last_week" t-options="{'widget': 'float_time'}"/>
                             heures du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
-                            avec une ecart de <t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/>
+                            avec un ecart de <t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/>
                        </p>
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                             <thead class="thead-light" style="background-color:#611610;">
@@ -300,7 +299,7 @@
                             <tr style="background-color:#611610;">
 
                                 <td colspan="6" style="text-align:center;color:white;">
-                                    Total présence:<t t-esc="object.hours_last_week" t-options="{'widget': 'float_time'}"/>
+                                    Total présence:  <t t-esc="object.hours_last_week" t-options="{'widget': 'float_time'}"/>
                                 /
                                 <t t-esc="object.total_hours_of_week()" t-options="{'widget': 'float_time'}"/>
                                 (<t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/> Ecart)
@@ -318,10 +317,10 @@
             </field>
         </record>
         <record id="email_template_pointage_notification_report_month" model="mail.template">
-            <field name="name">Nombre d'heures de la semaine</field>
+            <field name="name">Présence</field>
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.user_id.work_email or ''}}</field>
-            <field name="subject">Nombre d'heure travailler dans la semaine</field>
+            <field name="subject">Présence du mois dernier</field>
             <field name="report_name">Rapport Pointage</field>
             <field name="model_id" ref="hr.model_hr_employee"/>
             <field name="report_template" ref="pointage.report_pointage_presence"/>
@@ -331,7 +330,7 @@
             <h4>Présence dernier mois </h4>
                     <div>Bonjour, <br/>
                        <span t-out="object.name or ''"></span><br/>
-                       <p>Vous avez travaillé c-joint la fiche récaputilative des pointages
+                       <p>Vous avez travaillé c-joint la fiche récaputilative des pointages du mois dernier.
 
                         <p>
                             Cordialement le Directeur des ressources Humaines

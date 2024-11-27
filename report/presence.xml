@@ -38,6 +38,6 @@
             menu="False"
             name="pointage.report_presence_of_day_wizard"
             file="pointage.report_presence_of_day_wizard"
-            print_report_name="('Rapport liste des absences')"
+            print_report_name="('Rapport liste des présences')"
     />
 </odoo>
