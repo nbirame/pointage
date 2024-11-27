@@ -275,6 +275,7 @@ class Agent(models.Model):
         # Créer une liste de toutes les dates entre date_debut et date_fin
         toutes_dates = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
         # Trouver les dates manquantes
+        toutes_dates = [date for date in toutes_dates if date.weekday() < 5]
         dates_manquantes = [date for date in toutes_dates if date not in dates_existantes]
         # Ajouter les dates manquantes dans la liste d'origine
         for date in dates_manquantes:

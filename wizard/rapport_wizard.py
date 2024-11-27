@@ -56,7 +56,7 @@ class RapportWizard(models.TransientModel):
             number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
             self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                 self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-        
+
     def get_total_work(self):
         total_heure = 0
         attendances = self.env['hr.attendance'].search([
@@ -170,6 +170,7 @@ class RapportWizard(models.TransientModel):
         # Créer une liste de toutes les dates entre date_debut et date_fin
         toutes_dates = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
         # Trouver les dates manquantes
+        toutes_dates = [date for date in toutes_dates if date.weekday() < 5]
         dates_manquantes = [date for date in toutes_dates if date not in dates_existantes]
         print(f"Date m {dates_manquantes}")
         # Ajouter les dates manquantes dans la liste d'origine
