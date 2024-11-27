@@ -427,3 +427,26 @@ class Agent(models.Model):
 
     def ecart_worked_week(self):
         return self.hours_last_week - self.total_hours_of_week()
+
+    def get_start_of_last_month(self):
+        # Obtenir la date actuelle
+        today = datetime.now()
+
+        # Calculer le premier jour de ce mois
+        start_of_this_month = today.replace(day=1)
+
+        # Soustraire un jour pour obtenir la fin du mois dernier
+        end_of_last_month = start_of_this_month - timedelta(days=1)
+
+        # Retourner le premier jour du mois dernier
+        start_of_last_month = end_of_last_month.replace(day=1)
+        return start_of_last_month.date()
+
+    def fin_du_mois_dernier(self):
+        # Obtenir la date actuelle
+        maintenant = datetime.now()
+        # Aller au premier jour du mois actuel
+        premier_du_mois = maintenant.replace(day=1)
+        # Soustraire un jour pour obtenir la fin du mois dernier
+        fin_mois_dernier = premier_du_mois - relativedelta(days=1)
+        return fin_mois_dernier.date()

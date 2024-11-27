@@ -15,7 +15,7 @@
             <t t-call="web.html_container">
                     <div>Bonjour, <br/>
                        <span style="font-weight: bold;" t-out="object.name or ''"></span><br/>
-                       <p>Vous avez ci-dessous le tableau récapitulatif de votre présence du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/></p>
+                       <p>Vous avez ci-dessous le tableau récapitulatif de votre présence du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
                        <!--<p>Vous avez travaillé
                             <t t-esc="object.hours_last_week" t-options="{'widget': 'float_time'}"/>
                             heures du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
@@ -321,7 +321,7 @@
             <field name="name">Présence</field>
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.user_id.work_email or ''}}</field>
-            <field name="subject">Présence du mois dernier</field>
+            <field name="subject">Présence du {{object.get_start_of_last_month()}} au {{object.fin_du_mois_dernier()}}</field>
             <field name="report_name">Rapport Pointage</field>
             <field name="model_id" ref="hr.model_hr_employee"/>
             <field name="report_template" ref="pointage.report_pointage_presence"/>
@@ -330,7 +330,7 @@
             <t t-call="web.html_container">
                     <div>Bonjour, <br/>
                        <span t-out="object.name or ''"></span><br/>
-                       <p>Vous avez travaillé c-joint la fiche récaputilative des pointages du mois dernier.
+                       <p>Vous avez c-joint la fiche récaputilative des pointages du mois dernier.
 
                         <p>
                             Cordialement le Directeur des ressources Humaines
