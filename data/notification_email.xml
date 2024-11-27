@@ -15,11 +15,12 @@
             <t t-call="web.html_container">
                     <div>Bonjour, <br/>
                        <span style="font-weight: bold;" t-out="object.name or ''"></span><br/>
-                       <p>Vous avez travaillé
+                       <p>Vous avez ci-dessous le tableau récapitulatif</p>
+                       <!--<p>Vous avez travaillé
                             <t t-esc="object.hours_last_week" t-options="{'widget': 'float_time'}"/>
                             heures du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
                             avec un ecart de <t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/>
-                       </p>
+                       </p>-->
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                             <thead class="thead-light" style="background-color:#611610;">
                                 <tr>
