@@ -16,7 +16,7 @@
                     <field name="end_date"/>
                 </group>
                 <footer>
-                    <button name="action_generate_report_presence" string="Rapport des absences" type="object" class="btn-primary"/>
+                    <button name="action_generate_report_presence" string="Rapport pointage" type="object" class="btn-primary"/>
                     <button string="Annuler" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

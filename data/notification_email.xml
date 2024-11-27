@@ -335,7 +335,7 @@
                        au <t t-esc="object.fin_du_mois_dernier().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.
 
                         <p>
-                            Cordialement le Directeur des ressources Humaines
+                            Cordialement.
                         </p>
                     </div>
                     </t>
