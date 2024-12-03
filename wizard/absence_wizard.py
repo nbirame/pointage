@@ -42,8 +42,7 @@ class AbsenceWizard(models.TransientModel):
                 ('employee_id', '=', employee.id),
             ])
             for agent in equipe_mission:
-                print(agent.employee_id.name)
-                if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour <= self.end_date):
+                if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour <= self.end_date) and (agent.employee_id.id == employee.id):
                     # number_day_of_mission += number_day_of_mission
                     number_day_of_mission = self.nombre_jours_sans_weekend(agent.mission_id.date_depart, agent.mission_id.date_retour)
                     print(f"Nombre de jour mission {number_day_of_mission}")
