@@ -225,9 +225,7 @@ class Agent(models.Model):
         mission_listes = []
         equipe = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
         for employee in equipe:
-            # print(f"Equipe de mission: {employee.employee_id.name}")
             if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and (employee.mission_id.date_depart >= debut_mois_dernier.date() and employee.mission_id.date_retour <= fin_mois_dernier.date()):
-                # print("Dans le if")
                 date_debut = employee.mission_id.date_depart
                 date_fin = employee.mission_id.date_retour
                 mission_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
@@ -235,7 +233,6 @@ class Agent(models.Model):
                     mission_listes.append(jour_mission)
             else:
                 print("Hors if")
-        print(f"mission_listes {mission_listes}")
 
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])

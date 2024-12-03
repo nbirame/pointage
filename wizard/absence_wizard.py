@@ -24,6 +24,7 @@ class AbsenceWizard(models.TransientModel):
         liste_absent = []
         number_day_of_mission = 0
         for employee in employees:
+            print(employee.name)
             heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
             attendance_records = self.env['hr.attendance'].search([
                 ('employee_id', '=', employee.id),
@@ -41,13 +42,16 @@ class AbsenceWizard(models.TransientModel):
                 ('employee_id', '=', employee.id),
             ])
             for agent in equipe_mission:
-                if (
-                        agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour <= self.end_date:
-                    number_day_of_mission += number_day_of_mission
+                print(agent.employee_id.name)
+                if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour <= self.end_date):
+                    # number_day_of_mission += number_day_of_mission
+                    number_day_of_mission = self.nombre_jours_sans_weekend(agent.mission_id.date_depart, agent.mission_id.date_retour)
+                    print(f"Nombre de jour mission {number_day_of_mission}")
             number_day_of_party = self.env["vacances.ferier"].sudo().search_count([
                 ('date_star', '>=', self.start_date),
                 ('date_end', '<=', self.end_date),
             ])
+            print(f"Nombre de jour de ferier {number_day_of_party}")
             number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
             total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                 self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
