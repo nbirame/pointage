@@ -58,7 +58,8 @@ class AbsenceWizard(models.TransientModel):
             else:
                 print(f"Nombre de jour de ferier {number_day_of_party}")
                 number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
-                jours_absence = self.nombre_jours_sans_weekend(self.start_date, self.end_date) - len(attendance_records)
+                jours_absence = self.nombre_jours_sans_weekend(self.start_date, self.end_date) - len(
+                    attendance_records) - number_of_days_absence_legal
             total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                 self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
             # total_number_of_missing_hours = total_number_of_working_hours - total_worked_hours
