@@ -23,7 +23,7 @@ class AbsenceWizard(models.TransientModel):
         employees = self.env['hr.employee'].search([])
         liste_absent = []
         number_of_days_absence_legal = 0
-        jours_absence = 0
+        number_day_of_mission = 0
         for employee in employees:
             print(employee.name)
             heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
@@ -53,18 +53,15 @@ class AbsenceWizard(models.TransientModel):
                         number_day_of_mission = self.nombre_jours_sans_weekend(agent.mission_id.date_depart, agent.mission_id.date_retour)
                         print(f"Nombre de jour mission {number_day_of_mission}")
                         number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
-                        jours_absence = self.nombre_jours_sans_weekend(self.start_date, self.end_date) - len(
-                            attendance_records) - number_of_days_absence_legal
             else:
                 print(f"Nombre de jour de ferier {number_day_of_party}")
-                number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
-                jours_absence = self.nombre_jours_sans_weekend(self.start_date, self.end_date) - len(
-                    attendance_records) - number_of_days_absence_legal
+                number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
             total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                 self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
             # total_number_of_missing_hours = total_number_of_working_hours - total_worked_hours
             # jours_absence = int(total_number_of_missing_hours / 8)
-
+            jours_absence = self.nombre_jours_sans_weekend(self.start_date, self.end_date) - len(
+                attendance_records) - number_of_days_absence_legal
             # if total_number_of_missing_hours != 0:
             if jours_absence < 0:
                 jours_absence = 0
