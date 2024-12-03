@@ -225,12 +225,17 @@ class Agent(models.Model):
         mission_listes = []
         equipe = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
         for employee in equipe:
-            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and employee.mission_id.date_depart >= debut_mois_dernier.date() and employee.mission_id.date_retour <= fin_mois_dernier.date():
+            # print(f"Equipe de mission: {employee.employee_id.name}")
+            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and (employee.mission_id.date_depart >= debut_mois_dernier.date() and employee.mission_id.date_retour <= fin_mois_dernier.date()):
+                # print("Dans le if")
                 date_debut = employee.mission_id.date_depart
                 date_fin = employee.mission_id.date_retour
                 mission_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
                 for jour_mission in mission_liste:
                     mission_listes.append(jour_mission)
+            else:
+                print("Hors if")
+        print(f"mission_listes {mission_listes}")
 
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
@@ -266,7 +271,7 @@ class Agent(models.Model):
             fete_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
             for jour_fete in fete_liste:
                 fete_listes.append([jour_fete, nom_fete])
-        print(fete_listes)
+        # print(fete_listes)
         # Calculer la date de fin du mois dernier
         dates_existantes = [elem[0].date() for elem in liste_dates]
         # Trouver la date de début et de fin dans la liste existante
@@ -280,8 +285,9 @@ class Agent(models.Model):
         # Ajouter les dates manquantes dans la liste d'origine
         for date in dates_manquantes:
             if date.strftime('%A') != "samedi" and date.strftime(
-                    '%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes not in mission_listes and date not in participants_listes:
+                    '%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes and date not in participants_listes:
                 # print(date.strftime('%A'))
+                print(f"Absence {date} {mission_listes}")
                 # Créer une entrée vide pour chaque date manquante
                 nouvelle_entree = [datetime.combine(date, datetime.min.time()),
                                    datetime.combine(date, datetime.min.time()),
@@ -307,6 +313,7 @@ class Agent(models.Model):
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             elif date in mission_listes:
+                print(f"Jour de mission {date}")
                 nouvelle_entree = [datetime.combine(date, time(2, 0, 0)),
                                    datetime.combine(date, time(2, 0, 0)),
                                    'En mission', '', 0.0]
@@ -314,6 +321,7 @@ class Agent(models.Model):
                     liste_dates.append(nouvelle_entree)
             else:
                 pass
+        print(f"La liste des date {liste_dates}")
         return liste_dates
 
     def total_work_month(self):
@@ -338,6 +346,7 @@ class Agent(models.Model):
         fin_semaine_derniere = debut_semaine_derniere + timedelta(days=4)
         mission_listes = []
         equipe = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
+        print(equipe)
         for employee in equipe:
             # print(employee.mission_id.state)
             if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date():
