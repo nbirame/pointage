@@ -20,6 +20,7 @@ class AbsenceWizard(models.TransientModel):
         return jours_ouvres
 
     def get_employees_with_absences(self):
+        # Liste de presence
         employees = self.env['hr.employee'].search([])
         liste_absent = []
         number_of_days_absence_legal = 0
