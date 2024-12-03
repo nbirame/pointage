@@ -22,6 +22,7 @@ class AbsenceWizard(models.TransientModel):
     def get_employees_with_absences(self):
         employees = self.env['hr.employee'].search([])
         liste_absent = []
+        number_of_days_absence_legal = 0
         number_day_of_mission = 0
         for employee in employees:
             print(employee.name)
@@ -38,20 +39,23 @@ class AbsenceWizard(models.TransientModel):
                 ('request_date_from', '>=', self.start_date),
                 ('request_date_to', '<=', self.end_date),
             ])
-            equipe_mission = self.env["mission.equipe"].search([
-                ('employee_id', '=', employee.id),
-            ])
-            for agent in equipe_mission:
-                if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour <= self.end_date) and (agent.employee_id.id == employee.id):
-                    # number_day_of_mission += number_day_of_mission
-                    number_day_of_mission = self.nombre_jours_sans_weekend(agent.mission_id.date_depart, agent.mission_id.date_retour)
-                    print(f"Nombre de jour mission {number_day_of_mission}")
             number_day_of_party = self.env["vacances.ferier"].sudo().search_count([
                 ('date_star', '>=', self.start_date),
                 ('date_end', '<=', self.end_date),
             ])
-            print(f"Nombre de jour de ferier {number_day_of_party}")
-            number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
+            equipe_mission = self.env["mission.equipe"].search([
+                ('employee_id', '=', employee.id),
+            ])
+            if equipe_mission:
+                for agent in equipe_mission:
+                    if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour <= self.end_date) and (agent.employee_id.id == employee.id):
+                        # number_day_of_mission += number_day_of_mission
+                        number_day_of_mission = self.nombre_jours_sans_weekend(agent.mission_id.date_depart, agent.mission_id.date_retour)
+                        print(f"Nombre de jour mission {number_day_of_mission}")
+                        number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
+            else:
+                print(f"Nombre de jour de ferier {number_day_of_party}")
+                number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
             total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                 self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
             # total_number_of_missing_hours = total_number_of_working_hours - total_worked_hours
