@@ -59,8 +59,7 @@ class RapportWizard(models.TransientModel):
             if equipe_mission:
                 number_day_of_mission = 0
                 for agent in equipe_mission:
-                    if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (
-                            agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport) and (
+                    if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and ((agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport) or (agent.mission_id.date_depart <= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport) or (agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour >= self.date_end_get_rapport)) and (
                             agent.employee_id.id == employee.id):
                         number_day_of_mission += self.nombre_jours_sans_weekend(agent.mission_id.date_depart,
                                                                                 agent.mission_id.date_retour)
@@ -125,26 +124,16 @@ class RapportWizard(models.TransientModel):
         mission_listes = []
         equipe = self.env["mission.equipe"].search([('employee_id', '=', self.employee_id.id)])
         for employee in equipe:
-            print(f"debut: {employee.mission_id.date_depart}")
-            print(f" fin: {employee.mission_id.date_retour}")
-            # print(employee.mission_id.state)
-            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and employee.mission_id.date_depart >= self.date_in_get_rapport and employee.mission_id.date_retour <= self.date_end_get_rapport:
-                # print(f"Date depart mission {employee.mission_id.date_depart}")
-                # print(f"Date retour mission {employee.mission_id.date_retour}")
+            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and ((employee.mission_id.date_depart >= self.date_in_get_rapport and employee.mission_id.date_retour <= self.date_end_get_rapport) or (employee.mission_id.date_depart <= self.date_in_get_rapport and employee.mission_id.date_retour <= self.date_end_get_rapport) or employee.mission_id.date_depart >= self.date_in_get_rapport and employee.mission_id.date_retour >= self.date_end_get_rapport):
                 date_debut = employee.mission_id.date_depart
                 date_fin = employee.mission_id.date_retour
-                print(f"date de debut: {date_debut}")
-                print(f"date de fin: {date_fin}")
-                # print(f"date")
                 mission_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
                 for jour_mission in mission_liste:
                     mission_listes.append(jour_mission)
-        print(f"Date mission {mission_listes}")
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.employee_id.id)])
         print(f"Participants: {participants}")
         for employee in participants:
-            print(f"List des participants: {employee}")
             date_debut = employee.atelier_id.date_from
             date_fin = employee.atelier_id.date_to
             participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
