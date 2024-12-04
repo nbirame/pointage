@@ -25,7 +25,6 @@ class AbsenceWizard(models.TransientModel):
         liste_absent = []
         total_number_of_working_hours = 0
         number_of_days_absence_legal = 0
-        number_day_of_mission = 0
         for employee in employees:
             print(employee.name)
             heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
@@ -50,6 +49,7 @@ class AbsenceWizard(models.TransientModel):
             ])
             if equipe_mission:
                 for agent in equipe_mission:
+                    number_day_of_mission = 0
                     if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour <= self.end_date) and (agent.employee_id.id == employee.id):
                         number_day_of_mission += self.nombre_jours_sans_weekend(agent.mission_id.date_depart, agent.mission_id.date_retour)
                         number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
