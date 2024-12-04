@@ -23,6 +23,7 @@ class AbsenceWizard(models.TransientModel):
         # Liste de presence
         employees = self.env['hr.employee'].search([])
         liste_absent = []
+        total_number_of_working_hours = 0
         number_of_days_absence_legal = 0
         number_day_of_mission = 0
         for employee in employees:
@@ -55,7 +56,7 @@ class AbsenceWizard(models.TransientModel):
                         total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                             self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
             else:
-                number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
+                number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
                 total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                     self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
             jours_absence = self.nombre_jours_sans_weekend(self.start_date, self.end_date) - len(
