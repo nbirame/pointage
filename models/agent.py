@@ -346,7 +346,7 @@ class Agent(models.Model):
         print(equipe)
         for employee in equipe:
             # print(employee.mission_id.state)
-            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date():
+            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and (employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date()) and (self.id == employee.id):
                 date_debut = employee.mission_id.date_depart
                 date_fin = employee.mission_id.date_retour
                 mission_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
