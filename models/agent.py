@@ -343,25 +343,22 @@ class Agent(models.Model):
         fin_semaine_derniere = debut_semaine_derniere + timedelta(days=4)
         mission_listes = []
         equipe = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
-        print(equipe)
-        for employee in equipe:
-            # print(employee.mission_id.state)
-            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and (employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date()) and (self.id == employee.id):
-                date_debut = employee.mission_id.date_depart
-                date_fin = employee.mission_id.date_retour
-                mission_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-                for jour_mission in mission_liste:
-                    mission_listes.append(jour_mission)
+        if equipe:
+            for employee in equipe:
+                if employee.mission_id.date_depart:
+                    if (employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date()) or (employee.mission_id.date_depart <= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date()) or (employee.mission_id.date_depart <= debut_semaine_derniere.date() and employee.mission_id.date_retour >= fin_semaine_derniere.date()):
+                        date_debut = employee.mission_id.date_depart
+                        date_fin = employee.mission_id.date_retour
+                        mission_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
+                        for jour_mission in mission_liste:
+                            mission_listes.append(jour_mission)
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
-        print(f"Participants: {participants}")
         for employee in participants:
-            print(f"List des participants: {employee}")
             date_debut = employee.atelier_id.date_from
             date_fin = employee.atelier_id.date_to
             participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
             for jour_atelier in participants_liste:
-                print(f"Jour atelier: {jour_atelier}")
                 participants_listes.append(jour_atelier)
         conge_listes = []
         holidays = self.env['hr.leave'].sudo().search([
@@ -428,7 +425,7 @@ class Agent(models.Model):
                     liste_dates.append(nouvelle_entree)
             else:
                 pass
-        print(f"Liste des presence: {liste_dates}")
+        # print(f"Liste des presence: {liste_dates}")
         return liste_dates
 
     def ecart_worked_week(self):
