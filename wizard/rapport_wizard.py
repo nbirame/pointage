@@ -27,7 +27,6 @@ class RapportWizard(models.TransientModel):
     @api.depends("date_in_get_rapport", "date_end_get_rapport", "employee_id")
     def _compute_total_number_of_working_hours(self):
         employees = self.env['hr.employee'].search([])
-        number_day_of_mission = 0
         for employee in employees:
             heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
             attendance_records = self.env['hr.attendance'].search([
@@ -138,7 +137,6 @@ class RapportWizard(models.TransientModel):
             date_fin = employee.atelier_id.date_to
             participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
             for jour_atelier in participants_liste:
-                print(f"Jour atelier: {jour_atelier}")
                 participants_listes.append(jour_atelier)
         conge_listes = []
         holidays = self.env['hr.leave'].sudo().search([
@@ -161,7 +159,6 @@ class RapportWizard(models.TransientModel):
             date_debut = fete.date_star
             date_fin = fete.date_end
             nom_fete = fete.party_id.name
-            print(nom_fete)
             # Créer une liste de toutes les dates entre date_debut et date_fin
             fete_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
             print(fete_liste)
