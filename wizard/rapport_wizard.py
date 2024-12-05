@@ -58,19 +58,20 @@ class RapportWizard(models.TransientModel):
             if equipe_mission:
                 number_day_of_mission = 0
                 for agent in equipe_mission:
-                    if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport) and (agent.employee_id.id == employee.id):
+                    print(f"Agent---> mission agent: {agent.employee_id.id} id:{self.employee_id.id}")
+                    if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport) and (agent.employee_id.id == self.employee_id.id):
                         number_day_of_mission += self.nombre_jours_sans_weekend(agent.mission_id.date_depart,
                                                                                 agent.mission_id.date_retour)
                         number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
                         self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                             self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                    elif (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour >= self.date_end_get_rapport and (agent.employee_id.id == employee.id):
+                    elif (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour >= self.date_end_get_rapport and (agent.employee_id.id == self.employee_id.id):
                         number_day_of_mission += self.nombre_jours_sans_weekend(agent.mission_id.date_retour,
                                                                                 self.date_end_get_rapport)
                         number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
                         self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                             self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                    elif (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.employee_id.id == employee.id) and (agent.mission_id.date_depart <= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport):
+                    elif (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.employee_id.id == self.employee_id.id) and (agent.mission_id.date_depart <= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport):
                         number_day_of_mission += self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                 self.date_end_get_rapport)
                         number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
