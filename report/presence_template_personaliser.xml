@@ -26,7 +26,14 @@
                         <span style="font-weight: lighter;" t-esc="object.get_total_work()" t-options="{'widget': 'float_time'}"/>
                         <br/>
                         <span style="font-weight: bold;">Sur un total de: </span>
-                        <span t-esc="object.total_number_of_working_hours" t-options="{'widget': 'float_time'}"/>
+                        <span t-esc="object.total_number_of_working_hours" t-options="{'widget': 'float_time'}"/> Heures<br/>
+                        <span style="font-weight: bold;">Ecart : </span>
+                        <span t-if="object.calculate_ecart_worked() >= 0" style="background-color: geen;">
+                            <span t-esc="object.calculate_ecart_worked()" t-options="{'widget': 'float_time'}"/> Heure(s)
+                        </span>
+                        <span t-else="" style="background-color:red;">
+                            <span t-esc="object.calculate_ecart_worked()" t-options="{'widget': 'float_time'}"/> Heure(s)
+                        </span>
                         <p style="text-align:center;font-weight: bold; color:#800000;">Historique</p>
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
                                style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">

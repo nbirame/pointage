@@ -452,6 +452,9 @@ class Agent(models.Model):
     def ecart_worked_week(self):
         return self.hours_last_week - self.total_hours_of_week()
 
+    def ecart_worked_month(self):
+        return self.hours_last_month - self.total_work_month()
+
     def get_start_of_last_month(self):
         # Obtenir la date actuelle
         today = datetime.now()

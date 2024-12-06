@@ -12,7 +12,7 @@
                             t-if="object.get_work_hours_month()">
                             Fiche récaputilative des pointages
                             <span t-esc="object.get_work_hours_month()[0][0].strftime('%d/%m/%Y')"/>
-                            au<span t-esc="object.get_work_hours_month()[-1][0].strftime('%d/%m/%Y')"/>.
+                            au <span t-esc="object.get_work_hours_month()[-1][0].strftime('%d/%m/%Y')"/>.
                         </h3>
                         <span style="font-weight: bold;">Employé:
                         </span><span style="font-weight: lighter;" t-field="object.name"/><br/>
@@ -26,7 +26,14 @@
                             <span t-set="minutes" t-value="int((object.hours_last_month - hours) * 60)"/>
                             <span style="font-weight: lighter;" t-esc="hours"/>H:
                             <span style="font-weight: lighter;" t-esc="minutes"/><br/>
-                        <span style="font-weight: bold;">Sur un total de : </span><span style="font-weight: lighter;" t-esc="object.total_work_month()"/><br/>
+                        <span style="font-weight: bold;">Sur un total de : </span><span style="font-weight: lighter;" t-esc="object.total_work_month()"/>Heures<br/>
+                        <span style="font-weight: bold;">Avec un ecart de: </span>
+                        <span t-if="object.ecart_worked_month() >= 0" style="background-color: geen;">
+                            <span t-esc="object.ecart_worked_month()" t-options="{'widget':'float_time'}"/> Heure(s)
+                        </span>
+                        <span t-else="" style="background-color: red;">
+                            <span t-esc="object.ecart_worked_month()" t-options="{'widget':'float_time'}"/> Heure(s)
+                        </span>
                         <p style="text-align:center;font-weight: bold; color:#800000;">Historique</p>
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
                                style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
