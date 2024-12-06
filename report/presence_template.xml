@@ -27,8 +27,8 @@
                             <span style="font-weight: lighter;" t-esc="hours"/>H:
                             <span style="font-weight: lighter;" t-esc="minutes"/><br/>
                         <span style="font-weight: bold;">Sur un total de : </span><span style="font-weight: lighter;" t-esc="object.total_work_month()"/>Heures<br/>
-                        <span style="font-weight: bold;">Avec un ecart de: </span>
-                        <span t-if="object.ecart_worked_month() >= 0" style="background-color: geen;">
+                        <span style="font-weight: bold;">Ecart : </span>
+                        <span t-if="object.ecart_worked_month() >= 0" style="background-color: green;">
                             <span t-esc="object.ecart_worked_month()" t-options="{'widget':'float_time'}"/> Heure(s)
                         </span>
                         <span t-else="" style="background-color: red;">
