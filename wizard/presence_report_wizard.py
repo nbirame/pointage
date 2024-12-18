@@ -167,7 +167,7 @@ class PresenceReportWizard(models.TransientModel):
                 ecart = 0
                 status = "En mission"
             else:
-                ecart = 0
+                ecart = -8
                 status = "Absent(e)"
             if entree and total_worked_hours < 1:
                 observation = "Erreur de pointage"
