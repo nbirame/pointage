@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, time
-
+import xmlrpc.client
 import pytz
 from dateutil.relativedelta import relativedelta
 from odoo import models, fields
@@ -38,6 +38,51 @@ class Agent(models.Model):
             employee.hours_last_week = round(hours, 2)
             # Enregistrez une version formatée des heures travaillées la semaine dernière pour l'affichage
             # employee.hours_last_week_display = "%g" % employee.hours_last_week
+
+    def get_hollidays(self, fin_mois_dernier, debut_ce_mois):
+        conge_listes = []
+        url = "http://erp.fongip.sn:8069"
+        db_odoo = "fongip"
+        username = "admin@fongip.sn"
+        SECRET_KEY = "Fgp@2013"
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+        # Cette ligne permet de verifier si la connexion est valide ou non
+        uid = common.authenticate(db_odoo, username, SECRET_KEY, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+            # Récupérer les congés directement pour la plage de dates spécifiée
+            data_holidays = models.execute_kw(
+                db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
+                [[
+                    ('date_from', '!=', False),
+                    ('date_to', '!=', False),
+                    ('date_from', '<=', fin_mois_dernier),
+                    ('date_to', '>=', debut_ce_mois)
+                ]],
+                {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
+            )
+            # Extraire les IDs des employés uniques pour éviter des appels répétitifs
+            employee_ids = list(set([holiday['employee_id'][0] for holiday in data_holidays if holiday['employee_id']]))
+            # Récupérer les employés en une seule requête
+            employees = models.execute_kw(
+                db_odoo, uid, SECRET_KEY, 'hr.employee', 'search_read',
+                [[('id', 'in', employee_ids)]],
+                {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
+            )
+            # Créer un dictionnaire des employés pour un accès rapide par ID
+            employee_dict = {employee['id']: employee for employee in employees}
+            # Filtrer et traiter les congés
+            for holiday in data_holidays:
+                employee_id = holiday['employee_id'][0]
+                employee = employee_dict.get(employee_id)
+                if employee and employee['matricule_pointage'] == self.matricule:
+                    # Convertir les dates et générer la liste des jours de congé
+                    date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
+                    date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
+                    conge_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
+                    # Ajouter les jours de congé à la liste finale
+                    conge_listes.extend(conge_liste)
+        return conge_listes
 
     def week_start_date(self):
         today = fields.Date.today()
@@ -243,21 +288,7 @@ class Agent(models.Model):
             for jour_atelier in participants_liste:
                 participants_listes.append(jour_atelier)
 
-        conge_listes = []
-        holidays = self.env['hr.leave'].sudo().search([
-            ('employee_id', '=', self.id),
-            ('state', '=', 'validate'),
-            ('date_from', '<=', fin_mois_dernier),
-            ('date_to', '>=', debut_ce_mois),
-        ])
-        for holiday in holidays:
-            date_debut = holiday.date_from.date()
-            date_fin = holiday.date_to.date()
-            # Créer une liste de toutes les dates entre date_debut et date_fin
-            conge_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-            for jour_conge in conge_liste:
-                conge_listes.append(jour_conge)
-
+        conge_listes = self.get_hollidays(fin_mois_dernier, debut_ce_mois)
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for fete in fetes:
@@ -284,7 +315,7 @@ class Agent(models.Model):
             if date.strftime('%A') != "samedi" and date.strftime(
                     '%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes and date not in participants_listes:
                 # print(date.strftime('%A'))
-                print(f"Absence {date} {mission_listes}")
+                # print(f"Absence {date} {mission_listes}")
                 # Créer une entrée vide pour chaque date manquante
                 nouvelle_entree = [datetime.combine(date, datetime.min.time()),
                                    datetime.combine(date, datetime.min.time()),
@@ -310,7 +341,7 @@ class Agent(models.Model):
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             elif date in mission_listes:
-                print(f"Jour de mission {date}")
+                # print(f"Jour de mission {date}")
                 nouvelle_entree = [datetime.combine(date, time(2, 0, 0)),
                                    datetime.combine(date, time(2, 0, 0)),
                                    'En mission', '', 0.0]
@@ -318,7 +349,7 @@ class Agent(models.Model):
                     liste_dates.append(nouvelle_entree)
             else:
                 pass
-        print(f"La liste des date {liste_dates}")
+        # print(f"La liste des date {liste_dates}")
         return liste_dates
 
     def total_work_month(self):
@@ -381,20 +412,7 @@ class Agent(models.Model):
             participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
             for jour_atelier in participants_liste:
                 participants_listes.append(jour_atelier)
-        conge_listes = []
-        holidays = self.env['hr.leave'].sudo().search([
-            ('employee_id', '=', self.id),
-            ('state', '=', 'validate'),
-            ('date_from', '<=', fin_semaine_derniere),
-            ('date_to', '>=', debut_semaine_derniere),
-        ])
-        for holiday in holidays:
-            date_debut = holiday.date_from.date()
-            date_fin = holiday.date_to.date()
-            # Créer une liste de toutes les dates entre date_debut et date_fin
-            conge_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-            for jour_conge in conge_liste:
-                conge_listes.append(jour_conge)
+        conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for fete in fetes:

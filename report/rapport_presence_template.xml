@@ -66,11 +66,11 @@
                                         <span t-esc="absence[9]"/>
                                     </td>
                                     <td >
-                                        <span t-if="absence[3]" style="background-color: green;">
-                                            Présent
+                                        <span t-if="absence[10]=='Présent(e)' or absence[10]=='En congé' or absence[10]=='En mission' or absence[10]=='Jour ferier'" style="background-color: green;">
+                                            <span t-esc="absence[10]"/>
                                         </span>
                                         <span t-else="" style="background-color: red;">
-                                            Absent(e)
+                                            <span t-esc="absence[10]"/>
                                         </span>
                                     </td>
                                 </tr>
