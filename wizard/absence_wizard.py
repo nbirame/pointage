@@ -85,13 +85,14 @@ class AbsenceWizard(models.TransientModel):
                         for jour_conge in conge_liste:
                             conge_listes.append(jour_conge)
                     else:
-                        date_debut = start_date
-                        date_fin = end_date
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
+                        pass
+                        # date_debut = start_date
+                        # date_fin = end_date
+                        # nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
+                        # conge_liste = [date_debut + timedelta(days=i) for i in
+                        #                  range((date_fin - date_debut).days + 1)]
+                        # for jour_conge in conge_liste:
+                        #       conge_listes.append(jour_conge)
             liste.append(conge_listes)
             liste.append(nombre_jour)
         return liste
