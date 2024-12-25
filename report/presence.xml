@@ -40,4 +40,14 @@
             file="pointage.report_presence_of_day_wizard"
             print_report_name="('Rapport liste des présences')"
     />
+    <report
+            string="Rapport Agent ayant plus de deux abasences"
+            id="report_pointage_two_absence_of_week"
+            model="hr.employee"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_two_absence_of_week"
+            file="pointage.report_two_absence_of_week"
+            print_report_name="('Rapport liste des personnes ayant au mois de deux jours d\'absence')"
+    />
 </odoo>

@@ -40,6 +40,7 @@
         'report/presence_template_personaliser.xml',
         'report/rapport_presence_template.xml',
         'report/rapport_absence_liste_template.xml',
+        'report/absence_week_template.xml',
         'views/atelier_views.xml',
     ],
     # only loaded in demonstration mode
