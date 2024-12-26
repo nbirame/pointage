@@ -13,8 +13,7 @@ class RapportWizard(models.TransientModel):
     date_in_get_rapport = fields.Date(string="Date de début")
     date_end_get_rapport = fields.Date(string="Date de fin")
     # number_of_working_hours = fields.Float(string="Heure de travail")
-    total_number_of_working_hours = fields.Float(string="Heure de travail",
-                                                 compute="_compute_total_number_of_working_hours", store=True)
+    total_number_of_working_hours = fields.Float(string="Heure de travail", store=True)
 
     def nombre_jours_sans_weekend(self, date_debut, date_fin):
         jours = (date_fin - date_debut).days + 1
@@ -100,8 +99,8 @@ class RapportWizard(models.TransientModel):
             liste.append(nombre_jour)
         return liste
 
-    @api.depends("date_in_get_rapport", "date_end_get_rapport", "employee_id")
-    def _compute_total_number_of_working_hours(self):
+    @api.onchange("date_in_get_rapport", "date_end_get_rapport", "employee_id")
+    def _onchange_total_number_of_working_hours(self):
         heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
         absence_days_hollidays = self.get_hollidays(self.date_end_get_rapport, self.date_in_get_rapport)[1]
         number_day_of_party = self.env["vacances.ferier"].sudo().search_count([
@@ -111,7 +110,12 @@ class RapportWizard(models.TransientModel):
         equipe_mission = self.env["mission.equipe"].search([
             ('employee_id', '=', self.employee_id.id),
         ])
+        number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
+        self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
+                                                                                 self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
+        print(f"Le nombre d'heure avant if{self.total_number_of_working_hours}")
         if equipe_mission:
+            print("Mission")
             number_day_of_mission = 0
             for agent in equipe_mission:
                 if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport) and (agent.employee_id.id == self.employee_id.id):
@@ -139,6 +143,7 @@ class RapportWizard(models.TransientModel):
             number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
             self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                 self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
+            print(f"Le nombre d'heure {self.total_number_of_working_hours}")
 
     def get_total_work(self):
         total_heure = 0
@@ -209,6 +214,7 @@ class RapportWizard(models.TransientModel):
             for jour_atelier in participants_liste:
                 participants_listes.append(jour_atelier)
         conge_listes = self.get_hollidays(self.date_end_get_rapport, self.date_in_get_rapport)[0]
+        print(f"Conge {conge_listes}")
 
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
@@ -232,7 +238,7 @@ class RapportWizard(models.TransientModel):
         # Ajouter les dates manquantes dans la liste d'origine
         for date in dates_manquantes:
             if date.strftime('%A') != "samedi" and date.strftime('%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes and date not in participants_listes:
-                print('Helloo')
+                #  print('Helloo')
                 # Créer une entrée vide pour chaque date manquante
                 nouvelle_entree = [datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.min.time()),
                                    0.0, 0.0]
@@ -269,4 +275,6 @@ class RapportWizard(models.TransientModel):
         return liste_dates
 
     def calculate_ecart_worked(self):
+        print(f"Sous un total de {self.total_number_of_working_hours}")
+        print(f"Total woek  {self.get_total_work()}")
         return self.get_total_work() - self.total_number_of_working_hours
