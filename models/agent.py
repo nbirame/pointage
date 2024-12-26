@@ -99,26 +99,6 @@ class Agent(models.Model):
         if uid:
             models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
             # Récupérer les congés directement pour la plage de dates spécifiée
-            data_holiday = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
-                [[
-                    ('date_from', '!=', False),
-                    ('date_to', '!=', False),
-                    ('date_from', '<=', start_date),
-                    ('date_to', '<=', end_date)
-                ]],
-                {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
-            )
-            data_holiday2 = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
-                [[
-                    ('date_from', '!=', False),
-                    ('date_to', '!=', False),
-                    ('date_from', '>=', start_date),
-                    ('date_to', '>=', end_date)
-                ]],
-                {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
-            )
             data_holidays = models.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
                 [[
@@ -129,23 +109,11 @@ class Agent(models.Model):
                 ]],
                 {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
             )
-            # if data_holiday:
-            #     data_holidays = data_holiday
-            #     print("Dans la premiere")
-            # elif data_holiday2:
-            #     data_holidays = data_holiday2
-            #     print("Dans la deuxieme")
-            # elif data_holiday3:
-            #     data_holidays = data_holiday3
-            #     print("Dans le troisieme")
-            # else:
-            #     pass
             employees = models.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.employee', 'search_read',
                 [[('matricule_pointage', '=', matricule)]],
                 {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
             )
-            print(f"Liste des employee-------------> {employees}")
             # Créer un dictionnaire des employés pour un accès rapide par ID
             employee_dict = {employee['id']: employee for employee in employees}
             # Filtrer et traiter les congés
@@ -180,13 +148,6 @@ class Agent(models.Model):
                             conge_listes.append(jour_conge)
                     else:
                         pass
-                        # date_debut = start_date
-                        # date_fin = end_date
-                        # nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        # conge_liste = [date_debut + timedelta(days=i) for i in
-                        #                  range((date_fin - date_debut).days + 1)]
-                        # for jour_conge in conge_liste:
-                        #     conge_listes.append(jour_conge)
             liste.append(conge_listes)
             liste.append(nombre_jour)
         return liste
