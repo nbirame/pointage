@@ -52,7 +52,7 @@ class Agent(models.Model):
         if uid:
             models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
             # Récupérer les congés directement pour la plage de dates spécifiée
-            data_holiday = models.execute_kw(
+            data_holidays = models.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
                 [[
                     ('date_from', '!=', False),
@@ -62,32 +62,6 @@ class Agent(models.Model):
                 ]],
                 {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
             )
-            if data_holiday:
-                data_holidays = data_holiday
-            data_holiday1 = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
-                [[
-                    ('date_from', '!=', False),
-                    ('date_to', '!=', False),
-                    ('date_from', '<=', fin_mois_dernier),
-                    ('date_to', '<=', debut_ce_mois)
-                ]],
-                {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
-            )
-            if data_holiday1:
-                data_holidays = data_holiday1
-            data_holiday2 = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
-                [[
-                    ('date_from', '!=', False),
-                    ('date_to', '!=', False),
-                    ('date_from', '>=', debut_ce_mois),
-                    ('date_to', '<=', fin_mois_dernier)
-                ]],
-                {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
-            )
-            if data_holiday2:
-                data_holidays = data_holiday2
             # Extraire les IDs des employés uniques pour éviter des appels répétitifs
             employee_ids = list(set([holiday['employee_id'][0] for holiday in data_holidays if holiday['employee_id']]))
             # Récupérer les employés en une seule requête
@@ -114,7 +88,6 @@ class Agent(models.Model):
     def get_day_of_hollidays(self, matricule, end_date, start_date):
         conge_listes = []
         liste = []
-        data_holidays = []
         nombre_jour = 0
         url = "http://erp.fongip.sn:8069"
         db_odoo = "fongip"
@@ -146,24 +119,27 @@ class Agent(models.Model):
                 ]],
                 {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
             )
-            data_holiday3 = models.execute_kw(
+            data_holidays = models.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
                 [[
                     ('date_from', '!=', False),
                     ('date_to', '!=', False),
-                    ('date_from', '<=', start_date),
-                    ('date_to', '>=', end_date)
+                    ('date_from', '<=', end_date),
+                    ('date_to', '>=', start_date)
                 ]],
                 {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
             )
-            if data_holiday:
-                data_holidays = data_holiday
-            elif data_holiday2:
-                data_holidays = data_holidays
-            elif data_holiday3:
-                data_holidays = data_holiday3
-            else:
-                pass
+            # if data_holiday:
+            #     data_holidays = data_holiday
+            #     print("Dans la premiere")
+            # elif data_holiday2:
+            #     data_holidays = data_holiday2
+            #     print("Dans la deuxieme")
+            # elif data_holiday3:
+            #     data_holidays = data_holiday3
+            #     print("Dans le troisieme")
+            # else:
+            #     pass
             employees = models.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.employee', 'search_read',
                 [[('matricule_pointage', '=', matricule)]],
