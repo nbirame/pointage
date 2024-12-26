@@ -403,7 +403,8 @@ class Agent(models.Model):
         # employees = self.env['hr.employee'].search([])
         # for employee_hr in employees:
         #     conge_listes = self.get_day_of_hollidays(employee_hr.matricule, fin_mois_dernier, debut_ce_mois)[0]
-        conge_listes = self.get_hollidays(fin_mois_dernier, debut_ce_mois)
+        conge_listes = self.get_hollidays(fin_mois_dernier, debut_mois_dernier)
+        # print(f"Conge last month {conge_listes}")
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for fete in fetes:

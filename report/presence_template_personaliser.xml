@@ -27,7 +27,7 @@
                         <br/>
                         <span style="font-weight: bold;">Sur un total de: </span>
                         <span t-esc="object.total_number_of_working_hours" t-options="{'widget': 'float_time'}"/> Heures<br/>
-                        Total a faire<span t-esc="object.total_a_faire()" t-options="{'widget': 'float_time'}"/> Heures<br/>
+                        <!--Total a faire<span t-esc="object.total_a_faire()" t-options="{'widget': 'float_time'}"/> Heures<br/>-->
                         <span style="font-weight: bold;">Ecart : </span>
                         <span t-if="object.calculate_ecart_worked() >= 0" style="background-color: green;">
                             <span t-esc="object.calculate_ecart_worked()" t-options="{'widget': 'float_time'}"/> Heure(s)
