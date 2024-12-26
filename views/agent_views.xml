@@ -42,6 +42,11 @@
                         type="object"
                         icon="fa-bell"
                         class="oe_stat_button"/>
+                <button name="action_send_email_notify_drh"
+                        string="Absence de la Semaine"
+                        type="object"
+                        icon="fa-bell"
+                        class="oe_stat_button"/>
                 <button name="email_notification_send_woork_month"
                         string="Rapport Mois"
                         type="object"

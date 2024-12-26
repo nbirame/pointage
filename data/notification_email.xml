@@ -342,5 +342,30 @@
                         ]]>
             </field>
         </record>
+        <record id="email_template_pointage_notification_drh" model="mail.template">
+            <field name="name">Rapport des agents ayant au mois deux jours d'absences</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{ object.get_drh() }}</field>
+            <field name="subject">Présence du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
+            <field name="report_name">Rapport Absence</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="report_template" ref="pointage.report_pointage_two_absence_of_week"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+                    <div>Bonjour, <br/>
+                       <span t-out="object.name or ''"></span><br/>
+                       <p>Vous avez c-joint la fiche récaputilative des agents ayant au moins deux absences
+                       <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')"/>
+                       au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')"/>.
+
+                        <p>
+                            Cordialement.
+                        </p>
+                    </div>
+                    </t>
+                        ]]>
+            </field>
+        </record>
     </data>
 </odoo>

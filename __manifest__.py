@@ -23,6 +23,7 @@
 
     # always loaded
     'data': [
+        'security/pointage_security.xml',
         'security/ir.model.access.csv',
         'report/presence.xml',
         'wizard/data_pointage_wizard.xml',

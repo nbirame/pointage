@@ -331,14 +331,48 @@ class Agent(models.Model):
     def email_notification_send_woork_month(self):
         self.send_email_notification("email_template_pointage_notification_report_month")
 
-    def get_employee(self):
-        employees = []
+    def action_send_email_notify_drh(self):
+        send_notification = "Liste envoye"
+        template = self.env.ref("pointage.email_template_pointage_notification_drh")
+        # template = self.env.ref("pointage.%s" % temp)
+        if template:
+            self.env["mail.template"].browse(template.id).sudo().send_mail(
+                self.id, force_send=True
+            )
+            self.env["mail.mail"].sudo().process_email_queue()
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'type': 'success',
+                    'message': send_notification,
+                    'next': {
+                        'type': 'ir.actions.act_window_close'
+                    },
+                }
+            }
+
+    def get_manager(self, groupe):
+        drh = []
         users = self.env['res.users'].sudo().search([])
         for user in users:
-            employe = self.env['hr.employee'].sudo().search([('user_id', '=', user.id)], limit=1)
-            if employe:
-                employees.append(employe.work_email)
-                return ';'.join(employees)
+            if user.has_group(groupe):
+                employe = self.env['hr.employee'].sudo().search([('user_id', '=', user.id)], limit=1)
+                if employe:
+                    drh.append(employe.work_email)
+        return ';'.join(drh)
+
+    def get_drh(self):
+        return self.get_manager('pointage.group_conge_drh')
+
+    # def get_employee(self):
+    #     employees = []
+    #     users = self.env['res.users'].sudo().search([])
+    #     for user in users:
+    #         employe = self.env['hr.employee'].sudo().search([('user_id', '=', user.id)], limit=1)
+    #         if employe:
+    #             employees.append(employe.work_email)
+    #             return ';'.join(employees)
 
     def print_report_presence(self):
         return self.env.ref("pointage.report_pointage_presence").report_action(self)
