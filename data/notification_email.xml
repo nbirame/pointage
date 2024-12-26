@@ -345,7 +345,7 @@
         <record id="email_template_pointage_notification_drh" model="mail.template">
             <field name="name">Rapport des agents ayant au mois deux jours d'absences</field>
             <field name="email_from">fongip@fongip.sn</field>
-            <field name="email_to">{{ object.get_drh() }}</field>
+            <field name="email_to">{{object.get_drh()}}</field>
             <field name="subject">Présence du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
             <field name="report_name">Rapport Absence</field>
             <field name="model_id" ref="hr.model_hr_employee"/>

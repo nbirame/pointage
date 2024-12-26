@@ -357,13 +357,12 @@ class Agent(models.Model):
         users = self.env['res.users'].sudo().search([])
         for user in users:
             if user.has_group(groupe):
-                employe = self.env['hr.employee'].sudo().search([('user_id', '=', user.id)], limit=1)
-                if employe:
-                    drh.append(employe.work_email)
+                print(f"User appartien: {user.email}")
+                drh.append(user.email)
         return ';'.join(drh)
 
     def get_drh(self):
-        return self.get_manager('pointage.group_conge_drh')
+        return self.get_manager('pointage.group_pointage_drh')
 
     # def get_employee(self):
     #     employees = []
