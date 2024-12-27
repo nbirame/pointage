@@ -9,3 +9,7 @@ access_pointage_presence_report_wizard,pointage.presence_report_wizard,model_poi
 access_pointage_participants,pointage.participants,model_pointage_participants,base.group_user,1,1,1,1
 access_pointage_atelier,pointage.atelier,model_pointage_atelier,base.group_user,1,1,1,1
 access_pointage_absence_wizard,pointage.absence_wizard,model_pointage_absence_wizard,base.group_user,1,1,1,1
+access_pointage_autorisation_ag,pointage.autorisation,model_pointage_autorisation,pointage.group_pointage_ag,1,1,1,1
+access_pointage_autorisation_sg,pointage.autorisation,model_pointage_autorisation,pointage.group_pointage_sg,1,1,1,1
+access_pointage_autorisation_drh,pointage.autorisation,model_pointage_autorisation,pointage.group_pointage_drh,1,1,1,1
+access_pointage_autorisation_user,pointage.autorisation,model_pointage_autorisation,pointage.group_pointage_agent,1,1,1,0

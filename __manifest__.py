@@ -34,7 +34,7 @@
         # 'wizard/rapport_presence_wizard_views.xml',
         'views/agent_views.xml',
         # 'views/pointagedata_views.xml',
-        # 'views/originaldata_views.xml',
+        'views/autorisation_views.xml',
         'data/notification_email.xml',
         'views/working_hours_views.xml',
         'report/presence_template.xml',
