@@ -1,6 +1,5 @@
 from odoo import fields, api, models
 
-
 class Autorisation(models.Model):
     _name = "pointage.autorisation"
     _description = "Demande de sortie"
@@ -72,21 +71,69 @@ class Autorisation(models.Model):
         return True
 
     def action_drh(self):
+        self.action_send_email_notifier("email_template_notification_drh")
         self.write({'state': 'drh'})
         return True
 
     def action_sg(self):
         self.write({'state': 'sg'})
+        self.action_send_email_notifier("email_template_notification_sg")
         return True
 
     def action_ag(self):
         self.write({'state': 'ag'})
+        self.action_send_email_notifier("email_template_notification_ag")
         return True
 
     def action_valider(self):
         self.write({'state': 'valider'})
+        self.action_send_email_notifier("email_template_notification_agentAccept")
         return True
 
     def action_refuser(self):
         self.write({'state': 'refuser'})
+        self.action_send_email_notifier("email_template_notification_agentRefus")
         return True
+
+    def action_send_email_notifier(self, temp):
+        send_notification = "Votre demande d'autorisation est envoyé aves succès"
+        template = self.env.ref("pointage.%s" % temp)
+        if template:
+            self.env["mail.template"].browse(template.id).sudo().send_mail(
+                self.id, force_send=True
+            )
+            self.env["mail.mail"].sudo().process_email_queue()
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'type': 'success',
+                    'message': send_notification,
+                    'next': {
+                        'type': 'ir.actions.act_window_close'
+                    },
+                }
+            }
+
+    def get_url(self, id):
+        base_url = self.env["ir.config_parameter"].get_param("web.base.url")
+        url = f'{base_url}/web#id={id}&cids=1&model=pointage.autorisation&view_type=form'
+        return url
+
+    def get_manager(self, groupe):
+        drh = []
+        users = self.env['res.users'].sudo().search([])
+        for user in users:
+            if user.has_group(groupe):
+                print(f"User appartien: {user.email}")
+                drh.append(user.email)
+        return ';'.join(drh)
+
+    def get_drh(self):
+        return self.get_manager('pointage.group_pointage_drh')
+
+    def get_sg(self):
+        return self.get_manager('pointage.group_pointage_sg')
+
+    def get_ag(self):
+        return self.get_manager('pointage.group_pointage_ag')

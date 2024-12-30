@@ -363,5 +363,95 @@
                         ]]>
             </field>
         </record>
+        <record id="email_template_notification_drh" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_to">{{ object.get_drh() }}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour DRH,<br/>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     <!--<span t-out="object.get_url(object.id) or ''"></span>-->
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_sg" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_to">{{ object.get_sg() }}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour SG,<br/>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     <!--<span t-out="object.get_url(object.id) or ''"></span>-->
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_ag" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_to">{{ object.get_ag() }}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour AG,<br/>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     <!--<span t-out="object.get_url(object.id) or ''"></span>-->
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_agentAccept" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_to">{{ object.employee_id.work_email }}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour <span t-out="object.employee_id.name or ''"/>,<br/>
+                     <p> Votre demande  d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     est validé
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans Odoo</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_agentRefus" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_to">{{ object.employee_id.work_email }}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour <span t-out="object.employee_id.name or ''"/>,<br/>
+                     <p> Votre demande  d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     est refusé
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans Odoo</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
     </data>
 </odoo>
