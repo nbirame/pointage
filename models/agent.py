@@ -132,6 +132,12 @@ class Agent(models.Model):
                                          range((date_fin - date_debut).days + 1)]
                         for jour_conge in conge_liste:
                             conge_listes.append(jour_conge)
+                    elif date_debut >= start_date and date_fin >= end_date:
+                        nombre_jour = self.nombre_jours_sans_weekend(start_date, end_date)
+                        conge_liste = [date_debut + timedelta(days=i) for i in
+                                         range((end_date - start_date).days + 1)]
+                        for jour_conge in conge_liste:
+                            conge_listes.append(jour_conge)
                     elif date_debut <= start_date and date_fin >= end_date:
                         date_fin = end_date
                         nombre_jour = self.nombre_jours_sans_weekend(start_date, date_fin)
@@ -629,6 +635,7 @@ class Agent(models.Model):
             ])
             total_worked_hours = round(sum(attendance.worked_hours for attendance in attendance_records), 2)
             absence_days_hollidays = self.get_day_of_hollidays(employee.matricule, self.last_week_end_date(), self.last_week_start_date())[1]
+            print(f"Nombre de jour de conge ----------> {absence_days_hollidays}")
             number_day_of_party = self.env["vacances.ferier"].sudo().search_count([
                 ('date_star', '>=', self.last_week_start_date()),
                 ('date_end', '<=', self.last_week_end_date()),
