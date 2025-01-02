@@ -77,7 +77,7 @@
                 <button name="send_notify_late_week"
                         string="Retard SEMAINE"
                         type="object"
-                        icon="fa-print"
+                        icon="fa-bell-o"
                         class="oe_highlight"/>
                 <button name="%(pointage.pointage_donnees_rapport_wizard_form)d"
                         string="Rapport Presence"
