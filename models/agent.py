@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime, timedelta, time
 import xmlrpc.client
 import pytz
@@ -274,10 +275,10 @@ class Agent(models.Model):
     def email_notification_send_woork_month(self):
         self.send_email_notification("email_template_pointage_notification_report_month")
 
-    def action_send_email_notify_drh(self):
+    def send_email_notify(self, temp):
         send_notification = "Liste envoye"
-        template = self.env.ref("pointage.email_template_pointage_notification_drh")
-        # template = self.env.ref("pointage.%s" % temp)
+        # template = self.env.ref("pointage.email_template_pointage_notification_drh")
+        template = self.env.ref("pointage.%s" % temp)
         if template:
             self.env["mail.template"].browse(template.id).sudo().send_mail(
                 self.id, force_send=True
@@ -294,6 +295,9 @@ class Agent(models.Model):
                     },
                 }
             }
+
+    def action_send_email_notify_drh(self):
+        self.send_email_notify("email_template_pointage_notification_drh")
 
     def get_manager(self, groupe):
         drh = []
@@ -622,7 +626,6 @@ class Agent(models.Model):
         return fin_mois_dernier.date()
 
     def get_employees_with_two_absences_week(self):
-        # Liste de presence
         employees = self.env['hr.employee'].search([])
         liste_absent = []
         for employee in employees:
@@ -685,3 +688,33 @@ class Agent(models.Model):
                 liste_absent.append([employee.name, employee.job_title, employee.department_id.name, total_worked_hours,
                                     total_number_of_working_hours, ecart, jours_absence])
         return sorted(liste_absent, key=lambda absence: absence[-2], reverse=True)
+
+    def get_late_two_day_of_week(self):
+        liste_retard = []
+        employees = self.env["hr.employee"].search([])
+        for employee in employees:
+            attendances = self.env['hr.attendance'].search([
+                ('employee_id', '=', employee.id),
+                '&',
+                ('check_in', '<=', self.last_week_end_date()),
+                ('check_out', '>=', self.last_week_start_date()),
+            ])
+            for attendance in attendances:
+                if attendance.check_in.time() >= time(10, 0):
+                    liste_retard.append([attendance.employee_id.id, attendance.employee_id.name, attendance.check_in.time()])
+                    # print(liste_retard)
+                else:
+                    pass
+        grouped_data = defaultdict(list)
+        for entry in liste_retard:
+            grouped_data[(entry[0], entry[1])].append(entry[2])
+        result = []
+        for (id_, name), times in grouped_data.items():
+            if len(times) >= 2:
+                formatted_entry = [id_, name, *times[:5]]
+                formatted_entry.extend([""] * (7 - len(formatted_entry)))
+                result.append(formatted_entry)
+        return result
+
+    def send_notify_late_week(self):
+        self.send_email_notify("email_template_pointage_notification_retard")
