@@ -9,7 +9,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h3 style="text-align:center;color:#800000;margin-top:0px; font-weight: bold;">
-                            Pointage
+                            Liste des agents ayant au moins deux absences
                         </h3>
                         <p style="text-align:center; color:#800000; font-weight: 200;">
                              du
@@ -25,9 +25,6 @@
                                     <th>Employé</th>
                                     <th>Fonction</th>
                                     <th>Service</th>
-                                    <th>Présence(en heures)</th>
-                                    <th>Horaire à faire (en heures)</th>
-                                    <th>Ecart (en heures)</th>
                                     <th>Absence (en jours)</th>
                                 </tr>
                             </thead>
@@ -47,16 +44,7 @@
                                         <span t-esc="absence[2]"/>
                                     </td>
                                     <td >
-                                        <span t-esc="absence[3]" t-options="{'widget': 'float_time'}"/>
-                                    </td>
-                                    <td >
-                                        <span t-esc="absence[4]" t-options="{'widget': 'float_time'}"/>
-                                    </td>
-                                    <td >
-                                        <span t-esc="absence[5]" t-options="{'widget': 'float_time'}"/>
-                                    </td>
-                                    <td >
-                                        <span t-esc="absence[6]"/>
+                                        <span t-esc="absence[3]"/>
                                     </td>
                                 </tr>
                             </tbody>
@@ -66,7 +54,7 @@
                             <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
                         </p>
                         <h6 class="text-right">
-                            Le Directeur des Ressources Humaines
+                            La Directrice des Ressources Humaines
                         </h6>
                     </div>
                 </t>

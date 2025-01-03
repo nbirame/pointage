@@ -91,6 +91,11 @@
                         type="object"
                         icon="fa-bell-o"
                         class="oe_highlight"/>
+                <button name="send_notify_late_week_of_agent"
+                        string="Retard Agent"
+                        type="object"
+                        icon="fa-bell-o"
+                        class="oe_highlight"/>
                 <button name="%(pointage.pointage_donnees_rapport_wizard_form)d"
                         string="Rapport Presence"
                         type="action"

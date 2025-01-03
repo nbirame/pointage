@@ -454,10 +454,10 @@
             </field>
         </record>
         <record id="email_template_pointage_notification_retard" model="mail.template">
-            <field name="name">Agent ayant au moins deux retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
+            <field name="name">Agent ayant au moins trois retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{ object.get_drh() }}</field>
-            <field name="subject">Agent ayant au moins deux retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
+            <field name="subject">Agent ayant au moins trois retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
             <!--<field name="report_name">Rapport Pointage</field>-->
             <field name="model_id" ref="hr.model_hr_employee"/>
             <!--<field name="report_template" ref="pointage.report_pointage_presence"/>-->
@@ -499,7 +499,7 @@
         /* Vous pouvez ajuster chaque colonne ici */
     </style>
                     <div>Bonjour DRH, <br/>
-                       <p>Vous avez ci-dessous le tableau récapitulatif des agents ayant au moins deux retards du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
+                       <p>Vous avez ci-dessous le tableau récapitulatif des agents ayant au moins trois retards du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
 
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                             <thead class="thead-light" style="background-color:#611610;">
@@ -514,6 +514,105 @@
                             </thead>
                             <tbody>
                             <tr t-foreach="object.get_late_two_day_of_week()" t-as="retard">
+                            <td style="background-color:#611610;">
+                                <p style="text-align:center;color:white;">
+                                    <t t-esc="retard[1]"/>
+                                <p>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[2]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[3]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[4]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[5]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[6]"/>
+                                </span>
+                            </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    </t>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_pointage_notification_retard_agent" model="mail.template">
+            <field name="name">Attation au retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{ object.user_id.work_email or '' }}</field>
+            <field name="subject">Attation, vous avez au moins trois retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
+            <!--<field name="report_name">Rapport Pointage</field>-->
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <!--<field name="report_template" ref="pointage.report_pointage_presence"/>-->
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+                   <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #000;
+        }
+        th {
+            background-color: #800000;
+            color: white;
+        }
+        td {
+            background-color: #fff;
+        }
+        th:nth-child(2), td:nth-child(2) { /* Lundi */
+            width: 150px; /* Augmente la largeur */
+        }
+        th:nth-child(3), td:nth-child(3) { /* Mardi */
+            width: 150px;
+        }
+         th:nth-child(4), td:nth-child(4) { /* Mardi */
+            width: 150px;
+        }
+         th:nth-child(5), td:nth-child(5) { /* Mardi */
+            width: 150px;
+        }
+         th:nth-child(6), td:nth-child(6) { /* Mardi */
+            width: 150px;
+        }
+        /* Vous pouvez ajuster chaque colonne ici */
+    </style>
+                    <div>Bonjour <span style="font-weight: bold;" t-out="object.name or ''">,</span><br/>
+                       <p>Vous avez ci-dessous le tableau récapitulatif des agents ayant au moins trois retards du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
+
+                        <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                            <thead class="thead-light" style="background-color:#611610;">
+                                <tr style="background-color:#611610;">
+                                    <th style="color:white;">AGENT</th>
+                                    <th style="color:white;">Lundi</th>
+                                    <th style="color:white;">Mardi</th>
+                                    <th style="color:white;">Mercredi</th>
+                                    <th style="color:white;">Jeudi</th>
+                                    <th style="color:white;">Vendredi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr t-foreach="object.get_late_notify_tree_day_of_week(object.id)" t-as="retard">
                             <td style="background-color:#611610;">
                                 <p style="text-align:center;color:white;">
                                     <t t-esc="retard[1]"/>

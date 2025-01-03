@@ -685,8 +685,7 @@ class Agent(models.Model):
             if jours_absence >= 2:
                 # jours_absence = 0
                 ecart = total_worked_hours - total_number_of_working_hours
-                liste_absent.append([employee.name, employee.job_title, employee.department_id.name, total_worked_hours,
-                                    total_number_of_working_hours, ecart, jours_absence])
+                liste_absent.append([employee.name, employee.job_title, employee.department_id.name, jours_absence])
         return sorted(liste_absent, key=lambda absence: absence[-2], reverse=True)
 
     def get_late_two_day_of_week(self):
@@ -710,7 +709,7 @@ class Agent(models.Model):
             grouped_data[(entry[0], entry[1])].append(entry[2])
         result = []
         for (id_, name), times in grouped_data.items():
-            if len(times) >= 2:
+            if len(times) >= 3:
                 formatted_entry = [id_, name, *times[:5]]
                 formatted_entry.extend([""] * (7 - len(formatted_entry)))
                 result.append(formatted_entry)
@@ -718,3 +717,45 @@ class Agent(models.Model):
 
     def send_notify_late_week(self):
         self.send_email_notify("email_template_pointage_notification_retard")
+
+    def get_late_notify_tree_day_of_week(self, employee):
+        liste_retard = []
+        attendances = self.env['hr.attendance'].search([
+            ('employee_id', '=', employee),
+            '&',
+            ('check_in', '<=', self.last_week_end_date()),
+            ('check_out', '>=', self.last_week_start_date()),
+        ])
+        for attendance in attendances:
+            if attendance.check_in.time() >= time(10, 0):
+                liste_retard.append([attendance.employee_id.id, attendance.employee_id.name, attendance.check_in.time()])
+                # print(liste_retard)
+            else:
+                pass
+        grouped_data = defaultdict(list)
+        for entry in liste_retard:
+            grouped_data[(entry[0], entry[1])].append(entry[2])
+        result = []
+        for (id_, name), times in grouped_data.items():
+            if len(times) >= 3:
+                formatted_entry = [id_, name, *times[:5]]
+                formatted_entry.extend([""] * (7 - len(formatted_entry)))
+                result.append(formatted_entry)
+        return result
+
+    def send_email_notification_agent(self, temp):
+        employees = self.env['hr.employee'].sudo().search([])
+        for employee in employees:
+            for res in self.get_late_two_day_of_week():
+                if res[0] == employee.id:
+                    email_to = employee.work_email
+                    template = self.env.ref("pointage.%s" % temp)
+                    if template:
+                        # template.write({'email_to': email_to})
+                        self.env["mail.template"].browse(template.id).sudo().send_mail(
+                            employee.id, force_send=True, email_values={'email_to': email_to}
+                        )
+                        self.env["mail.mail"].sudo().process_email_queue()
+
+    def send_notify_late_week_of_agent(self):
+        self.send_email_notification_agent("email_template_pointage_notification_retard_agent")
