@@ -23,7 +23,7 @@ class LaterWizard(models.TransientModel):
     def get_late_tree_day_of_week_wizard(self):
         nombre_jour = self.nombre_jours_sans_weekend(self.start_date, self.end_date)
         liste_retard = []
-        employees = self.env["hr.employee"].search([])
+        employees = self.env["hr.employee"].search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG')])
         for employee in employees:
             attendances = self.env['hr.attendance'].search([
                 ('employee_id', '=', employee.id),

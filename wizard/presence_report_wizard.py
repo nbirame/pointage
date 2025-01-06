@@ -94,7 +94,7 @@ class PresenceReportWizard(models.TransientModel):
         return liste
 
     def get_employees_with_presence(self): #get_employees_with_presence
-        employees = self.env['hr.employee'].search([])
+        employees = self.env['hr.employee'].search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG')])
         liste_absent = []
         number_of_days_absence_legal = 0
         number_day_of_mission = 0
