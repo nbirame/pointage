@@ -30,6 +30,7 @@
         'wizard/rapport_presence_wizard_views.xml',
         'wizard/rapport_wizard_views.xml',
         'wizard/rapport_absence_liste_wizard_views.xml',
+        'wizard/later_report_wizard.xml',
         'views/views.xml',
         # 'wizard/rapport_presence_wizard_views.xml',
         'views/agent_views.xml',
@@ -42,6 +43,7 @@
         'report/rapport_presence_template.xml',
         'report/rapport_absence_liste_template.xml',
         'report/absence_week_template.xml',
+        'report/retard_template.xml',
         'views/atelier_views.xml',
     ],
     # only loaded in demonstration mode

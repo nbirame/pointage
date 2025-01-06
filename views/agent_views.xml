@@ -66,6 +66,11 @@
                         type="object"
                         icon="fa-bell"
                         class="oe_stat_button"/>
+                <button name="email_notification_send_woork_week_agent"
+                        string="Heures Travaillées"
+                        type="object"
+                        icon="fa-bell"
+                        class="oe_stat_button"/>
                 <button name="action_send_email_notify_drh"
                         string="Absence de la Semaine"
                         type="object"
@@ -108,6 +113,11 @@
                         class="oe_highlight"/>
                 <button name="%(pointage.pointage_presence_of_day_rapport_wizard_form)d"
                         string="Heures Pointage"
+                        type="action"
+                        icon="fa-print"
+                        class="oe_highlight"/>
+                <button name="%(pointage.pointage_later_rapport_wizard_form)d"
+                        string="Retards Pointage"
                         type="action"
                         icon="fa-print"
                         class="oe_highlight"/>

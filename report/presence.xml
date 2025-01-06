@@ -50,4 +50,14 @@
             file="pointage.report_two_absence_of_week"
             print_report_name="('Rapport liste des personnes ayant au mois de deux jours d\'absence')"
     />
+     <report
+            string="Rapport Retards"
+            id="report_pointage_retard_wizard"
+            model="pointage.later.wizard"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_later_wizard"
+            file="pointage.report_later_wizard"
+            print_report_name="('Retards ')"
+    />
 </odoo>
