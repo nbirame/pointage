@@ -20,9 +20,14 @@
                                 <tr t-if="object.get_late_tree_day_of_week_wizard()[0]">
                                     <th>N*</th>
                                     <th>AGENT</th>
-                                    <t t-foreach="range(2, len(object.get_late_tree_day_of_week_wizard()[0]))" t-as="col_index">
+                                    <th>Lundi</th>
+                                    <th>Mardi</th>
+                                    <th>Mercredi</th>
+                                    <th>Jeudi</th>
+                                    <th>Vendredi</th>
+                                    <!--<t t-foreach="range(2, len(object.get_late_tree_day_of_week_wizard()[0]))" t-as="col_index">
                                         <th>Date <span t-esc="col_index - 1"/></th>
-                                    </t>
+                                    </t>-->
                                 </tr>
                             </thead>
                             <tbody t-foreach="object.get_late_tree_day_of_week_wizard()" t-as="retard">
