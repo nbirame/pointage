@@ -146,7 +146,7 @@ class Agent(models.Model):
                                          range((date_fin - start_date).days + 1)]
                         for jour_conge in conge_liste:
                             conge_listes.append(jour_conge)
-                    elif date_debut <= start_date and date_fin <= start_date:
+                    elif date_debut <= start_date and date_fin <= end_date:
                         date_debut = start_date
                         nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
                         conge_liste = [date_debut + timedelta(days=i) for i in
