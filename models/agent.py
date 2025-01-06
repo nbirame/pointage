@@ -250,7 +250,7 @@ class Agent(models.Model):
             employee.hours_last_month_display = "%g" % employee.hours_last_month
 
     def send_email_notification(self, temp):
-        employees = self.env['hr.employee'].sudo().search([])
+        employees = self.env['hr.employee'].sudo().search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG')])
         for employee in employees:
             email_to = employee.work_email
             template = self.env.ref("pointage.%s" % temp)
@@ -696,7 +696,7 @@ class Agent(models.Model):
 
     def get_late_two_day_of_week(self):
         liste_retard = []
-        employees = self.env["hr.employee"].search([])
+        employees = self.env["hr.employee"].search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG')])
         for employee in employees:
             attendances = self.env['hr.attendance'].search([
                 ('employee_id', '=', employee.id),
@@ -750,7 +750,7 @@ class Agent(models.Model):
         return result
 
     def send_email_notification_agent(self, temp):
-        employees = self.env['hr.employee'].sudo().search([])
+        employees = self.env['hr.employee'].sudo().search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG')])
         for employee in employees:
             for res in self.get_late_two_day_of_week():
                 if res[0] == employee.id:
