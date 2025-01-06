@@ -299,6 +299,9 @@ class Agent(models.Model):
     def email_notification_send_woork_week_agent(self):
         self.send_email_notify("email_template_pointage_notification")
 
+    def email_notification_send_woork_month_agent(self):
+        self.send_email_notify("email_template_pointage_notification_report_month")
+
     def action_send_email_notify_drh(self):
         self.send_email_notify("email_template_pointage_notification_drh")
 

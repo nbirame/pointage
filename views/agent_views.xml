@@ -61,11 +61,11 @@
                         </span>
                     </div>
                 </button>
-                <button name="email_notification_send_woork_week"
+                <!--<button name="email_notification_send_woork_week"
                         string="Rapport Semaine"
                         type="object"
                         icon="fa-bell"
-                        class="oe_stat_button"/>
+                        class="oe_stat_button"/>-->
                 <button name="email_notification_send_woork_week_agent"
                         string="Heures Travaillées"
                         type="object"
@@ -76,7 +76,7 @@
                         type="object"
                         icon="fa-bell"
                         class="oe_stat_button"/>
-                <button name="email_notification_send_woork_month"
+                <button name="email_notification_send_woork_month_agent"
                         string="Rapport Mois"
                         type="object"
                         icon="fa-bell-o"
