@@ -632,7 +632,7 @@ class Agent(models.Model):
         return fin_mois_dernier.date()
 
     def get_employees_with_two_absences_week(self):
-        employees = self.env['hr.employee'].search([])
+        employees = self.env['hr.employee'].search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG')])
         liste_absent = []
         for employee in employees:
             print(employee.name)
