@@ -8,6 +8,7 @@ access_pointage_rapport_wizard,pointage.rapport_wizard,model_pointage_rapport_wi
 access_pointage_presence_report_wizard,pointage.presence_report_wizard,model_pointage_presence_report_wizard,base.group_user,1,1,1,1
 access_pointage_participants,pointage.participants,model_pointage_participants,base.group_user,1,1,1,1
 access_pointage_atelier,pointage.atelier,model_pointage_atelier,base.group_user,1,1,1,1
+access_pointage_agence,pointage.agence,model_pointage_agence,base.group_user,1,1,1,1
 access_pointage_absence_wizard,pointage.absence_wizard,model_pointage_absence_wizard,base.group_user,1,1,1,1
 access_pointage_later_wizard,pointage.later_wizard,model_pointage_later_wizard,base.group_user,1,1,1,1
 access_pointage_autorisation_ag,pointage.autorisation,model_pointage_autorisation,pointage.group_pointage_ag,1,1,1,1

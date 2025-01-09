@@ -142,6 +142,9 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_title']" position="after">
+                <field name="agence_id" placeholder="SIEGE ou l'Agence"/>
+            </xpath>
             <xpath expr="//field[@name='work_email']" position="after">
                 <field name="matricule"/>
             </xpath>

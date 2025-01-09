@@ -8,3 +8,4 @@ from . import working_hours
 from . import participants
 from . import atelier
 from . import autorisation
+from . import agence

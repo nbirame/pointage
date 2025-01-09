@@ -597,8 +597,14 @@
         }
         /* Vous pouvez ajuster chaque colonne ici */
     </style>
-                    <div>Bonjour <span style="font-weight: bold;" t-out="object.name or ''">,</span><br/>
-                       <p>Vous avez ci-dessous le tableau récapitulatif de vos retards du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
+                    <div>Cher collaborateur,<br/>
+                    Nous avons constaté, de votre part, le non-respect des horaires de travail applicables au personnel et arrêtées comme suit : 8H30 - 17H30 du lundi au vendredi,
+                    soit 40 heures par semaine. Notre dernier constat date du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.
+                    Par conséquent, vous êtes priés de prendre toutes les dispositions nécessaires pour pallier ces manquements.
+
+                    Dans le cas contraire nous serons dans l’obligation de prendre les mesures administratives appropriées à votre encontre.
+
+                       <p>Vous avez ci-dessous le tableau récapitulatif de vos retards.</p>
 
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                             <thead class="thead-light" style="background-color:#611610;">
@@ -646,6 +652,7 @@
                             </tr>
                             </tbody>
                         </table>
+                        <p>Bien cordialement </p>
                     </div>
                     </t>
                         ]]>

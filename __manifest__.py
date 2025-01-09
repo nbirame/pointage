@@ -45,6 +45,7 @@
         'report/absence_week_template.xml',
         'report/retard_template.xml',
         'views/atelier_views.xml',
+        'views/agence_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

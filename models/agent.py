@@ -15,6 +15,7 @@ class Agent(models.Model):
     hours_last_week = fields.Float(string="Nombre d'heure dernier Semaine", compute='_compute_hours_last_week')
     # hours_last_week_display = fields.Char(string="Nombre d'heure dernier Semaine", compute='_compute_hours_last_week')
     matricule = fields.Integer(string="Matricule")
+    agence_id = fields.Many2one('pointage.agence', string="FONGIP")
 
     # Supposez que self représente une liste d'objets employés
     def _compute_hours_last_week(self):
@@ -250,7 +251,7 @@ class Agent(models.Model):
             employee.hours_last_month_display = "%g" % employee.hours_last_month
 
     def send_email_notification(self, temp):
-        employees = self.env['hr.employee'].sudo().search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG')])
+        employees = self.env['hr.employee'].sudo().search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG'), ('agence_id.name', '=', 'SIEGE')])
         for employee in employees:
             email_to = employee.work_email
             template = self.env.ref("pointage.%s" % temp)

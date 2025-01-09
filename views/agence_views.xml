@@ -1,0 +1,44 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="pointage_atelier">
+            <field name="name">Liste agences</field>
+            <field name="model">pointage.agence</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="pointage_agence_form">
+            <field name="name">FONGIP</field>
+            <field name="res_model">pointage.agence</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!--  action open form view -->
+        <record id="agence_import_view_form" model="ir.ui.view">
+            <field name="name">pointage.agence.form</field>
+            <field name="model">pointage.agence</field>
+            <field name="arch" type="xml">
+                <form string="FONGIP">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <menuitem
+                id="pointage_agence_data"
+                name="AGENCE FONGIP"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="13"
+                groups="hr_attendance.group_hr_attendance_kiosk"
+                action="pointage_agence_form"/>
+
+
+    </data>
+</odoo>
