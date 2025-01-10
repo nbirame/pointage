@@ -5,7 +5,7 @@
         <record id="email_template_pointage_notification" model="mail.template">
             <field name="name">Présence de la semaine du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
             <field name="email_from">fongip@fongip.sn</field>
-            <field name="email_to">{{object.user_id.work_email or ''}}</field>
+            <field name="email_to">{{object.work_email or ''}}</field>
             <field name="subject">Présence de la semaine du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
             <!--<field name="report_name">Rapport Pointage</field>-->
             <field name="model_id" ref="hr.model_hr_employee"/>
@@ -320,7 +320,7 @@
         <record id="email_template_pointage_notification_report_month" model="mail.template">
             <field name="name">Présence</field>
             <field name="email_from">fongip@fongip.sn</field>
-            <field name="email_to">{{object.user_id.work_email or ''}}</field>
+            <field name="email_to">{{object.work_email or ''}}</field>
             <field name="subject">Présence du {{object.get_start_of_last_month()}} au {{object.fin_du_mois_dernier()}}</field>
             <field name="report_name">Rapport Pointage</field>
             <field name="model_id" ref="hr.model_hr_employee"/>
