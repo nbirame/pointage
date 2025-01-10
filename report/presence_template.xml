@@ -18,7 +18,7 @@
                         </span><span style="font-weight: lighter;" t-field="object.name"/><br/>
                         <span style="font-weight: bold;">Responsable Service:
                         </span>
-                         <span style="font-weight: lighter;" t-field="object.user_id.employee_parent_id.name"/><br/>
+                         <span style="font-weight: lighter;" t-field="object.employee_id.parent_id.name"/><br/>
                         <span style="font-weight: bold;">Service: </span>  <span style="font-weight: lighter;" t-field="object.user_id.employee_parent_id.department_id.name"/><br/>
                         <span style="font-weight: bold;">Presence effective(en heures):
                         </span>
