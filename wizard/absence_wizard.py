@@ -99,10 +99,10 @@ class AbsenceWizard(models.TransientModel):
 
     def get_employees_with_absences(self):
         # Liste de presence
-        employees = self.env['hr.employee'].search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG'), ('agence_id.name', '=', 'SIEGE')])
+        employees = self.env['hr.employee'].search([('job_title', 'not in', ['SG', 'AG']), ('agence_id.name', '=', 'SIEGE')])
         liste_absent = []
         for employee in employees:
-            print(employee.name)
+            print(f"Les agents du Siege: {employee.name}")
             heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
             attendance_records = self.env['hr.attendance'].search([
                 ('employee_id', '=', employee.id),
