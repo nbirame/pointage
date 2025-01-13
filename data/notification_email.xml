@@ -448,10 +448,10 @@
             </field>
         </record>
         <record id="email_template_pointage_notification_retard" model="mail.template">
-            <field name="name">Agent ayant au moins trois retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
+            <field name="name">Agent ayant au moins trois retards du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{ object.get_drh() }}</field>
-            <field name="subject">Agent ayant au moins trois retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
+            <field name="subject">Agent ayant au moins trois retards du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
             <!--<field name="report_name">Rapport Pointage</field>-->
             <field name="model_id" ref="hr.model_hr_employee"/>
             <!--<field name="report_template" ref="pointage.report_pointage_presence"/>-->
@@ -547,10 +547,10 @@
             </field>
         </record>
         <record id="email_template_pointage_notification_retard_agent" model="mail.template">
-            <field name="name">Attention au retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
+            <field name="name">Attention au retards du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{ object.user_id.work_email or '' }}</field>
-            <field name="subject">Attention, vous avez au moins trois retards du {{object.last_week_start_date().strftime( '%Y-%m-%d')}} au {{object.last_week_end_date().strftime( '%Y-%m-%d')}}</field>
+            <field name="subject">Attention, vous avez au moins trois retards du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
             <!--<field name="report_name">Rapport Pointage</field>-->
             <field name="model_id" ref="hr.model_hr_employee"/>
             <!--<field name="report_template" ref="pointage.report_pointage_presence"/>-->
