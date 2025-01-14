@@ -723,7 +723,8 @@ class Agent(models.Model):
         return result
 
     def send_notify_late_week(self):
-        self.send_email_notify("email_template_pointage_notification_retard")
+        if self.get_late_two_day_of_week():
+            self.send_email_notify("email_template_pointage_notification_retard")
 
     def get_late_notify_tree_day_of_week(self, employee):
         liste_retard = []
