@@ -541,7 +541,7 @@
                             </tr>
                             </tbody>
                         </table>
-                        <h2 t-else="">Il n'y a pas de retard durant la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/></h2>
+                        <p t-else="">Il n'y a pas de retard durant la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/></p>
                         </br>
                         <p>Cordialement.</p>
                     </div>
