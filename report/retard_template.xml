@@ -9,7 +9,7 @@
                 <t t-call="web.external_layout">
                     <div class="page" t-if="object.get_late_tree_day_of_week_wizard()">
                         <h3 style="text-align:center;color:#800000;margin-top:50px;">
-                            Fiche récaputilative des agents ayants au moins trois retards
+                            Récaputilative des agents ayants au moins trois retards durant la période du
                             <span t-esc="object.start_date" t-options='{"widget": "date"}'/>
                             au <span t-esc="object.end_date" t-options='{"widget": "date"}'/>.
                         </h3>

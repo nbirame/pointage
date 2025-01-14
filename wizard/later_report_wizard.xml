@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <odoo>
     <record model="ir.actions.act_window" id="pointage_later_rapport_wizard_form">
-        <field name="name">Rapport Présence</field>
+        <field name="name">Rapport Retard</field>
         <field name="res_model">pointage.later.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
