@@ -375,7 +375,7 @@
                                     <td >
                                         <span t-esc="absence[2]"/>
                                     </td>
-                                    <td >
+                                    <td style="text-align:center">
                                         <span t-esc="absence[3]"/>
                                     </td>
                                 </tr>
