@@ -341,18 +341,16 @@
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.get_drh()}}</field>
             <field name="subject">Liste des agents ayant enregistré au moins deux jours d'absence durant la période du {{object.date_debut_semaine().strftime( '%d-%m-%Y')}} au {{object.date_fin_emaine().strftime( '%d-%m-%Y')}}</field>
-            <!--<field name="report_name">Rapport Absence</field>-->
             <field name="model_id" ref="pointage.model_pointage_absence"/>
-           <!-- <field name="report_template" ref="pointage.report_pointage_two_absence_of_week"/>-->
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
             <t t-call="web.html_container">
                     <div>Bonjour DRH, <br/>
-                       <p>Veillez trouver ci-dessous le tableau récapitulatif des agents au moins deux jours d'absence durant la période du {{object.date_debut_semaine().strftime( '%d-%m-%Y')}} au {{object.date_fin_emaine().strftime( '%d-%m-%Y')}} />.</p>
+                       <p>Veillez trouver ci-dessous le tableau récapitulatif des agents au moins deux jours d'absence durant la période du <t t-esc="object.date_debut_semaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>  au <t t-esc="object.date_fin_emaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
                        </br>
                        <table t-if="object.get_absence_employees()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
                                style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; font-family: arial, sans-serif;
-  border-collapse: collapse;">
+                                border-collapse: collapse;">
                             <thead class="thead-light" style="background-color:#611610;">
                                 <tr>
                                     <th style="text-align:center;color:white;">N°</th>
