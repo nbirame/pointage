@@ -9,10 +9,10 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h3 style="text-align:center;color:#800000;margin-top:0px; font-weight: bold;">
-                            Liste des agents ayant au moins deux absences
+                            Liste des agents ayant au moins deux absences durant la période :
                         </h3>
                         <p style="text-align:center; color:#800000; font-weight: 200;">
-                             du
+                             Du
                             <span t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
                             au <span t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.
                         </p>

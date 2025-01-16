@@ -46,6 +46,7 @@
         'report/retard_template.xml',
         'views/atelier_views.xml',
         'views/agence_views.xml',
+        'views/absence_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
