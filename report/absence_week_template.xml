@@ -13,8 +13,8 @@
                         </h3>
                         <p style="text-align:center; color:#800000; font-weight: 200;">
                              Du
-                            <span t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
-                            au <span t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.
+                            <span t-esc="object.date_debut_semaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
+                            au <span t-esc="object.date_fin_emaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.
                         </p>
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
                                style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; font-family: arial, sans-serif;
@@ -28,7 +28,7 @@
                                     <th>Absence (en jours)</th>
                                 </tr>
                             </thead>
-                            <tbody t-foreach="object.get_employees_with_two_absences_week()" t-as="absence">
+                            <tbody t-foreach="object.get_absence_employees()" t-as="absence">
                                 <tr>
                                     <td>
                                        <span t-esc="absence_index+1"/>

@@ -43,7 +43,7 @@
     <report
             string="Rapport Agent ayant plus de deux abasences"
             id="report_pointage_two_absence_of_week"
-            model="hr.employee"
+            model="pointage.absence"
             report_type="qweb-pdf"
             menu="False"
             name="pointage.report_two_absence_of_week"

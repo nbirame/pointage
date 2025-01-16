@@ -262,13 +262,6 @@ class Agent(models.Model):
                     employee.id, force_send=True, email_values={'email_to': email_to}
                 )
                 self.env["mail.mail"].sudo().process_email_queue()
-        # template = self.env.ref("pointage.email_template_pointage_notification")
-        # if template:
-        #     # template.write({'email_to': email_to})
-        #     self.env["mail.template"].browse(template.id).sudo().send_mail(
-        #         self.id, force_send=True, email_values={'email_to': 'nbirame559@gmail.com'}
-        #     )
-        #     self.env["mail.mail"].sudo().process_email_queue()
 
     def email_notification_send_woork_week(self):
         self.send_email_notification("email_template_pointage_notification")
@@ -317,15 +310,6 @@ class Agent(models.Model):
 
     def get_drh(self):
         return self.get_manager('pointage.group_pointage_drh')
-
-    # def get_employee(self):
-    #     employees = []
-    #     users = self.env['res.users'].sudo().search([])
-    #     for user in users:
-    #         employe = self.env['hr.employee'].sudo().search([('user_id', '=', user.id)], limit=1)
-    #         if employe:
-    #             employees.append(employe.work_email)
-    #             return ';'.join(employees)
 
     def print_report_presence(self):
         return self.env.ref("pointage.report_pointage_presence").report_action(self)
@@ -417,9 +401,6 @@ class Agent(models.Model):
             participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
             for jour_atelier in participants_liste:
                 participants_listes.append(jour_atelier)
-        # employees = self.env['hr.employee'].search([])
-        # for employee_hr in employees:
-        #     conge_listes = self.get_day_of_hollidays(employee_hr.matricule, fin_mois_dernier, debut_ce_mois)[0]
         conge_listes = self.get_hollidays(fin_mois_dernier, debut_mois_dernier)
         # print(f"Conge last month {conge_listes}")
         fetes = self.env["vacances.ferier"].sudo().search([])
@@ -447,9 +428,6 @@ class Agent(models.Model):
         for date in dates_manquantes:
             if date.strftime('%A') != "samedi" and date.strftime(
                     '%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes and date not in participants_listes:
-                # print(date.strftime('%A'))
-                # print(f"Absence {date} {mission_listes}")
-                # Créer une entrée vide pour chaque date manquante
                 nouvelle_entree = [datetime.combine(date, datetime.min.time()),
                                    datetime.combine(date, datetime.min.time()),
                                    0.0, 0.0]
@@ -546,9 +524,6 @@ class Agent(models.Model):
             for jour_atelier in participants_liste:
                 participants_listes.append(jour_atelier)
         conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
-        # employees = self.env['hr.employee'].search([])
-        # for employee_hr in employees:
-        #     conge_listes = self.get_day_of_hollidays(employee_hr.matricule, fin_semaine_derniere, debut_semaine_derniere)[0]
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for fete in fetes:
@@ -631,69 +606,6 @@ class Agent(models.Model):
         # Soustraire un jour pour obtenir la fin du mois dernier
         fin_mois_dernier = premier_du_mois - relativedelta(days=1)
         return fin_mois_dernier.date()
-
-    def get_employees_with_two_absences_week(self):
-        employees = self.env['hr.employee'].search([('job_title', 'not in', ['SG', 'AG']), ('agence_id.name', '=', 'SIEGE')])
-        liste_absent = []
-        for employee in employees:
-            print(employee.name)
-            heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
-            attendance_records = self.env['hr.attendance'].search([
-                ('employee_id', '=', employee.id),
-                ('check_in', '>=', self.last_week_start_date()),
-                ('check_out', '<=', self.last_week_end_date()),
-            ])
-            total_worked_hours = round(sum(attendance.worked_hours for attendance in attendance_records), 2)
-            absence_days_hollidays = self.get_day_of_hollidays(employee.matricule, self.last_week_end_date(), self.last_week_start_date())[1]
-            print(f"Nombre de jour de conge ----------> {absence_days_hollidays}")
-            number_day_of_party = self.env["vacances.ferier"].sudo().search_count([
-                ('date_star', '>=', self.last_week_start_date()),
-                ('date_end', '<=', self.last_week_end_date()),
-            ])
-            number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
-            total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.last_week_start_date(),
-                                                                                self.last_week_end_date()) - number_of_days_absence_legal) * heure_travail.worked_hours)
-            equipe_mission = self.env["mission.equipe"].search([
-                ('employee_id', '=', employee.id),
-            ])
-            if equipe_mission:
-                number_day_of_mission = 0
-                for agent in equipe_mission:
-                    if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (
-                            agent.mission_id.date_depart >= self.last_week_start_date() and agent.mission_id.date_retour <= self.last_week_end_date()):
-                        number_day_of_mission += self.nombre_jours_sans_weekend(agent.mission_id.date_depart,
-                                                                                agent.mission_id.date_retour)
-                        number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
-                        total_number_of_working_hours = int(
-                            (self.nombre_jours_sans_weekend(self.last_week_start_date(),
-                                                            self.last_week_end_date()) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                    elif (
-                            agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and agent.mission_id.date_depart >= self.last_week_start_date() and agent.mission_id.date_retour >= self.last_week_end_date():
-                        number_day_of_mission += self.nombre_jours_sans_weekend(agent.mission_id.date_depart,
-                                                                                self.last_week_end_date())
-                        number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
-                        total_number_of_working_hours = int(
-                            (self.nombre_jours_sans_weekend(self.last_week_start_date(),
-                                                            self.last_week_end_date()) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                    elif (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (
-                            agent.mission_id.date_depart <= self.last_week_start_date() and agent.mission_id.date_retour <= self.last_week_end_date()):
-                        number_day_of_mission += self.nombre_jours_sans_weekend(self.last_week_start_date(),
-                                                                                agent.mission_id.date_retour)
-                        number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
-                        total_number_of_working_hours = int(
-                            (self.nombre_jours_sans_weekend(self.last_week_start_date(),
-                                                            self.last_week_end_date()) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                    else:
-                        pass
-            else:
-                pass
-            jours_absence = self.nombre_jours_sans_weekend(self.last_week_start_date(), self.last_week_end_date()) - len(
-                attendance_records) - number_of_days_absence_legal
-            if jours_absence >= 2:
-                # jours_absence = 0
-                ecart = total_worked_hours - total_number_of_working_hours
-                liste_absent.append([employee.name, employee.job_title, employee.department_id.name, jours_absence])
-        return sorted(liste_absent, key=lambda absence: absence[-2], reverse=True)
 
     def get_late_two_day_of_week(self):
         liste_retard = []
