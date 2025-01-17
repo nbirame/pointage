@@ -390,7 +390,7 @@
         </record>
         <record id="email_template_notification_drh" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
-            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.get_drh()}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
@@ -408,7 +408,7 @@
         </record>
         <record id="email_template_notification_sg" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
-            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.get_sg()}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
@@ -426,7 +426,7 @@
         </record>
         <record id="email_template_notification_ag" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
-            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.get_ag()}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
@@ -444,7 +444,7 @@
         </record>
         <record id="email_template_notification_agentAccept" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
-            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.employee_id.work_email}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
@@ -462,7 +462,7 @@
         </record>
         <record id="email_template_notification_agentRefus" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
-            <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
+            <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.employee_id.work_email}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
@@ -688,6 +688,7 @@
         </record>
         <record id="email_justification_notification_drh" model="mail.template">
             <field name="name">Justification absence</field>
+            <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.groupe_drh()}}</field>
             <field name="subject">Justification d'absence par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_justification"/>
@@ -705,6 +706,7 @@
         </record>
         <record id="email_justification_refuser_notification_agent" model="mail.template">
             <field name="name">Justification refusée</field>
+            <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.employee_id.work_email}}</field>
             <field name="subject">Justification d'absence refusée</field>
             <field name="model_id" ref="pointage.model_pointage_justification"/>
