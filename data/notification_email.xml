@@ -391,7 +391,7 @@
         <record id="email_template_notification_drh" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
             <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
-            <field name="email_to">{{ object.get_drh() }}</field>
+            <field name="email_to">{{object.get_drh()}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
             <field name="auto_delete" eval="True"/>
@@ -409,7 +409,7 @@
         <record id="email_template_notification_sg" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
             <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
-            <field name="email_to">{{ object.get_sg() }}</field>
+            <field name="email_to">{{object.get_sg()}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
             <field name="auto_delete" eval="True"/>
@@ -427,7 +427,7 @@
         <record id="email_template_notification_ag" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
             <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
-            <field name="email_to">{{ object.get_ag() }}</field>
+            <field name="email_to">{{object.get_ag()}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
             <field name="auto_delete" eval="True"/>
@@ -445,7 +445,7 @@
         <record id="email_template_notification_agentAccept" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
             <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
-            <field name="email_to">{{ object.employee_id.work_email }}</field>
+            <field name="email_to">{{object.employee_id.work_email}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
             <field name="auto_delete" eval="True"/>
@@ -463,7 +463,7 @@
         <record id="email_template_notification_agentRefus" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
             <!--                <field name="email_from">{{object.user_id.work_email or user.email_formatted}}</field>-->
-            <field name="email_to">{{ object.employee_id.work_email }}</field>
+            <field name="email_to">{{object.employee_id.work_email}}</field>
             <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_autorisation"/>
             <field name="auto_delete" eval="True"/>
@@ -481,7 +481,7 @@
         <record id="email_template_pointage_notification_retard" model="mail.template">
             <field name="name">Liste des agents ayant enregistré au moins trois retards durant la période du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
             <field name="email_from">fongip@fongip.sn</field>
-            <field name="email_to">{{ object.get_drh() }}</field>
+            <field name="email_to">{{object.get_drh()}}</field>
             <field name="subject">Liste des agents ayant enregistré au moins trois retards durant la période du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
             <!--<field name="report_name">Rapport Pointage</field>-->
             <field name="model_id" ref="hr.model_hr_employee"/>
@@ -583,7 +583,7 @@
         <record id="email_template_pointage_notification_retard_agent" model="mail.template">
             <field name="name">Attention au retards du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
             <field name="email_from">fongip@fongip.sn</field>
-            <field name="email_to">{{ object.user_id.work_email or '' }}</field>
+            <field name="email_to">{{object.user_id.work_email or ''}}</field>
             <field name="subject">Attention, vous avez au moins trois retards du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
             <!--<field name="report_name">Rapport Pointage</field>-->
             <field name="model_id" ref="hr.model_hr_employee"/>
@@ -683,6 +683,38 @@
                         <p>Bien cordialement </p>
                     </div>
                     </t>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_justification_notification_drh" model="mail.template">
+            <field name="name">Justification absence</field>
+            <field name="email_to">{{object.groupe_drh()}}</field>
+            <field name="subject">Justification d'absence par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_justification"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour DRH,<br/>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a envoyé une justification d'absence</p>
+                     <span t-out="object.date_to or ''"></span> de
+                     <span t-out="object.date_from or ''"></span>.<br/>
+                     <p>Avec comme motif: <span t-out="object.motif or ''"/></p>.
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_justification_refuser_notification_agent" model="mail.template">
+            <field name="name">Justification refusée</field>
+            <field name="email_to">{{object.employee_id.work_email}}</field>
+            <field name="subject">Justification d'absence refusée</field>
+            <field name="model_id" ref="pointage.model_pointage_justification"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour <span t-out="object.employee_id.name or ''"></span>,<br/>
+                     <p> Votre justification n'est valide</p>
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                     <p>Cordialement.</p>
+                    </div>
                         ]]>
             </field>
         </record>

@@ -6,11 +6,11 @@ class Absence(models.Model):
     _name = "pointage.absence"
     _description = "Liste des absences"
 
-    employee_id = fields.Many2one("hr.employee", string="Agent", required=True)
+    employee_id = fields.Many2one("hr.employee", string="Agent", required=True, store=True)
     day_absence = fields.Date(string="Jour d'absence", required=True, default=fields.Date.context_today)
     reason = fields.Text(string="Motif", help="Motif de l'absence")
     state = fields.Selection([('absent', 'Non Justifié'), ('justifier', 'Justifié')], string="Status", default='absent')
-    # file_justify = fields.Binary(string="Justificatif")
+    justify_id = fields.Many2one("pointage.justification", string="Justificatif", store=True)
 
     _sql_constraints = [
         ('unique_employee_date', 'unique(employee_id, day_absence)', 'Cet enregistrement existe deja')
@@ -78,6 +78,12 @@ class Absence(models.Model):
                             'day_absence': single_date,
                             'state': 'absent',
                         })
+
+    @api.onchange('justify_id')
+    def _onchange_reason(self):
+        for record in self:
+            if record.justify_id:
+                record.reason = record.justify_id.motif
 
     def get_absence_employees(self):
         liste_absent = []

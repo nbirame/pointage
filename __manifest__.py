@@ -47,6 +47,7 @@
         'views/atelier_views.xml',
         'views/agence_views.xml',
         'views/absence_view.xml',
+        'views/justification_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

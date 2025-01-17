@@ -41,6 +41,7 @@
                             <field name="employee_id"/>
                             <field name="day_absence"/>
                             <field name="state"/>
+                            <field name="justify_id"/>
                         </group>
                         <notebook>
                             <page string="Motif">
