@@ -5,7 +5,7 @@ class Justification(models.Model):
     _name = "pointage.justification"
     _description = "Justification Absence"
 
-    employee_id = fields.Many2one("hr.employee", string="Agent", required=True, default=lambda self: self.env.context.get('active_id', None), store=True)
+    employee_id = fields.Many2one("hr.employee", string="Agent", required=True)
     date_to = fields.Date(string="Date de début", required=True)
     date_from = fields.Date(string="Date de fin", required=True)
     file_justify = fields.Binary(string="Justificatif", store=True)
@@ -17,7 +17,6 @@ class Justification(models.Model):
         ('drh', 'DRH'),
         ('valider', 'Validé'),
         ('refuser', 'Refusé')], string="Status", default='draft')
-    _rec_name = "employee_id"
 
     def name_get(self):
         justif = []
@@ -25,6 +24,16 @@ class Justification(models.Model):
             rec_name = "%s-%s" % (record.date_to, record.file_name)
             justif.append((record.id, rec_name))
         return justif
+
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        if not self.employee_id:
+            # Récupérer l'utilisateur connecté
+            user = self.env.user
+            # Récupérer l'employé lié à l'utilisateur
+            employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+            if employee:
+                self.employee_id = employee
 
     def action_draft(self):
         self.write({'state': 'draft'})
@@ -44,6 +53,16 @@ class Justification(models.Model):
         self.send_justify_refuser()
         self.write({'state': 'refuser'})
 
+    def send_email_notify(self, temp):
+        for record in self:
+            template = self.env.ref(temp)
+            template.sudo().with_context({
+                'default_model': 'pointage.justification',
+                'default_res_id': record.id,
+                'default_use_template': True,
+                'default_template_id': template.id,
+            }).send_mail(record.id, force_send=True)
+
     def write_absence(self):
         absence_model = self.env['pointage.absence']
         for record in self:
@@ -59,7 +78,7 @@ class Justification(models.Model):
                     })
 
     def send_justify(self):
-        self.env["hr.employee"].send_email_notify("email_justification_notification_drh")
+        self.send_email_notify("email_justification_absence_notification_drh")
 
     def send_justify_refuser(self):
         self.env["hr.employee"].send_email_notify("email_justification_refuser_notification_agent")
