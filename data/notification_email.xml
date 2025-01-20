@@ -345,7 +345,7 @@
             <field name="body_html"><![CDATA[
             <t t-call="web.html_container">
                     <div>Bonjour DRH, <br/>
-                       <p>Veuillez trouver ci-dessous le tableau récapitulatif des agents ayant au moins deux jours d'absence durant la période du <t t-esc="object.date_debut_semaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>  au <t t-esc="object.date_fin_emaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
+                       <p>Veuillez trouver ci-dessous le tableau récapitulatif des agents ayant enregistré au moins deux jours d'absence durant la période du <t t-esc="object.date_debut_semaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>  au <t t-esc="object.date_fin_emaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
                        </br>
                        <table t-if="object.get_absence_employees()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
                                style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; font-family: arial, sans-serif;
