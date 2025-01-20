@@ -250,41 +250,18 @@ class Agent(models.Model):
             employee.hours_last_month = round(hours, 2)
             employee.hours_last_month_display = "%g" % employee.hours_last_month
 
-    # def send_email_notification(self, temp):
-    #     employees = self.env['hr.employee'].sudo().search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG'), ('agence_id.name', '=', 'SIEGE')])
-    #     for employee in employees:
-    #         email_to = employee.work_email
-    #         template = self.env.ref("pointage.%s" % temp)
-    #         # template = self.env.ref("pointage.email_template_pointage_notification")
-    #         if template:
-    #             # template.write({'email_to': email_to})
-    #             self.env["mail.template"].browse(template.id).sudo().send_mail(
-    #                 employee.id, force_send=True, email_values={'email_to': email_to}
-    #             )
-    #             self.env["mail.mail"].sudo().process_email_queue()
     def send_email_notification(self, temp):
-        # Récupération du template en dehors de la boucle
-        template = self.env.ref("pointage.%s" % temp)
-        if not template:
-            return
-
-        mail_template = self.env["mail.template"].browse(template.id).sudo()
-
-        # Recherche de tous les employés ciblés
-        employees = self.env['hr.employee'].sudo().search([
-            ('job_title', '!=', 'SG'),
-            ('job_title', '!=', 'AG'),
-            ('agence_id.name', '=', 'SIEGE')
-        ])
-
-        # Pour chaque employé : créer le mail dans la queue
+        employees = self.env['hr.employee'].sudo().search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG'), ('agence_id.name', '=', 'SIEGE')])
         for employee in employees:
             email_to = employee.work_email
-            # Ne pas forcer l’envoi tout de suite (force_send=False ou omis)
-            mail_template.send_mail(employee.id, force_send=False, email_values={'email_to': email_to})
-
-        # Une seule fois en fin de boucle, on process la queue
-        self.env["mail.mail"].sudo().process_email_queue()
+            template = self.env.ref("pointage.%s" % temp)
+            # template = self.env.ref("pointage.email_template_pointage_notification")
+            if template:
+                # template.write({'email_to': email_to})
+                self.env["mail.template"].browse(template.id).sudo().send_mail(
+                    employee.id, force_send=True, email_values={'email_to': email_to}
+                )
+                self.env["mail.mail"].sudo().process_email_queue()
 
     def email_notification_send_woork_week(self):
         self.send_email_notification("email_template_pointage_notification")
