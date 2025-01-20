@@ -13,7 +13,7 @@
             <field name="body_html"><![CDATA[
             <t t-call="web.html_container">
                     <div>Bonjour <span t-out="object.name or ''"></span>, <br/>
-                       <p>Veillez trouver ci-dessous le tableau récapitulatif de votre présence pour la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
+                       <p>Veuillez trouver ci-dessous le tableau récapitulatif de votre présence pour la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
                         <p>Cordialement.</p>
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                             <thead class="thead-light" style="background-color:#611610;">
@@ -323,7 +323,7 @@
             <field name="body_html"><![CDATA[
             <t t-call="web.html_container">
                     <div>Bonjour <span t-out="object.name or ''"></span>, <br/>
-                       <p>Veillez trouver ci-joint la fiche récaputilative de votre présence pour la période du
+                       <p>Veuillez trouver ci-joint la fiche récaputilative de votre présence pour la période du
                        <t t-esc="object.get_start_of_last_month().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
                        au <t t-esc="object.fin_du_mois_dernier().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.
 
@@ -345,7 +345,7 @@
             <field name="body_html"><![CDATA[
             <t t-call="web.html_container">
                     <div>Bonjour DRH, <br/>
-                       <p>Veillez trouver ci-dessous le tableau récapitulatif des agents au moins deux jours d'absence durant la période du <t t-esc="object.date_debut_semaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>  au <t t-esc="object.date_fin_emaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
+                       <p>Veuillez trouver ci-dessous le tableau récapitulatif des agents ayant au moins deux jours d'absence durant la période du <t t-esc="object.date_debut_semaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>  au <t t-esc="object.date_fin_emaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
                        </br>
                        <table t-if="object.get_absence_employees()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
                                style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; font-family: arial, sans-serif;
@@ -524,7 +524,7 @@
         /* Vous pouvez ajuster chaque colonne ici */
     </style>
                     <div>Bonjour DRH, <br/>
-                       <p t-if="object.get_late_two_day_of_week()">Veillez trouvez ci-dessous le tableau récapitulatif des agents ayant renregistré au moins trois retards durant la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p></br>
+                       <p t-if="object.get_late_two_day_of_week()">Veuillez trouvez ci-dessous le tableau récapitulatif des agents ayant renregistré au moins trois retards durant la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p></br>
 
                         <table t-if="object.get_late_two_day_of_week()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                             <thead class="thead-light" style="background-color:#611610;">
