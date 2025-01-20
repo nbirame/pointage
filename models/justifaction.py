@@ -55,7 +55,7 @@ class Justification(models.Model):
 
     def send_email_notify(self, temp):
         for record in self:
-            template = self.env.ref(temp)
+            template = self.env.ref("pointage.%s" % temp)
             template.sudo().with_context({
                 'default_model': 'pointage.justification',
                 'default_res_id': record.id,
@@ -81,7 +81,7 @@ class Justification(models.Model):
         self.send_email_notify("email_justification_absence_notification_drh")
 
     def send_justify_refuser(self):
-        self.env["hr.employee"].send_email_notify("email_justification_refuser_notification_agent")
+        self.send_email_notify("email_justification_refuser_notification_agent")
 
     def get_url(self, id):
         base_url = self.env["ir.config_parameter"].get_param("web.base.url")

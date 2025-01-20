@@ -690,16 +690,16 @@
             <field name="name">Justification absence</field>
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.groupe_drh()}}</field>
-            <field name="subject">Justification d'absence par {{object.get_emplyee()}} {{ object.employee_id.name or ''}}</field>
+            <field name="subject">Justification d'absence par {{ object.employee_id.name or ''}}</field>
             <field name="model_id" ref="pointage.model_pointage_justification"/>
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
                     <div>Bonjour DRH,<br/>
                      <p>
-                        L'agent <span t-out="object.employee_id.name or 'Nom Vide'"></span><br/>
+                        L'agent <span t-out="object.employee_id.name or ''"></span><br/>
                         a envoyé une justification d'absence
-                        du <span t-out="object.date_from or 'Date vide'"></span> au
-                        <span t-out="object.date_to or 'Date vide'"></span>.
+                        du <span t-out="object.date_from or ''"></span> au
+                        <span t-out="object.date_to or ''"></span>.
                     </p>
                     <br/>
                     <p>
