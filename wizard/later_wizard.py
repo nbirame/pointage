@@ -32,7 +32,7 @@ class LaterWizard(models.TransientModel):
                 ('check_out', '>=', self.start_date),
             ])
             for attendance in attendances:
-                if attendance.check_in.time() >= time(10, 0):
+                if attendance.check_in.time() >= time(9, 0):
                     liste_retard.append([attendance.employee_id.id, attendance.employee_id.name, attendance.check_in.time()])
                     # print(liste_retard)
                 else:
