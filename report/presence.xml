@@ -11,6 +11,16 @@
             print_report_name="('Présence de '+object.name)"
     />
     <report
+            string="Retards Agents"
+            id="report_pointage_retard_agent"
+            model="hr.employee"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_retard_agent"
+            file="pointage.report_retard_agent"
+            print_report_name="Retard"
+    />
+    <report
             string="Rapport Présence"
             id="report_pointage_presence_person_wizard"
             model="pointage.rapport.wizard"

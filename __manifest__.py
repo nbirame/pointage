@@ -44,6 +44,7 @@
         'report/rapport_absence_liste_template.xml',
         'report/absence_week_template.xml',
         'report/retard_template.xml',
+        'report/retard_agent_template.xml',
         'views/atelier_views.xml',
         'views/agence_views.xml',
         'views/absence_view.xml',
