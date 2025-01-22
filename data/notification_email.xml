@@ -14,6 +14,8 @@
             <t t-call="web.html_container">
         <!-- On stocke ici le résultat de get_work_hours_week() pour éviter de l'appeler
              plusieurs fois dans chaque case du tableau -->
+             <t t-set="start_week" t-value="object.last_week_start_date()"/>
+        <t t-set="end_week" t-value="object.last_week_end_date()"/>
         <t t-set="week_attendance" t-value="object.get_work_hours_week()"/>
         <div>
             Bonjour <span t-out="object.name or ''"/>, <br/>
