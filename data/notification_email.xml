@@ -24,8 +24,6 @@
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
             <t t-call="web.html_container">
-                <!-- On stocke ici le résultat de get_work_hours_week() pour éviter de l'appeler
-                     plusieurs fois dans chaque case du tableau -->
                 <t t-set="week_attendance" t-value="object.get_work_hours_week()"/>
                 <div>
                     Bonjour <span t-out="object.name or ''"/>, <br/>
@@ -34,9 +32,7 @@
                     <t t-esc="start_week.strftime('%Y-%m-%d')" t-options="{'widget': 'date'}"/>
                     au
                     <t t-esc="end_week.strftime('%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
-
                     <p>Cordialement.</p>
-
                     <table class="table table-bordered" width="590" border="1" cellpadding="0"
                            cellspacing="0" style="min-width: 590px; background-color: white;
                            padding: 0px 8px 0px 8px; border-collapse:separate;">
@@ -51,12 +47,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <!-- PARTIE ENTRÉE -->
                         <tr>
                             <td style="background-color:#611610;">
                                 <p style="text-align:center;color:white;">Entrée<p>
                             </td>
-
                             <!-- Exemple pour la colonne Lundi.
                                  On référence désormais week_attendance[0] au lieu d'appeler
                                  object.get_work_hours_week()[0] -->
@@ -80,8 +74,6 @@
                                     <t t-esc="week_attendance[0][0].strftime('%H:%M:%S')"/>
                                 </span>
                             </td>
-
-                            <!-- MARDI -->
                             <td t-if="week_attendance and week_attendance[1]">
                                 <span t-if="week_attendance[1][0].strftime('%H:%M:%S') == '00:00:00'">
                                     Absent
@@ -102,8 +94,6 @@
                                     <t t-esc="week_attendance[1][0].strftime('%H:%M:%S')"/>
                                 </span>
                             </td>
-
-                            <!-- MERCREDI -->
                             <td t-if="week_attendance and week_attendance[2]">
                                 <!-- Idem, on vérifie les codes horaires -->
                                 <span t-if="week_attendance[2][0].strftime('%H:%M:%S') == '00:00:00'">
@@ -125,8 +115,6 @@
                                     <t t-esc="week_attendance[2][0].strftime('%H:%M:%S')"/>
                                 </span>
                             </td>
-
-                            <!-- JEUDI -->
                             <td t-if="week_attendance and week_attendance[3]">
                                 <span t-if="week_attendance[3][0].strftime('%H:%M:%S') == '00:00:00'">
                                     Absent
@@ -147,8 +135,6 @@
                                     <t t-esc="week_attendance[3][0].strftime('%H:%M:%S')"/>
                                 </span>
                             </td>
-
-                            <!-- VENDREDI -->
                             <td t-if="week_attendance and week_attendance[4]">
                                 <span t-if="week_attendance[4][0].strftime('%H:%M:%S') == '00:00:00'">
                                     Absent
@@ -170,14 +156,10 @@
                                 </span>
                             </td>
                         </tr>
-
-                        <!-- PARTIE SORTIE -->
                         <tr>
                             <td style="background-color:#611610;">
                                 <p style="text-align:center;color:white;">Sortie<p>
                             </td>
-
-                            <!-- Lundi Sortie -->
                             <td t-if="week_attendance and week_attendance[0]">
                                 <span t-if="week_attendance[0][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
                                     <!-- Rien ou un commentaire -->
@@ -186,7 +168,6 @@
                                     <t t-esc="week_attendance[0][1].strftime('%H:%M:%S')"/>
                                 </span>
                             </td>
-                            <!-- Mardi Sortie -->
                             <td t-if="week_attendance and week_attendance[1]">
                                 <span t-if="week_attendance[1][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
                                 </span>
@@ -194,8 +175,6 @@
                                     <t t-esc="week_attendance[1][1].strftime('%H:%M:%S')"/>
                                 </span>
                             </td>
-
-                            <!-- Mercredi Sortie -->
                             <td t-if="week_attendance and week_attendance[2]">
                                 <span t-if="week_attendance[2][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
                                 </span>
@@ -203,8 +182,6 @@
                                     <t t-esc="week_attendance[2][1].strftime('%H:%M:%S')"/>
                                 </span>
                             </td>
-
-                            <!-- Jeudi Sortie -->
                             <td t-if="week_attendance and week_attendance[3]">
                                 <span t-if="week_attendance[3][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
                                 </span>
@@ -212,8 +189,6 @@
                                     <t t-esc="week_attendance[3][1].strftime('%H:%M:%S')"/>
                                 </span>
                             </td>
-
-                            <!-- Vendredi Sortie -->
                             <td t-if="week_attendance and week_attendance[4]">
                                 <span t-if="week_attendance[4][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
                                 </span>
@@ -222,8 +197,6 @@
                                 </span>
                             </td>
                         </tr>
-
-                        <!-- PARTIE DURÉE -->
                         <tr>
                             <td style="background-color:#611610;">
                                 <p style="text-align:center;color:white;">Durée<p>
@@ -254,8 +227,6 @@
                                 </span>
                             </td>
                         </tr>
-
-                        <!-- PARTIE ÉCART -->
                         <tr>
                             <td style="background-color:#611610;">
                                 <p style="text-align:center;color:white;">Ecart<p>
@@ -286,8 +257,6 @@
                                 </span>
                             </td>
                         </tr>
-
-                        <!-- TOTAL SEMAINE -->
                         <tr style="background-color:#611610;">
                             <td colspan="6" style="text-align:center;color:white;">
                                 Total présence:
