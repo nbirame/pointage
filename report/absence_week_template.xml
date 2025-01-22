@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="report_two_absence_of_week">
+    <template id="report_absence_of_week">
         <div class="header" style="margin-top: 0px;">
             <img src="/pointage/static/src/img/fon.jpeg" alt="Logo" class="w-910 h-3"/>
         </div>

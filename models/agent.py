@@ -304,7 +304,6 @@ class Agent(models.Model):
         users = self.env['res.users'].sudo().search([])
         for user in users:
             if user.has_group(groupe):
-                print(f"User appartien: {user.email}")
                 drh.append(user.email)
         return ';'.join(drh)
 
@@ -315,7 +314,7 @@ class Agent(models.Model):
         return self.env.ref("pointage.report_pointage_presence").report_action(self)
 
     def print_report_absence_week(self):
-        return self.env.ref("pointage.report_pointage_two_absence_of_week").report_action(self)
+        return self.env.ref("pointage.report_pointage_absence_of_week").report_action(self)
 
     def get_work_hours_month(self):
         liste_presences = []
@@ -358,7 +357,6 @@ class Agent(models.Model):
                     difference_heure = presece.worked_hours - 8
                 liste_presences.append(
                     [presece.check_in, presece.check_out, round(difference_heure, 2), presece.worked_hours])
-        # print(liste_presences)
         return sorted(self.ajouter_dates_manquantes(liste_presences), key=lambda x: x[0])
 
     def last_week_start_date(self):
@@ -391,7 +389,7 @@ class Agent(models.Model):
                 for jour_mission in mission_liste:
                     mission_listes.append(jour_mission)
             else:
-                print("Hors if")
+                pass
 
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
@@ -402,7 +400,6 @@ class Agent(models.Model):
             for jour_atelier in participants_liste:
                 participants_listes.append(jour_atelier)
         conge_listes = self.get_hollidays(fin_mois_dernier, debut_mois_dernier)
-        # print(f"Conge last month {conge_listes}")
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for fete in fetes:

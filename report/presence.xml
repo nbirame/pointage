@@ -52,12 +52,12 @@
     />
     <report
             string="Rapport Agent ayant plus de deux abasences"
-            id="report_pointage_two_absence_of_week"
+            id="report_pointage_absence_of_week"
             model="pointage.absence"
             report_type="qweb-pdf"
             menu="False"
-            name="pointage.report_two_absence_of_week"
-            file="pointage.report_two_absence_of_week"
+            name="pointage.report_absence_of_week"
+            file="pointage.report_absence_of_week"
             print_report_name="('Rapport liste des personnes ayant au mois de deux jours d\'absence')"
     />
      <report

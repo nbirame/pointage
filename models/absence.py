@@ -106,7 +106,31 @@ class Absence(models.Model):
     def date_fin_emaine(self):
         return self.env['hr.employee'].last_week_end_date()
 
-    def get_drh(self):
+    def get_groupe_drh(self):
         return self.env['hr.employee'].get_drh()
+
+    def send_email_notify(self, temp):
+        send_notification = "Liste envoye"
+        # template = self.env.ref("pointage.email_template_pointage_notification_drh")
+        template = self.env.ref("pointage.%s" % temp)
+        if template:
+            self.env["mail.template"].browse(template.id).sudo().send_mail(
+                self.id, force_send=True
+            )
+            self.env["mail.mail"].sudo().process_email_queue()
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'type': 'success',
+                    'message': send_notification,
+                    'next': {
+                        'type': 'ir.actions.act_window_close'
+                    },
+                }
+            }
+
+    def absence_send_email_notify_drh(self):
+        self.send_email_notify("email_template_absence_semaine_notification_drh")
 
 

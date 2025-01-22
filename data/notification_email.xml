@@ -335,10 +335,10 @@
                         ]]>
             </field>
         </record>
-        <record id="email_template_pointage_notification_drh" model="mail.template">
+        <record id="email_template_absence_semaine_notification_drh" model="mail.template">
             <field name="name">Liste des agents ayant enregistré au moins deux jours d'absence durant la période</field>
             <field name="email_from">fongip@fongip.sn</field>
-            <field name="email_to">{{object.get_drh()}}</field>
+            <field name="email_to">{{object.get_groupe_drh()}}</field>
             <field name="subject">Liste des agents ayant enregistré au moins deux jours d'absence durant la période du {{object.date_debut_semaine().strftime( '%d-%m-%Y')}} au {{object.date_fin_emaine().strftime( '%d-%m-%Y')}}</field>
             <field name="model_id" ref="pointage.model_pointage_absence"/>
             <field name="auto_delete" eval="True"/>
@@ -361,7 +361,7 @@
                             </thead>
                             <tbody t-foreach="object.get_absence_employees()" t-as="absence">
                                 <tr>
-                                    <td>
+                                    <td style="text-align:center;">
                                        <span t-esc="absence_index+1"/>
                                     </td>
 
@@ -504,7 +504,7 @@
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.user_id.work_email or ''}}</field>
             <field name="subject">Attention, vous avez au moins trois retards du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
-            <!--<field name="report_name">Rapport Pointage</field>-->
+            <field name="report_name">Rapport Retard</field>
             <field name="model_id" ref="hr.model_hr_employee"/>
             <!--<field name="report_template" ref="pointage.report_pointage_presence"/>-->
             <field name="auto_delete" eval="True"/>
