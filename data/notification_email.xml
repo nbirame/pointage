@@ -3,316 +3,310 @@
     <data noupdate="0">
         <!--Email template -->
        <record id="email_template_pointage_notification" model="mail.template">
-    <field name="name">
-        Récapitulatif de votre présence du
-        <t t-set="start_week" t-value="object.last_week_start_date()"/>
-        <t t-set="end_week" t-value="object.last_week_end_date()"/>
-        <t t-esc="start_week.strftime('%d-%m-%Y')"/>
-        au
-        <t t-esc="end_week.strftime('%d-%m-%Y')"/>
-    </field>
+            <field name="name">
+                Récapitulatif de votre présence du
+                <t t-set="start_week" t-value="object.last_week_start_date()"/>
+                <t t-set="end_week" t-value="object.last_week_end_date()"/>
+                <t t-esc="start_week.strftime('%d-%m-%Y')"/>
+                au
+                <t t-esc="end_week.strftime('%d-%m-%Y')"/>
+            </field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">
+                <t t-esc="object.work_email or ''"/>
+            </field>
+            <field name="subject">
+                Récapitulatif de votre présence du
+                <t t-esc="start_week.strftime('%d-%m-%Y')"/> au
+                <t t-esc="end_week.strftime('%d-%m-%Y')"/>
+            </field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+                <!-- On stocke ici le résultat de get_work_hours_week() pour éviter de l'appeler
+                     plusieurs fois dans chaque case du tableau -->
+                <t t-set="week_attendance" t-value="object.get_work_hours_week()"/>
+                <div>
+                    Bonjour <span t-out="object.name or ''"/>, <br/>
+                    <p>Veuillez trouver ci-dessous le tableau récapitulatif de votre présence
+                    pour la période du
+                    <t t-esc="start_week.strftime('%Y-%m-%d')" t-options="{'widget': 'date'}"/>
+                    au
+                    <t t-esc="end_week.strftime('%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
 
-    <field name="email_from">test@test.sn</field>
-    <field name="email_to">
-        <t t-esc="object.work_email or ''"/>
-    </field>
+                    <p>Cordialement.</p>
 
-    <field name="subject">
-        Récapitulatif de votre présence du
-        <t t-esc="start_week.strftime('%d-%m-%Y')"/> au
-        <t t-esc="end_week.strftime('%d-%m-%Y')"/>
-    </field>
+                    <table class="table table-bordered" width="590" border="1" cellpadding="0"
+                           cellspacing="0" style="min-width: 590px; background-color: white;
+                           padding: 0px 8px 0px 8px; border-collapse:separate;">
+                        <thead class="thead-light" style="background-color:#611610;">
+                            <tr>
+                                <th></th>
+                                <th style="color:white;">Lundi</th>
+                                <th style="color:white;">Mardi</th>
+                                <th style="color:white;">Mercredi</th>
+                                <th style="color:white;">Jeudi</th>
+                                <th style="color:white;">Vendredi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <!-- PARTIE ENTRÉE -->
+                        <tr>
+                            <td style="background-color:#611610;">
+                                <p style="text-align:center;color:white;">Entrée<p>
+                            </td>
 
-    <field name="model_id" ref="hr.model_hr_employee"/>
-    <field name="auto_delete" eval="True"/>
+                            <!-- Exemple pour la colonne Lundi.
+                                 On référence désormais week_attendance[0] au lieu d'appeler
+                                 object.get_work_hours_week()[0] -->
+                            <td t-if="week_attendance and week_attendance[0]">
+                                <span t-if="week_attendance[0][0].strftime('%H:%M:%S') == '00:00:00'">
+                                    Absent
+                                </span>
+                                <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '03:00:00'">
+                                    En congé
+                                </span>
+                                <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '04:00:00'">
+                                    En atelié
+                                </span>
+                                <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '02:00:00'">
+                                    En mission
+                                </span>
+                                <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '23:59:59'">
+                                    <t t-esc="week_attendance[0][-3]"/>
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[0][0].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
 
-    <field name="body_html"><![CDATA[
-    <t t-call="web.html_container">
-        <!-- On stocke ici le résultat de get_work_hours_week() pour éviter de l'appeler
-             plusieurs fois dans chaque case du tableau -->
-        <t t-set="week_attendance" t-value="object.get_work_hours_week()"/>
-        <div>
-            Bonjour <span t-out="object.name or ''"/>, <br/>
-            <p>Veuillez trouver ci-dessous le tableau récapitulatif de votre présence
-            pour la période du
-            <t t-esc="start_week.strftime('%Y-%m-%d')" t-options="{'widget': 'date'}"/>
-            au
-            <t t-esc="end_week.strftime('%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
+                            <!-- MARDI -->
+                            <td t-if="week_attendance and week_attendance[1]">
+                                <span t-if="week_attendance[1][0].strftime('%H:%M:%S') == '00:00:00'">
+                                    Absent
+                                </span>
+                                <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '03:00:00'">
+                                    En congé
+                                </span>
+                                <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '04:00:00'">
+                                    En atelié
+                                </span>
+                                <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '02:00:00'">
+                                    En mission
+                                </span>
+                                <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '23:59:59'">
+                                    <t t-esc="week_attendance[1][-3]"/>
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[1][0].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
 
-            <p>Cordialement.</p>
+                            <!-- MERCREDI -->
+                            <td t-if="week_attendance and week_attendance[2]">
+                                <!-- Idem, on vérifie les codes horaires -->
+                                <span t-if="week_attendance[2][0].strftime('%H:%M:%S') == '00:00:00'">
+                                    Absent
+                                </span>
+                                <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '23:59:59'">
+                                    <t t-esc="week_attendance[2][-3]"/>
+                                </span>
+                                <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '03:00:00'">
+                                    En congé
+                                </span>
+                                <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '04:00:00'">
+                                    En atelé
+                                </span>
+                                <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '02:00:00'">
+                                    En mission
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[2][0].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
 
-            <table class="table table-bordered" width="590" border="1" cellpadding="0"
-                   cellspacing="0" style="min-width: 590px; background-color: white;
-                   padding: 0px 8px 0px 8px; border-collapse:separate;">
-                <thead class="thead-light" style="background-color:#611610;">
-                    <tr>
-                        <th></th>
-                        <th style="color:white;">Lundi</th>
-                        <th style="color:white;">Mardi</th>
-                        <th style="color:white;">Mercredi</th>
-                        <th style="color:white;">Jeudi</th>
-                        <th style="color:white;">Vendredi</th>
-                    </tr>
-                </thead>
-                <tbody>
+                            <!-- JEUDI -->
+                            <td t-if="week_attendance and week_attendance[3]">
+                                <span t-if="week_attendance[3][0].strftime('%H:%M:%S') == '00:00:00'">
+                                    Absent
+                                </span>
+                                <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '23:59:59'">
+                                    <t t-esc="week_attendance[3][-3]"/>
+                                </span>
+                                <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '03:00:00'">
+                                    En congé
+                                </span>
+                                <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '04:00:00'">
+                                    En atelié
+                                </span>
+                                <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '02:00:00'">
+                                    En mission
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[3][0].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
 
-                <!-- PARTIE ENTRÉE -->
-                <tr>
-                    <td style="background-color:#611610;">
-                        <p style="text-align:center;color:white;">Entrée<p>
-                    </td>
+                            <!-- VENDREDI -->
+                            <td t-if="week_attendance and week_attendance[4]">
+                                <span t-if="week_attendance[4][0].strftime('%H:%M:%S') == '00:00:00'">
+                                    Absent
+                                </span>
+                                <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '23:59:59'">
+                                    Jour férié
+                                </span>
+                                <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '03:00:00'">
+                                    En congé
+                                </span>
+                                <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '04:00:00'">
+                                    En atelé
+                                </span>
+                                <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '02:00:00'">
+                                    En mission
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[4][0].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
+                        </tr>
 
-                    <!-- Exemple pour la colonne Lundi.
-                         On référence désormais week_attendance[0] au lieu d'appeler
-                         object.get_work_hours_week()[0] -->
-                    <td t-if="week_attendance and week_attendance[0]">
-                        <span t-if="week_attendance[0][0].strftime('%H:%M:%S') == '00:00:00'">
-                            Absent
-                        </span>
-                        <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '03:00:00'">
-                            En congé
-                        </span>
-                        <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '04:00:00'">
-                            En atelié
-                        </span>
-                        <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '02:00:00'">
-                            En mission
-                        </span>
-                        <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '23:59:59'">
-                            <t t-esc="week_attendance[0][-3]"/>
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[0][0].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
+                        <!-- PARTIE SORTIE -->
+                        <tr>
+                            <td style="background-color:#611610;">
+                                <p style="text-align:center;color:white;">Sortie<p>
+                            </td>
 
-                    <!-- MARDI -->
-                    <td t-if="week_attendance and week_attendance[1]">
-                        <span t-if="week_attendance[1][0].strftime('%H:%M:%S') == '00:00:00'">
-                            Absent
-                        </span>
-                        <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '03:00:00'">
-                            En congé
-                        </span>
-                        <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '04:00:00'">
-                            En atelié
-                        </span>
-                        <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '02:00:00'">
-                            En mission
-                        </span>
-                        <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '23:59:59'">
-                            <t t-esc="week_attendance[1][-3]"/>
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[1][0].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
+                            <!-- Lundi Sortie -->
+                            <td t-if="week_attendance and week_attendance[0]">
+                                <span t-if="week_attendance[0][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                                    <!-- Rien ou un commentaire -->
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[0][1].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
+                            <!-- Mardi Sortie -->
+                            <td t-if="week_attendance and week_attendance[1]">
+                                <span t-if="week_attendance[1][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[1][1].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
 
-                    <!-- MERCREDI -->
-                    <td t-if="week_attendance and week_attendance[2]">
-                        <!-- Idem, on vérifie les codes horaires -->
-                        <span t-if="week_attendance[2][0].strftime('%H:%M:%S') == '00:00:00'">
-                            Absent
-                        </span>
-                        <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '23:59:59'">
-                            <t t-esc="week_attendance[2][-3]"/>
-                        </span>
-                        <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '03:00:00'">
-                            En congé
-                        </span>
-                        <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '04:00:00'">
-                            En atelé
-                        </span>
-                        <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '02:00:00'">
-                            En mission
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[2][0].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
+                            <!-- Mercredi Sortie -->
+                            <td t-if="week_attendance and week_attendance[2]">
+                                <span t-if="week_attendance[2][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[2][1].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
 
-                    <!-- JEUDI -->
-                    <td t-if="week_attendance and week_attendance[3]">
-                        <span t-if="week_attendance[3][0].strftime('%H:%M:%S') == '00:00:00'">
-                            Absent
-                        </span>
-                        <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '23:59:59'">
-                            <t t-esc="week_attendance[3][-3]"/>
-                        </span>
-                        <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '03:00:00'">
-                            En congé
-                        </span>
-                        <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '04:00:00'">
-                            En atelié
-                        </span>
-                        <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '02:00:00'">
-                            En mission
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[3][0].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
+                            <!-- Jeudi Sortie -->
+                            <td t-if="week_attendance and week_attendance[3]">
+                                <span t-if="week_attendance[3][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[3][1].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
 
-                    <!-- VENDREDI -->
-                    <td t-if="week_attendance and week_attendance[4]">
-                        <span t-if="week_attendance[4][0].strftime('%H:%M:%S') == '00:00:00'">
-                            Absent
-                        </span>
-                        <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '23:59:59'">
-                            Jour férié
-                        </span>
-                        <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '03:00:00'">
-                            En congé
-                        </span>
-                        <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '04:00:00'">
-                            En atelé
-                        </span>
-                        <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '02:00:00'">
-                            En mission
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[4][0].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
-                </tr>
+                            <!-- Vendredi Sortie -->
+                            <td t-if="week_attendance and week_attendance[4]">
+                                <span t-if="week_attendance[4][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                                </span>
+                                <span t-else="">
+                                    <t t-esc="week_attendance[4][1].strftime('%H:%M:%S')"/>
+                                </span>
+                            </td>
+                        </tr>
 
-                <!-- PARTIE SORTIE -->
-                <tr>
-                    <td style="background-color:#611610;">
-                        <p style="text-align:center;color:white;">Sortie<p>
-                    </td>
+                        <!-- PARTIE DURÉE -->
+                        <tr>
+                            <td style="background-color:#611610;">
+                                <p style="text-align:center;color:white;">Durée<p>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[0]">
+                                <span t-if="week_attendance[0][-1] != ''">
+                                    <t t-esc="week_attendance[0][-1]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[1]">
+                                <span t-if="week_attendance[1][-1] != ''">
+                                    <t t-esc="week_attendance[1][-1]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[2]">
+                                <span t-if="week_attendance[2][-1] != ''">
+                                    <t t-esc="week_attendance[2][-1]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[3]">
+                                <span t-if="week_attendance[3][-1] != ''">
+                                    <t t-esc="week_attendance[3][-1]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[4]">
+                                <span t-if="week_attendance[4][-1] != ''">
+                                    <t t-esc="week_attendance[4][-1]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                        </tr>
 
-                    <!-- Lundi Sortie -->
-                    <td t-if="week_attendance and week_attendance[0]">
-                        <span t-if="week_attendance[0][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
-                            <!-- Rien ou un commentaire -->
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[0][1].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
-                    <!-- Mardi Sortie -->
-                    <td t-if="week_attendance and week_attendance[1]">
-                        <span t-if="week_attendance[1][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[1][1].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
+                        <!-- PARTIE ÉCART -->
+                        <tr>
+                            <td style="background-color:#611610;">
+                                <p style="text-align:center;color:white;">Ecart<p>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[0]">
+                                <span t-if="week_attendance[0][-2]">
+                                    <t t-esc="week_attendance[0][-2]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[1]">
+                                <span t-if="week_attendance[1][-2]">
+                                    <t t-esc="week_attendance[1][-2]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[2]">
+                                <span t-if="week_attendance[2][-2]">
+                                    <t t-esc="week_attendance[2][-2]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[3]">
+                                <span t-if="week_attendance[3][-2]">
+                                    <t t-esc="week_attendance[3][-2]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                            <td t-if="week_attendance and week_attendance[4]">
+                                <span t-if="week_attendance[4][-2]">
+                                    <t t-esc="week_attendance[4][-2]" t-options="{'widget': 'float_time'}"/>
+                                </span>
+                            </td>
+                        </tr>
 
-                    <!-- Mercredi Sortie -->
-                    <td t-if="week_attendance and week_attendance[2]">
-                        <span t-if="week_attendance[2][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[2][1].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
+                        <!-- TOTAL SEMAINE -->
+                        <tr style="background-color:#611610;">
+                            <td colspan="6" style="text-align:center;color:white;">
+                                Total présence:
+                                <t t-esc="object.hours_last_week" t-options="{'widget': 'float_time'}"/>
+                                /
+                                <t t-esc="object.total_hours_of_week()" t-options="{'widget': 'float_time'}"/>
+                                (
+                                <t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/>
+                                Ecart
+                                )
+                            </td>
+                        </tr>
 
-                    <!-- Jeudi Sortie -->
-                    <td t-if="week_attendance and week_attendance[3]">
-                        <span t-if="week_attendance[3][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[3][1].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
-
-                    <!-- Vendredi Sortie -->
-                    <td t-if="week_attendance and week_attendance[4]">
-                        <span t-if="week_attendance[4][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
-                        </span>
-                        <span t-else="">
-                            <t t-esc="week_attendance[4][1].strftime('%H:%M:%S')"/>
-                        </span>
-                    </td>
-                </tr>
-
-                <!-- PARTIE DURÉE -->
-                <tr>
-                    <td style="background-color:#611610;">
-                        <p style="text-align:center;color:white;">Durée<p>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[0]">
-                        <span t-if="week_attendance[0][-1] != ''">
-                            <t t-esc="week_attendance[0][-1]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[1]">
-                        <span t-if="week_attendance[1][-1] != ''">
-                            <t t-esc="week_attendance[1][-1]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[2]">
-                        <span t-if="week_attendance[2][-1] != ''">
-                            <t t-esc="week_attendance[2][-1]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[3]">
-                        <span t-if="week_attendance[3][-1] != ''">
-                            <t t-esc="week_attendance[3][-1]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[4]">
-                        <span t-if="week_attendance[4][-1] != ''">
-                            <t t-esc="week_attendance[4][-1]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                </tr>
-
-                <!-- PARTIE ÉCART -->
-                <tr>
-                    <td style="background-color:#611610;">
-                        <p style="text-align:center;color:white;">Ecart<p>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[0]">
-                        <span t-if="week_attendance[0][-2]">
-                            <t t-esc="week_attendance[0][-2]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[1]">
-                        <span t-if="week_attendance[1][-2]">
-                            <t t-esc="week_attendance[1][-2]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[2]">
-                        <span t-if="week_attendance[2][-2]">
-                            <t t-esc="week_attendance[2][-2]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[3]">
-                        <span t-if="week_attendance[3][-2]">
-                            <t t-esc="week_attendance[3][-2]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                    <td t-if="week_attendance and week_attendance[4]">
-                        <span t-if="week_attendance[4][-2]">
-                            <t t-esc="week_attendance[4][-2]" t-options="{'widget': 'float_time'}"/>
-                        </span>
-                    </td>
-                </tr>
-
-                <!-- TOTAL SEMAINE -->
-                <tr style="background-color:#611610;">
-                    <td colspan="6" style="text-align:center;color:white;">
-                        Total présence:
-                        <t t-esc="object.hours_last_week" t-options="{'widget': 'float_time'}"/>
-                        /
-                        <t t-esc="object.total_hours_of_week()" t-options="{'widget': 'float_time'}"/>
-                        (
-                        <t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/>
-                        Ecart
-                        )
-                    </td>
-                </tr>
-
-                </tbody>
-            </table>
-        </div>
-    </t>
-    ]]></field>
-</record>
-
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+            ]]></field>
+        </record>
         <record id="email_template_pointage_notification_report_month" model="mail.template">
             <field name="name">Présence</field>
             <field name="email_from">fongip@fongip.sn</field>
