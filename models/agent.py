@@ -333,7 +333,7 @@ class Agent(models.Model):
         self.send_email_notify("email_template_pointage_notification_report_month")
 
     def action_send_email_notify_drh(self):
-        self.send_email_notify("email_template_pointage_notification_drh")
+        self.send_email_notify("email_template_absence_semaine_notification_drh")
 
     def get_manager(self, groupe):
         """
