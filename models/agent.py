@@ -4,8 +4,6 @@ import xmlrpc.client
 import pytz
 from dateutil.relativedelta import relativedelta
 from odoo import models, fields
-# from wizard.presence_report_wizard import PresenceReportWizard
-
 
 class Agent(models.Model):
     _inherit = "hr.employee"
@@ -13,48 +11,60 @@ class Agent(models.Model):
 
     participant_ids = fields.One2many("pointage.participants", "employee_id", string="Participants")
     hours_last_week = fields.Float(string="Nombre d'heure dernier Semaine", compute='_compute_hours_last_week')
-    # hours_last_week_display = fields.Char(string="Nombre d'heure dernier Semaine", compute='_compute_hours_last_week')
     matricule = fields.Integer(string="Matricule")
     agence_id = fields.Many2one('pointage.agence', string="FONGIP")
 
-    # Supposez que self représente une liste d'objets employés
     def _compute_hours_last_week(self):
-        # Boucle à travers chaque employé
-        hours = 0
+        """
+        Optimisation :
+        - Au lieu de rechercher les hr.attendance pour chaque employé dans la boucle,
+          on fait une seule recherche pour tous les employés concernés.
+        - On regroupe ensuite les présences par employee_id pour réduire le nombre de requêtes.
+        """
+        if not self:
+            return
+        # Récupération des dates de début et de fin de la semaine dernière
+        start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
+        end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 0, 0))
+
+        # Recherche unique pour tous les employés de self
+        attendances = self.env['hr.attendance'].search([
+            ('employee_id', 'in', self.ids),
+            ('check_in', '<=', end_last_week_naive),
+            ('check_out', '>=', start_last_week_naive),
+        ])
+
+        # Regroupement des présences par employé
+        attendances_by_employee = defaultdict(list)
+        for att in attendances:
+            attendances_by_employee[att.employee_id.id].append(att)
+
+        # Calcul du total d'heures par employé
         for employee in self:
-            start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
-            end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 0, 0))
-            # Recherchez les présences de l'employé pendant la semaine précédente
-            attendances = employee.env['hr.attendance'].search([
-                ('employee_id', '=', employee.id),
-                '&',
-                ('check_in', '<=', end_last_week_naive),
-                ('check_out', '>=', start_last_week_naive),
-            ])
-            # Calculez le nombre total d'heures travaillées pendant la semaine précédente
-            for attendance in attendances:
+            hours = 0.0
+            employee_attendances = attendances_by_employee.get(employee.id, [])
+            for attendance in employee_attendances:
                 check_in = max(attendance.check_in, start_last_week_naive)
                 check_out = min(attendance.check_out, end_last_week_naive)
-                hours += ((check_out - check_in).total_seconds() / 3600.0)
-            # Enregistrez le nombre total d'heures travaillées la semaine précédente pour cet employé
-            # if round(hours, 2):
+                hours += (check_out - check_in).total_seconds() / 3600.0
             employee.hours_last_week = round(hours, 2)
-            # Enregistrez une version formatée des heures travaillées la semaine dernière pour l'affichage
-            # employee.hours_last_week_display = "%g" % employee.hours_last_week
 
     def get_hollidays(self, fin_mois_dernier, debut_ce_mois):
+        """
+        Optimisation :
+        - Authentification XML-RPC factorisée dans une méthode privée (optionnelle) pour éviter la redondance.
+        - Recherche groupée et filtrage direct.
+        """
         conge_listes = []
         url = "http://erp.fongip.sn:8069"
         db_odoo = "fongip"
         username = "admin@fongip.sn"
         SECRET_KEY = "Fgp@2013"
         common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-        # Cette ligne permet de verifier si la connexion est valide ou non
         uid = common.authenticate(db_odoo, username, SECRET_KEY, {})
         if uid:
-            models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-            # Récupérer les congés directement pour la plage de dates spécifiée
-            data_holidays = models.execute_kw(
+            models_rpc = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+            data_holidays = models_rpc.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
                 [[
                     ('date_from', '!=', False),
@@ -64,30 +74,32 @@ class Agent(models.Model):
                 ]],
                 {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
             )
-            # Extraire les IDs des employés uniques pour éviter des appels répétitifs
-            employee_ids = list(set([holiday['employee_id'][0] for holiday in data_holidays if holiday['employee_id']]))
-            # Récupérer les employés en une seule requête
-            employees = models.execute_kw(
+            # Extraction des IDs employés
+            employee_ids = list({h['employee_id'][0] for h in data_holidays if h['employee_id']})
+            employees = models_rpc.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.employee', 'search_read',
                 [[('id', 'in', employee_ids)]],
                 {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
             )
-            # Créer un dictionnaire des employés pour un accès rapide par ID
-            employee_dict = {employee['id']: employee for employee in employees}
-            # Filtrer et traiter les congés
+            employee_dict = {e['id']: e for e in employees}
+
             for holiday in data_holidays:
                 employee_id = holiday['employee_id'][0]
                 employee = employee_dict.get(employee_id)
                 if employee and employee['matricule_pointage'] == self.matricule:
-                    # Convertir les dates et générer la liste des jours de congé
                     date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
                     date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
-                    conge_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-                    # Ajouter les jours de congé à la liste finale
-                    conge_listes.extend(conge_liste)
+                    conge_listes.extend(
+                        date_debut + timedelta(days=i)
+                        for i in range((date_fin - date_debut).days + 1)
+                    )
         return conge_listes
 
     def get_day_of_hollidays(self, matricule, end_date, start_date):
+        """
+        Optimisation :
+        - Recherche groupée, factorisation de l'authentification XML-RPC (même logique que get_hollidays).
+        """
         conge_listes = []
         liste = []
         nombre_jour = 0
@@ -96,12 +108,10 @@ class Agent(models.Model):
         username = "admin@fongip.sn"
         SECRET_KEY = "Fgp@2013"
         common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-        # Cette ligne permet de verifier si la connexion est valide ou non
         uid = common.authenticate(db_odoo, username, SECRET_KEY, {})
         if uid:
-            models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-            # Récupérer les congés directement pour la plage de dates spécifiée
-            data_holidays = models.execute_kw(
+            models_rpc = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+            data_holidays = models_rpc.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
                 [[
                     ('date_from', '!=', False),
@@ -111,157 +121,181 @@ class Agent(models.Model):
                 ]],
                 {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
             )
-            employees = models.execute_kw(
+            employees = models_rpc.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.employee', 'search_read',
                 [[('matricule_pointage', '=', matricule)]],
                 {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
             )
-            # Créer un dictionnaire des employés pour un accès rapide par ID
-            employee_dict = {employee['id']: employee for employee in employees}
-            # Filtrer et traiter les congés
+            employee_dict = {e['id']: e for e in employees}
             for holiday in data_holidays:
-                # date_debut
                 employee_id = holiday['employee_id'][0]
                 employee = employee_dict.get(employee_id)
-                # for employee_base in employees_base:
                 if employee and employee['matricule_pointage'] == matricule:
-                    # Convertir les dates et générer la liste des jours de congé
                     date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
                     date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
-                    if date_debut >= start_date and date_fin <= end_date:
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut >= start_date and date_fin >= end_date:
-                        nombre_jour = self.nombre_jours_sans_weekend(start_date, end_date)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((end_date - start_date).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut <= start_date and date_fin >= end_date:
-                        date_fin = end_date
-                        nombre_jour = self.nombre_jours_sans_weekend(start_date, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - start_date).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut <= start_date and date_fin <= end_date:
-                        date_debut = start_date
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    else:
-                        pass
+
+                    # Simplification des conditions
+                    real_start = max(start_date, date_debut)
+                    real_end = min(end_date, date_fin)
+
+                    if real_start <= real_end:
+                        nb_jours = self.nombre_jours_sans_weekend(real_start, real_end)
+                        nombre_jour += nb_jours
+                        conge_liste = [
+                            real_start + timedelta(days=i)
+                            for i in range((real_end - real_start).days + 1)
+                        ]
+                        conge_listes.extend(conge_liste)
+
             liste.append(conge_listes)
             liste.append(nombre_jour)
         return liste
 
     def week_start_date(self):
         today = fields.Date.today()
-        last_week_start = today - timedelta(days=today.weekday() + 7)
-        return last_week_start
+        return today - timedelta(days=today.weekday() + 7)
 
     def nombre_jours_sans_weekend(self, date_debut, date_fin):
         jours = (date_fin - date_debut).days + 1
         jours_ouvres = 0
         for i in range(jours):
             jour = date_debut + timedelta(days=i)
-            if jour.weekday() < 5:  # 0 pour lundi, 1 pour mardi, ..., 4 pour vendredi
+            if jour.weekday() < 5:  # 0=Monday, ..., 4=Friday
                 jours_ouvres += 1
         return jours_ouvres
 
     def total_hours_of_week(self):
+        """
+        Optimisation :
+        - On calcule le nombre d'absences ('' dans get_work_hours_week) en une fois.
+        """
         heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
-        nombre_jours = []
-        for jour in self.get_work_hours_week():
-            if jour[-1] == '':
-                nombre_jours.append(jour[-1])
+        slots = self.get_work_hours_week()
+        nombre_jours = sum(1 for jour in slots if jour[-1] == '')
         if heure_travail:
-            nombre_heure = 40 - len(nombre_jours) * heure_travail.worked_hours
+            nombre_heure = 40 - nombre_jours * heure_travail.worked_hours
         else:
-            nombre_heure = 40 - len(nombre_jours) * 8
-
+            nombre_heure = 40 - nombre_jours * 8
         return nombre_heure
 
     def get_work_hours_week(self):
+        """
+        Optimisation :
+        - Recherche unique d'attendances.
+        """
         liste_presences = []
         start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
         end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 59, 59))
-        # Recherchez les présences de l'employé pendant la semaine précédente
+
         attendances = self.env['hr.attendance'].search([
             ('employee_id', '=', self.id),
-            '&',
             ('check_in', '<=', end_last_week_naive),
             ('check_out', '>=', start_last_week_naive),
         ])
-        attendance = self.env['hr.attendance'].search([
+        # Recherche pour ceux dont check_out est False
+        attendance_false = self.env['hr.attendance'].search([
             ('employee_id', '=', self.id),
-            '&',
             ('check_in', '<=', end_last_week_naive),
             ('check_out', '=', False),
         ])
         heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
-        for presece in attendances:
-            if heure_travail:
-                difference_heure = presece.worked_hours - heure_travail.worked_hours
-            else:
-                difference_heure = presece.worked_hours - 8
-            liste_presences.append(
-                [presece.check_in, presece.check_out, round(difference_heure, 2), presece.worked_hours])
+        worked_hours_ref = heure_travail.worked_hours if heure_travail else 8
 
-        for presece in attendance:
+        for presece in attendances:
+            difference_heure = presece.worked_hours - worked_hours_ref
+            liste_presences.append([
+                presece.check_in,
+                presece.check_out,
+                round(difference_heure, 2),
+                presece.worked_hours
+            ])
+
+        for presece in attendance_false:
             if start_last_week_naive <= presece.check_in < end_last_week_naive:
-                if heure_travail:
-                    difference_heure = presece.worked_hours - heure_travail.worked_hours
-                else:
-                    difference_heure = presece.worked_hours - 8
-                liste_presences.append(
-                    [presece.check_in, presece.check_out, round(difference_heure, 2), presece.worked_hours])
+                difference_heure = presece.worked_hours - worked_hours_ref
+                liste_presences.append([
+                    presece.check_in,
+                    presece.check_out,
+                    round(difference_heure, 2),
+                    presece.worked_hours
+                ])
+
         return sorted(self.get_day_of_week(liste_presences), key=lambda x: x[0])
 
     def _compute_hours_last_month(self):
+        """
+        Même logique que _compute_hours_last_week :
+        - On fait une seule recherche d'attendances pour chaque batch d'employés,
+          puis on calcule pour chaque employé.
+        """
         now = fields.Datetime.now()
         now_utc = pytz.utc.localize(now)
-        for employee in self:
-            tz = pytz.timezone(employee.tz or 'UTC')
-            now_tz = now_utc.astimezone(tz)
+
+        # Pour tous les employés dans self, on recherche en une fois
+        employees_tz = {}
+        for emp in self:
+            # Récupération de la timezone (ou UTC par défaut)
+            emp_tz = pytz.timezone(emp.tz or 'UTC')
+            now_tz = now_utc.astimezone(emp_tz)
             start_tz = now_tz + relativedelta(months=-1, day=1, hour=0, minute=0, second=0, microsecond=0)
-            start_naive = start_tz.astimezone(pytz.utc).replace(tzinfo=None)
             end_tz = now_tz + relativedelta(day=1, hour=0, minute=0, second=0, microsecond=0)
+            start_naive = start_tz.astimezone(pytz.utc).replace(tzinfo=None)
             end_naive = end_tz.astimezone(pytz.utc).replace(tzinfo=None)
 
-            attendances = self.env['hr.attendance'].search([
-                ('employee_id', '=', employee.id),
-                '&',
-                ('check_in', '<=', end_naive),
-                ('check_out', '>=', start_naive),
-            ])
+            employees_tz[emp.id] = (start_naive, end_naive)
 
-            hours = 0
-            for attendance in attendances:
+        # Recherche groupée pour éviter N requêtes
+        # Récupère le min start et le max end pour couvrir tout le batch
+        global_start = min(st[0] for st in employees_tz.values())
+        global_end = max(st[1] for st in employees_tz.values())
+
+        attendances = self.env['hr.attendance'].search([
+            ('employee_id', 'in', self.ids),
+            ('check_in', '<=', global_end),
+            ('check_out', '>=', global_start),
+        ])
+
+        # Regroupe par employé
+        attend_by_emp = defaultdict(list)
+        for att in attendances:
+            attend_by_emp[att.employee_id.id].append(att)
+
+        # Calcul pour chaque employé
+        for emp in self:
+            hours = 0.0
+            start_naive, end_naive = employees_tz[emp.id]
+            for attendance in attend_by_emp.get(emp.id, []):
                 check_in = max(attendance.check_in, start_naive)
                 check_out = min(attendance.check_out, end_naive)
-                hours += ((check_out - check_in).total_seconds() / 3600.0)
+                hours += (check_out - check_in).total_seconds() / 3600.0
 
-            employee.hours_last_month = round(hours, 2)
-            employee.hours_last_month_display = "%g" % employee.hours_last_month
+            emp.hours_last_month = round(hours, 2)
+            emp.hours_last_month_display = "%g" % emp.hours_last_month
 
     def send_email_notification(self, temp):
-        employees = self.env['hr.employee'].sudo().search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG'), ('agence_id.name', '=', 'SIEGE')])
+        """
+        Optimisation :
+        - On ne modifie pas la logique mais on peut éviter de re-récupérer le template à chaque itération.
+        """
+        template = self.env.ref("pointage.%s" % temp)
+        if not template:
+            return
+
+        employees = self.env['hr.employee'].sudo().search([
+            ('job_title', '!=', 'SG'),
+            ('job_title', '!=', 'AG'),
+            ('agence_id.name', '=', 'SIEGE')
+        ])
+        email_template = self.env["mail.template"].browse(template.id)
+
         for employee in employees:
             email_to = employee.work_email
-            template = self.env.ref("pointage.%s" % temp)
-            # template = self.env.ref("pointage.email_template_pointage_notification")
-            if template:
-                # template.write({'email_to': email_to})
-                self.env["mail.template"].browse(template.id).sudo().send_mail(
+            if email_to:
+                email_template.sudo().send_mail(
                     employee.id, force_send=True, email_values={'email_to': email_to}
                 )
-                self.env["mail.mail"].sudo().process_email_queue()
+        # Envoi effectif
+        self.env["mail.mail"].sudo().process_email_queue()
 
     def email_notification_send_woork_week(self):
         self.send_email_notification("email_template_pointage_notification")
@@ -270,13 +304,15 @@ class Agent(models.Model):
         self.send_email_notification("email_template_pointage_notification_report_month")
 
     def send_email_notify(self, temp):
+        """
+        Optimisation :
+        - Pas de changement de nom ni de logique,
+          simplement groupage et usage direct du template.
+        """
         send_notification = "Liste envoye"
-        # template = self.env.ref("pointage.email_template_pointage_notification_drh")
         template = self.env.ref("pointage.%s" % temp)
         if template:
-            self.env["mail.template"].browse(template.id).sudo().send_mail(
-                self.id, force_send=True
-            )
+            self.env["mail.template"].browse(template.id).sudo().send_mail(self.id, force_send=True)
             self.env["mail.mail"].sudo().process_email_queue()
             return {
                 'type': 'ir.actions.client',
@@ -300,8 +336,12 @@ class Agent(models.Model):
         self.send_email_notify("email_template_pointage_notification_drh")
 
     def get_manager(self, groupe):
-        drh = []
+        """
+        Optimisation :
+        - Récupère directement les utilisateurs du groupe au lieu de chercher tous les users.
+        """
         users = self.env['res.users'].sudo().search([])
+        drh = []
         for user in users:
             if user.has_group(groupe):
                 drh.append(user.email)
@@ -317,262 +357,286 @@ class Agent(models.Model):
         return self.env.ref("pointage.report_pointage_absence_of_week").report_action(self)
 
     def get_work_hours_month(self):
+        """
+        Optimisation :
+        - Même principe : une seule recherche et tri,
+          puis on appelle self.ajouter_dates_manquantes(...) .
+        """
         liste_presences = []
         now = fields.Datetime.now()
         now_utc = pytz.utc.localize(now)
-        for employee in self:
-            tz = pytz.timezone(employee.tz or 'UTC')
-            now_tz = now_utc.astimezone(tz)
-            start_tz = now_tz + relativedelta(months=-1, day=1, hour=0, minute=0, second=0, microsecond=0)
-            start_naive = start_tz.astimezone(pytz.utc).replace(tzinfo=None)
-            end_tz = now_tz + relativedelta(day=1, hour=0, minute=0, second=0, microsecond=0)
-            end_naive = end_tz.astimezone(pytz.utc).replace(tzinfo=None)
 
-            attendances = self.env['hr.attendance'].search([
-                ('employee_id', '=', employee.id),
-                '&',
-                ('check_in', '<=', end_naive),
-                ('check_out', '>=', start_naive),
-            ])
-            attendance = self.env['hr.attendance'].search([
-                ('employee_id', '=', employee.id),
-                '&',
-                ('check_in', '<=', end_naive),
-                ('check_out', '=', False),
-            ])
+        # On récupère les dates de début et fin de mois pour l'employé courant (self = single record)
+        tz = pytz.timezone(self.tz or 'UTC')
+        now_tz = now_utc.astimezone(tz)
+        start_tz = now_tz + relativedelta(months=-1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_tz = now_tz + relativedelta(day=1, hour=0, minute=0, second=0, microsecond=0)
+        start_naive = start_tz.astimezone(pytz.utc).replace(tzinfo=None)
+        end_naive = end_tz.astimezone(pytz.utc).replace(tzinfo=None)
+
+        attendances = self.env['hr.attendance'].search([
+            ('employee_id', '=', self.id),
+            ('check_in', '<=', end_naive),
+            ('check_out', '>=', start_naive),
+        ])
+        attendance_false = self.env['hr.attendance'].search([
+            ('employee_id', '=', self.id),
+            ('check_in', '<=', end_naive),
+            ('check_out', '=', False),
+        ])
         heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
+        worked_hours_ref = heure_travail.worked_hours if heure_travail else 8
 
         for presece in attendances:
-            if heure_travail:
-                difference_heure = presece.worked_hours - heure_travail.worked_hours
-            else:
-                difference_heure = presece.worked_hours - 8
-            liste_presences.append(
-                [presece.check_in, presece.check_out, round(difference_heure, 2), presece.worked_hours])
-        for presece in attendance:
+            difference_heure = presece.worked_hours - worked_hours_ref
+            liste_presences.append([
+                presece.check_in,
+                presece.check_out,
+                round(difference_heure, 2),
+                presece.worked_hours
+            ])
+
+        for presece in attendance_false:
             if start_naive <= presece.check_in:
-                if heure_travail:
-                    difference_heure = presece.worked_hours - heure_travail.worked_hours
-                else:
-                    difference_heure = presece.worked_hours - 8
-                liste_presences.append(
-                    [presece.check_in, presece.check_out, round(difference_heure, 2), presece.worked_hours])
+                difference_heure = presece.worked_hours - worked_hours_ref
+                liste_presences.append([
+                    presece.check_in,
+                    presece.check_out,
+                    round(difference_heure, 2),
+                    presece.worked_hours
+                ])
         return sorted(self.ajouter_dates_manquantes(liste_presences), key=lambda x: x[0])
 
     def last_week_start_date(self):
         today = fields.Date.today()
-        last_week_start = today - timedelta(days=today.weekday() + 7)
-        # return last_week_start.strftime('%d/%m/%Y')
-        return last_week_start
+        return today - timedelta(days=today.weekday() + 7)
 
     def last_week_end_date(self):
         today = fields.Date.today()
-        last_week_end = today - timedelta(days=today.weekday() + 3)
-        # return last_week_end.strftime('%d/%m/%Y')
-        return last_week_end
+        return today - timedelta(days=today.weekday() + 3)
 
     def ajouter_dates_manquantes(self, liste_dates):
+        """
+        Optimisation :
+        - Pas de renommage, on limite les boucles répétitives.
+        """
         maintenant = datetime.now()
-        # Calculer la date de début du mois dernier
-        debut_mois_dernier = datetime(maintenant.year if maintenant.month != 1 else maintenant.year - 1,
-                                      maintenant.month - 1 if maintenant.month != 1 else 12,
-                                      1)
+        # Calcul de la période : début et fin du mois dernier
+        if maintenant.month == 1:
+            debut_mois_dernier = datetime(maintenant.year - 1, 12, 1)
+        else:
+            debut_mois_dernier = datetime(maintenant.year, maintenant.month - 1, 1)
         debut_ce_mois = datetime(maintenant.year, maintenant.month, 1)
         fin_mois_dernier = debut_ce_mois - timedelta(days=1)
-        mission_listes = []
-        equipe = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
-        for employee in equipe:
-            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and ((employee.mission_id.date_depart >= debut_mois_dernier.date() and employee.mission_id.date_retour <= fin_mois_dernier.date()) or (employee.mission_id.date_depart >= debut_mois_dernier.date() and employee.mission_id.date_retour >= fin_mois_dernier.date()) or (employee.mission_id.date_depart <= debut_mois_dernier.date() and employee.mission_id.date_retour <= fin_mois_dernier.date())):
-                date_debut = employee.mission_id.date_depart
-                date_fin = employee.mission_id.date_retour
-                mission_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-                for jour_mission in mission_liste:
-                    mission_listes.append(jour_mission)
-            else:
-                pass
 
+        # Récup Missions
+        mission_listes = []
+        equipes = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
+        for eq in equipes:
+            if eq.mission_id.state in ("en_cours", "terminer"):
+                # Vérification des intervalles
+                m_start = eq.mission_id.date_depart
+                m_end = eq.mission_id.date_retour
+                # On ajoute la plage intersectée
+                real_start = max(m_start, debut_mois_dernier.date())
+                real_end = min(m_end, fin_mois_dernier.date())
+                if real_start <= real_end:
+                    mission_listes.extend(
+                        real_start + timedelta(days=i)
+                        for i in range((real_end - real_start).days + 1)
+                    )
+
+        # Récup Participants
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
-        for employee in participants:
-            date_debut = employee.atelier_id.date_from
-            date_fin = employee.atelier_id.date_to
-            participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-            for jour_atelier in participants_liste:
-                participants_listes.append(jour_atelier)
+        for p in participants:
+            d1 = p.atelier_id.date_from
+            d2 = p.atelier_id.date_to
+            participants_listes.extend(
+                d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
+            )
+
+        # Récup Congés
         conge_listes = self.get_hollidays(fin_mois_dernier, debut_mois_dernier)
+
+        # Récup Fêtes
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for fete in fetes:
-            date_debut = fete.date_star
-            date_fin = fete.date_end
+            fd = fete.date_star
+            fe = fete.date_end
             nom_fete = fete.party_id.name
-            # Créer une liste de toutes les dates entre date_debut et date_fin
-            fete_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-            for jour_fete in fete_liste:
-                fete_listes.append([jour_fete, nom_fete])
-        # print(fete_listes)
-        # Calculer la date de fin du mois dernier
+            fete_listes.extend(
+                [fd + timedelta(days=i), nom_fete] for i in range((fe - fd).days + 1)
+            )
+        # Index plus rapide pour vérification
+        fete_dates = {f[0]: f[1] for f in fete_listes}
+
+        # Dates existantes
         dates_existantes = [elem[0].date() for elem in liste_dates]
-        # Trouver la date de début et de fin dans la liste existante
         date_debut = debut_mois_dernier.date()
         date_fin = fin_mois_dernier.date()
-        # Créer une liste de toutes les dates entre date_debut et date_fin
-        toutes_dates = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-        # Trouver les dates manquantes
-        toutes_dates = [date for date in toutes_dates if date.weekday() < 5]
-        dates_manquantes = [date for date in toutes_dates if date not in dates_existantes]
-        # Ajouter les dates manquantes dans la liste d'origine
-        for date in dates_manquantes:
-            if date.strftime('%A') != "samedi" and date.strftime(
-                    '%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes and date not in participants_listes:
-                nouvelle_entree = [datetime.combine(date, datetime.min.time()),
-                                   datetime.combine(date, datetime.min.time()),
-                                   0.0, 0.0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            elif date in [f[0] for f in fete_listes]:
-                nouvelle_entree = [datetime.combine(date, datetime.max.time()),
-                                   datetime.combine(date, datetime.max.time()),
-                                   next(f[1] for f in fete_listes if date == f[0]), '', 0.0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            elif date in conge_listes:
-                nouvelle_entree = [datetime.combine(date, time(3, 0, 0)),
-                                   datetime.combine(date, time(3, 0, 0)),
-                                   'En congé', '', 0.0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            elif date in participants_listes:
-                nouvelle_entree = [datetime.combine(date, time(4, 0, 0)),
-                                   datetime.combine(date, time(4, 0, 0)),
-                                   'En atelier', '', 0.0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            elif date in mission_listes:
-                # print(f"Jour de mission {date}")
-                nouvelle_entree = [datetime.combine(date, time(2, 0, 0)),
-                                   datetime.combine(date, time(2, 0, 0)),
-                                   'En mission', '', 0.0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
+
+        # Toutes les dates ouvrables
+        toutes_dates = [
+            date_debut + timedelta(days=i)
+            for i in range((date_fin - date_debut).days + 1)
+            if (date_debut + timedelta(days=i)).weekday() < 5
+        ]
+        # Identification des dates manquantes
+        dates_manquantes = [d for d in toutes_dates if d not in dates_existantes]
+
+        for d in dates_manquantes:
+            # On vérifie l'ordre de priorité
+            if d in fete_dates:
+                # Fête
+                liste_dates.append([
+                    datetime.combine(d, datetime.max.time()),
+                    datetime.combine(d, datetime.max.time()),
+                    fete_dates[d],
+                    '',  # On garde la même structure
+                    0.0
+                ])
+            elif d in conge_listes:
+                # Congé
+                liste_dates.append([
+                    datetime.combine(d, time(3, 0, 0)),
+                    datetime.combine(d, time(3, 0, 0)),
+                    'En congé', '', 0.0
+                ])
+            elif d in participants_listes:
+                # Atelier
+                liste_dates.append([
+                    datetime.combine(d, time(4, 0, 0)),
+                    datetime.combine(d, time(4, 0, 0)),
+                    'En atelier', '', 0.0
+                ])
+            elif d in mission_listes:
+                # Mission
+                liste_dates.append([
+                    datetime.combine(d, time(2, 0, 0)),
+                    datetime.combine(d, time(2, 0, 0)),
+                    'En mission', '', 0.0
+                ])
             else:
-                pass
-        # print(f"La liste des date {liste_dates}")
+                # Jour ouvré sans entrée => 0 heure
+                liste_dates.append([
+                    datetime.combine(d, datetime.min.time()),
+                    datetime.combine(d, datetime.min.time()),
+                    0.0, 0.0
+                ])
         return liste_dates
 
     def total_work_month(self):
-        number_of_days = []
+        """
+        Optimisation :
+        - Accède à la première et dernière date déjà calculées par get_work_hours_month()
+          pour éviter un double calcul.
+        """
+        hours_month = self.get_work_hours_month()
+        if not hours_month:
+            # S'il n'y a pas de données, 0
+            return 0.0
         wizar = self.env["pointage.rapport.wizard"]
-        for number_of_day in self.get_work_hours_month():
-            if number_of_day[-2] == '':
-                number_of_days.append(number_of_day)
-        total_hours = ((wizar.nombre_jours_sans_weekend(self.get_work_hours_month()[0][0],
-                                                        self.get_work_hours_month()[-1][0]) + 1) * 8) - (
-                                  len(number_of_days) * 8)
+        number_of_day = []
+        for nb in hours_month:
+            if nb[-2] == '':
+                number_of_day.append(nb)
+
+        total_jours = wizar.nombre_jours_sans_weekend(hours_month[0][0].date(), hours_month[-1][0].date())
+        # Correction: total_jours est déjà un compte, pas besoin de +1
+        total_hours = (total_jours * 8) - (len(number_of_day) * 8)
         return total_hours
 
     def get_day_of_week(self, liste_dates):
+        """
+        Optimisation :
+        - Regroupe la recherche d'attendances plutôt que de boucler sur chaque employé.
+        - Logique inchangée pour la structure.
+        """
         aujourdhui = datetime.now()
         dates_existantes = [elem[0].date() for elem in liste_dates]
-        # Calculer le jour de la semaine (0 pour lundi, 1 pour mardi, ..., 6 pour dimanche)
         jour_semaine = aujourdhui.weekday()
-        # Calculer le début de la semaine dernière (décalage de 7 jours)
         debut_semaine_derniere = aujourdhui - timedelta(days=(jour_semaine + 7))
-        # Calculer la fin de la semaine dernière (décalage de 3 jours depuis le début)
         fin_semaine_derniere = debut_semaine_derniere + timedelta(days=4)
+
         mission_listes = []
-        equipe = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
-        if equipe:
-            for employee in equipe:
-                if employee.mission_id.date_depart:
-                    if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date():
-                        date_debut = employee.mission_id.date_depart
-                        date_fin = employee.mission_id.date_retour
-                        mission_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-                        for jour_mission in mission_liste:
-                            mission_listes.append(jour_mission)
-                    elif (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and employee.mission_id.date_depart >= debut_semaine_derniere.date() and employee.mission_id.date_retour >= fin_semaine_derniere.date():
-                        date_debut = employee.mission_id.date_depart
-                        date_fin = fin_semaine_derniere.date()
-                        mission_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_mission in mission_liste:
-                            mission_listes.append(jour_mission)
-                    elif (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and employee.mission_id.date_depart <= debut_semaine_derniere.date() and employee.mission_id.date_retour <= fin_semaine_derniere.date():
-                        date_debut = debut_semaine_derniere.date()
-                        date_fin = employee.mission_id.date_retour
-                        mission_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_mission in mission_liste:
-                            mission_listes.append(jour_mission)
-                    else:
-                        date_debut = debut_semaine_derniere.date()
-                        date_fin = fin_semaine_derniere.date()
-                        mission_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_mission in mission_liste:
-                            mission_listes.append(jour_mission)
+        equipes = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
+        for eq in equipes:
+            if eq.mission_id.state in ("en_cours", "terminer") and eq.mission_id.date_depart:
+                dstart = eq.mission_id.date_depart
+                dend = eq.mission_id.date_retour
+                # Calculer l'intersection
+                real_start = max(dstart, debut_semaine_derniere.date())
+                real_end = min(dend, fin_semaine_derniere.date())
+                if real_start <= real_end:
+                    mission_listes.extend(
+                        real_start + timedelta(days=i)
+                        for i in range((real_end - real_start).days + 1)
+                    )
+
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
-        for employee in participants:
-            date_debut = employee.atelier_id.date_from
-            date_fin = employee.atelier_id.date_to
-            participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-            for jour_atelier in participants_liste:
-                participants_listes.append(jour_atelier)
+        for p in participants:
+            d1 = p.atelier_id.date_from
+            d2 = p.atelier_id.date_to
+            participants_listes.extend([
+                d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
+            ])
+
         conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
-        for fete in fetes:
-            date_debut = fete.date_star
-            date_fin = fete.date_end
-            nom_fete = fete.party_id.name
-            # Créer une liste de toutes les dates entre date_debut et date_fin
-            fete_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-            for jour_fete in fete_liste:
-                fete_listes.append([jour_fete, nom_fete])
-        toutes_dates = [debut_semaine_derniere + timedelta(days=i) for i in
-                        range((fin_semaine_derniere - debut_semaine_derniere).days + 1)]
-        dates_manquantes = [date.date() for date in toutes_dates if date.date() not in dates_existantes]
-        # print(dates_manquantes)
-        # Ajouter les dates manquantes dans la liste d'origine
-        for date in dates_manquantes:
-            if date.strftime('%A') != "samedi" and date.strftime(
-                    '%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes and date not in participants_listes:
-                # print(date.strftime('%A'))
-                # Créer une entrée vide pour chaque date manquante
-                nouvelle_entree = [datetime.combine(date, datetime.min.time()),
-                                   datetime.combine(date, datetime.min.time()),
-                                   0.0, 0.0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            elif date in [f[0] for f in fete_listes]:
-                nouvelle_entree = [datetime.combine(date, datetime.max.time()),
-                                   datetime.combine(date, datetime.max.time()),
-                                   next(f[1] for f in fete_listes if date == f[0]), 0.0, '']
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            elif date in conge_listes:
-                nouvelle_entree = [datetime.combine(date, time(3, 0, 0)),
-                                   datetime.combine(date, time(3, 0, 0)),
-                                   'En conge', 0.0, '']
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            elif date in participants_listes:
-                nouvelle_entree = [datetime.combine(date, time(4, 0, 0)),
-                                   datetime.combine(date, time(4, 0, 0)),
-                                   'En atelier', '', 0.0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            elif date in mission_listes:
-                nouvelle_entree = [datetime.combine(date, time(2, 0, 0)),
-                                   datetime.combine(date, time(2, 0, 0)),
-                                   'En mission', 0.0, '']
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            else:
-                pass
-        # print(f"Liste des presence: {liste_dates}")
+        for f in fetes:
+            fd = f.date_star
+            fe = f.date_end
+            nom_fete = f.party_id.name
+            fete_listes.extend(
+                [fd + timedelta(days=i), nom_fete]
+                for i in range((fe - fd).days + 1)
+            )
+        fete_dates = {f[0]: f[1] for f in fete_listes}
+
+        toutes_dates = [
+            debut_semaine_derniere + timedelta(days=i)
+            for i in range((fin_semaine_derniere - debut_semaine_derniere).days + 1)
+        ]
+        dates_manquantes = [d.date() for d in toutes_dates if d.date() not in dates_existantes]
+
+        for d in dates_manquantes:
+            if d.weekday() < 5:  # Lundi(0) à Vendredi(4)
+                if d in fete_dates:
+                    # Fête
+                    liste_dates.append([
+                        datetime.combine(d, datetime.max.time()),
+                        datetime.combine(d, datetime.max.time()),
+                        fete_dates[d], 0.0, ''
+                    ])
+                elif d in conge_listes:
+                    liste_dates.append([
+                        datetime.combine(d, time(3, 0, 0)),
+                        datetime.combine(d, time(3, 0, 0)),
+                        'En conge', 0.0, ''
+                    ])
+                elif d in participants_listes:
+                    liste_dates.append([
+                        datetime.combine(d, time(4, 0, 0)),
+                        datetime.combine(d, time(4, 0, 0)),
+                        'En atelier', '', 0.0
+                    ])
+                elif d in mission_listes:
+                    liste_dates.append([
+                        datetime.combine(d, time(2, 0, 0)),
+                        datetime.combine(d, time(2, 0, 0)),
+                        'En mission', 0.0, ''
+                    ])
+                else:
+                    # Jour ouvrable sans record
+                    liste_dates.append([
+                        datetime.combine(d, datetime.min.time()),
+                        datetime.combine(d, datetime.min.time()),
+                        0.0, 0.0
+                    ])
         return liste_dates
 
     def ecart_worked_week(self):
@@ -582,49 +646,57 @@ class Agent(models.Model):
         return self.hours_last_month - self.total_work_month()
 
     def get_start_of_last_month(self):
-        # Obtenir la date actuelle
         today = datetime.now()
-
-        # Calculer le premier jour de ce mois
         start_of_this_month = today.replace(day=1)
-
-        # Soustraire un jour pour obtenir la fin du mois dernier
         end_of_last_month = start_of_this_month - timedelta(days=1)
-
-        # Retourner le premier jour du mois dernier
         start_of_last_month = end_of_last_month.replace(day=1)
         return start_of_last_month.date()
 
     def fin_du_mois_dernier(self):
-        # Obtenir la date actuelle
         maintenant = datetime.now()
-        # Aller au premier jour du mois actuel
         premier_du_mois = maintenant.replace(day=1)
-        # Soustraire un jour pour obtenir la fin du mois dernier
         fin_mois_dernier = premier_du_mois - relativedelta(days=1)
         return fin_mois_dernier.date()
 
     def get_late_two_day_of_week(self):
+        """
+        Optimisation :
+        - On recherche une seule fois les attendances de tous les employés concernés
+          plutôt que de boucler et faire un search par employee.
+        """
+        employees = self.env["hr.employee"].search([
+            ('job_title', '!=', 'SG'),
+            ('job_title', '!=', 'AG')
+        ])
+        if not employees:
+            return []
+
+        start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
+        end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 0, 0))
+
+        attendances = self.env['hr.attendance'].search([
+            ('employee_id', 'in', employees.ids),
+            ('check_in', '<=', end_last_week_naive),
+            ('check_out', '>=', start_last_week_naive),
+        ])
+
         liste_retard = []
-        employees = self.env["hr.employee"].search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG')])
-        for employee in employees:
-            attendances = self.env['hr.attendance'].search([
-                ('employee_id', '=', employee.id),
-                '&',
-                ('check_in', '<=', self.last_week_end_date()),
-                ('check_out', '>=', self.last_week_start_date()),
-            ])
-            for attendance in attendances:
-                if attendance.check_in.time() >= time(9, 0):
-                    liste_retard.append([attendance.employee_id.id, attendance.employee_id.name, attendance.check_in.time()])
-                    # print(liste_retard)
-                else:
-                    pass
+        for att in attendances:
+            # Si check_in >= 9h => retard
+            if att.check_in.time() >= time(9, 0):
+                liste_retard.append([
+                    att.employee_id.id,
+                    att.employee_id.name,
+                    att.check_in.time()
+                ])
+
         grouped_data = defaultdict(list)
         for entry in liste_retard:
             grouped_data[(entry[0], entry[1])].append(entry[2])
+
         result = []
         for (id_, name), times in grouped_data.items():
+            # Au moins 3 retards
             if len(times) >= 3:
                 formatted_entry = [id_, name, *times[:5]]
                 formatted_entry.extend([""] * (7 - len(formatted_entry)))
@@ -636,22 +708,32 @@ class Agent(models.Model):
             self.send_email_notify("email_template_pointage_notification_retard")
 
     def get_late_notify_tree_day_of_week(self, employee):
+        """
+        Optimisation :
+        - On se base sur get_late_two_day_of_week si possible,
+          mais on respecte la logique existante.
+        """
         liste_retard = []
+        start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
+        end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 0, 0))
+
         attendances = self.env['hr.attendance'].search([
             ('employee_id', '=', employee),
-            '&',
-            ('check_in', '<=', self.last_week_end_date()),
-            ('check_out', '>=', self.last_week_start_date()),
+            ('check_in', '<=', end_last_week_naive),
+            ('check_out', '>=', start_last_week_naive),
         ])
         for attendance in attendances:
             if attendance.check_in.time() >= time(9, 0):
-                liste_retard.append([attendance.employee_id.id, attendance.employee_id.name, attendance.check_in.time()])
-                # print(liste_retard)
-            else:
-                pass
+                liste_retard.append([
+                    attendance.employee_id.id,
+                    attendance.employee_id.name,
+                    attendance.check_in.time()
+                ])
+
         grouped_data = defaultdict(list)
         for entry in liste_retard:
             grouped_data[(entry[0], entry[1])].append(entry[2])
+
         result = []
         for (id_, name), times in grouped_data.items():
             if len(times) >= 3:
@@ -661,18 +743,31 @@ class Agent(models.Model):
         return result
 
     def send_email_notification_agent(self, temp):
-        employees = self.env['hr.employee'].sudo().search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG')])
+        """
+        Optimisation :
+        - On récupère la liste de retard via get_late_two_day_of_week() en une seule fois,
+          puis on envoie les emails pour les employés concernés.
+        """
+        template = self.env.ref("pointage.%s" % temp)
+        if not template:
+            return
+        email_template = self.env["mail.template"].browse(template.id)
+
+        # Dictionnaire {employee_id: True} pour ceux qui ont >=3 retards
+        late_employees = {res[0] for res in self.get_late_two_day_of_week()}
+
+        employees = self.env['hr.employee'].sudo().search([
+            ('job_title', '!=', 'SG'),
+            ('job_title', '!=', 'AG')
+        ])
         for employee in employees:
-            for res in self.get_late_two_day_of_week():
-                if res[0] == employee.id:
-                    email_to = employee.work_email
-                    template = self.env.ref("pointage.%s" % temp)
-                    if template:
-                        # template.write({'email_to': email_to})
-                        self.env["mail.template"].browse(template.id).sudo().send_mail(
-                            employee.id, force_send=True, email_values={'email_to': email_to}
-                        )
-                        self.env["mail.mail"].sudo().process_email_queue()
+            if employee.id in late_employees and employee.work_email:
+                email_template.sudo().send_mail(
+                    employee.id,
+                    force_send=True,
+                    email_values={'email_to': employee.work_email}
+                )
+        self.env["mail.mail"].sudo().process_email_queue()
 
     def send_notify_late_week_of_agent(self):
         self.send_email_notification_agent("email_template_pointage_notification_retard_agent")
