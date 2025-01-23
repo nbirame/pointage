@@ -100,8 +100,6 @@ class RapportWizard(models.TransientModel):
                                 conge_listes.append(jour_conge)
             liste.append(conge_listes)
             liste.append(nombre_jour)
-            print(f"Liste de conge {liste}")
-            print(f"Nombre de jour de conger : {nombre_jour} = {liste[1]}")
         return liste
 
     @api.depends("date_in_get_rapport", "date_end_get_rapport", "employee_id")
@@ -114,15 +112,15 @@ class RapportWizard(models.TransientModel):
             ('date_star', '>=', self.date_in_get_rapport),
             ('date_end', '<=', self.date_end_get_rapport),
         ])
+        number_day_of_party = fete.sudo().search_count([
+            ('date_star', '>=', self.date_in_get_rapport),
+            ('date_end', '<=', self.date_end_get_rapport),
+        ])
         equipe_mission = self.env["mission.equipe"].search([
             ('employee_id', '=', self.employee_id.id),
         ])
         for jours_fete in date_fete:
             if jours_fete['date_star'] not in jour_de_conge[0]:
-                number_day_of_party = fete.sudo().search_count([
-                    ('date_star', '>=', self.date_in_get_rapport),
-                    ('date_end', '<=', self.date_end_get_rapport),
-                ])
                 number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
             else:
                 number_of_days_absence_legal = absence_days_hollidays
