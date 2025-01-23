@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, date
+from typing import Optional
 
 from odoo import models, fields, api
 import xmlrpc.client
@@ -28,6 +29,7 @@ class RapportWizard(models.TransientModel):
     def get_hollidays(self, fin_mois_dernier, debut_ce_mois):
         conge_listes = []
         liste = []
+        nombre_demande_conge = []
         nombre_jour = 0
         url = "http://erp.fongip.sn:8069"
         db_odoo = "fongip"
@@ -59,43 +61,43 @@ class RapportWizard(models.TransientModel):
             )
             # Créer un dictionnaire des employés pour un accès rapide par ID
             employee_dict = {employee['id']: employee for employee in employees}
-            # Filtrer et traiter les congés
             for holiday in data_holidays:
                 # date_debut
                 employee_id = holiday['employee_id'][0]
                 employee = employee_dict.get(employee_id)
                 if employee and employee['matricule_pointage'] == self.employee_id.matricule:
-                    # Convertir les dates et générer la liste des jours de congé
-                    date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
-                    date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
-                    if date_debut >= debut_ce_mois and date_fin <= fin_mois_dernier:
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut >= debut_ce_mois and date_fin >= date_fin:
-                        date_fin = fin_mois_dernier
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut <= debut_ce_mois and date_fin <= fin_mois_dernier:
-                        date_debut = debut_ce_mois
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    else:
-                        date_debut = debut_ce_mois
-                        date_fin = fin_mois_dernier
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
+                    nombre_demande_conge.append(holiday)
+                    for i in range(len(nombre_demande_conge)):
+                        date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
+                        date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
+                        if date_debut >= debut_ce_mois and date_fin <= fin_mois_dernier:
+                            nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
+                            conge_liste = [date_debut + timedelta(days=i) for i in
+                                             range((date_fin - date_debut).days + 1)]
+                            for jour_conge in conge_liste:
+                                conge_listes.append(jour_conge)
+                        elif date_debut >= debut_ce_mois and date_fin >= date_fin:
+                            date_fin = fin_mois_dernier
+                            nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
+                            conge_liste = [date_debut + timedelta(days=i) for i in
+                                             range((date_fin - date_debut).days + 1)]
+                            for jour_conge in conge_liste:
+                                conge_listes.append(jour_conge)
+                        elif date_debut <= debut_ce_mois and date_fin <= fin_mois_dernier:
+                            date_debut = debut_ce_mois
+                            nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
+                            conge_liste = [date_debut + timedelta(days=i) for i in
+                                             range((date_fin - date_debut).days + 1)]
+                            for jour_conge in conge_liste:
+                                conge_listes.append(jour_conge)
+                        else:
+                            date_debut = debut_ce_mois
+                            date_fin = fin_mois_dernier
+                            nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
+                            conge_liste = [date_debut + timedelta(days=i) for i in
+                                             range((date_fin - date_debut).days + 1)]
+                            for jour_conge in conge_liste:
+                                conge_listes.append(jour_conge)
             liste.append(conge_listes)
             liste.append(nombre_jour)
         return liste
@@ -139,12 +141,13 @@ class RapportWizard(models.TransientModel):
                         (self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                         self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
                 else:
-                    print(f"Agent dans else---> mission agent: {agent.employee_id.id} id:{self.employee_id.id}")
+                    pass
+                    # print(f"Agent dans else---> mission agent: {agent.employee_id.id} id:{self.employee_id.id}")
         else:
             number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
             self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                 self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-            print(f"Le nombre d'heure {self.total_number_of_working_hours}")
+            # print(f"Le nombre d'heure {self.total_number_of_working_hours}")
 
     def get_total_work(self):
         total_heure = 0
