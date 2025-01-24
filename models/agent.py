@@ -5,6 +5,7 @@ import pytz
 from dateutil.relativedelta import relativedelta
 from odoo import models, fields
 
+
 class Agent(models.Model):
     _inherit = "hr.employee"
     _description = "Presence Agent"
@@ -15,12 +16,6 @@ class Agent(models.Model):
     agence_id = fields.Many2one('pointage.agence', string="FONGIP")
 
     def _compute_hours_last_week(self):
-        """
-        Optimisation :
-        - Au lieu de rechercher les hr.attendance pour chaque employé dans la boucle,
-          on fait une seule recherche pour tous les employés concernés.
-        - On regroupe ensuite les présences par employee_id pour réduire le nombre de requêtes.
-        """
         if not self:
             return
         # Récupération des dates de début et de fin de la semaine dernière
@@ -50,11 +45,6 @@ class Agent(models.Model):
             employee.hours_last_week = round(hours, 2)
 
     def get_hollidays(self, fin_mois_dernier, debut_ce_mois):
-        """
-        Optimisation :
-        - Authentification XML-RPC factorisée dans une méthode privée (optionnelle) pour éviter la redondance.
-        - Recherche groupée et filtrage direct.
-        """
         conge_listes = []
         url = "http://erp.fongip.sn:8069"
         db_odoo = "fongip"
@@ -96,10 +86,6 @@ class Agent(models.Model):
         return conge_listes
 
     def get_day_of_hollidays(self, matricule, end_date, start_date):
-        """
-        Optimisation :
-        - Recherche groupée, factorisation de l'authentification XML-RPC (même logique que get_hollidays).
-        """
         conge_listes = []
         liste = []
         nombre_jour = 0
@@ -165,10 +151,6 @@ class Agent(models.Model):
         return jours_ouvres
 
     def total_hours_of_week(self):
-        """
-        Optimisation :
-        - On calcule le nombre d'absences ('' dans get_work_hours_week) en une fois.
-        """
         heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
         slots = self.get_work_hours_week()
         nombre_jours = sum(1 for jour in slots if jour[-1] == '')
@@ -179,10 +161,6 @@ class Agent(models.Model):
         return nombre_heure
 
     def get_work_hours_week(self):
-        """
-        Optimisation :
-        - Recherche unique d'attendances.
-        """
         liste_presences = []
         start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
         end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 59, 59))
@@ -223,11 +201,6 @@ class Agent(models.Model):
         return sorted(self.get_day_of_week(liste_presences), key=lambda x: x[0])
 
     def _compute_hours_last_month(self):
-        """
-        Même logique que _compute_hours_last_week :
-        - On fait une seule recherche d'attendances pour chaque batch d'employés,
-          puis on calcule pour chaque employé.
-        """
         now = fields.Datetime.now()
         now_utc = pytz.utc.localize(now)
 
@@ -273,10 +246,6 @@ class Agent(models.Model):
             emp.hours_last_month_display = "%g" % emp.hours_last_month
 
     def send_email_notification(self, temp):
-        """
-        Optimisation :
-        - On ne modifie pas la logique mais on peut éviter de re-récupérer le template à chaque itération.
-        """
         template = self.env.ref("pointage.%s" % temp)
         if not template:
             return
@@ -304,11 +273,6 @@ class Agent(models.Model):
         self.send_email_notification("email_template_pointage_notification_report_month")
 
     def send_email_notify(self, temp):
-        """
-        Optimisation :
-        - Pas de changement de nom ni de logique,
-          simplement groupage et usage direct du template.
-        """
         send_notification = "Liste envoye"
         template = self.env.ref("pointage.%s" % temp)
         if template:
@@ -336,10 +300,6 @@ class Agent(models.Model):
         self.send_email_notify("email_template_absence_semaine_notification_drh")
 
     def get_manager(self, groupe):
-        """
-        Optimisation :
-        - Récupère directement les utilisateurs du groupe au lieu de chercher tous les users.
-        """
         users = self.env['res.users'].sudo().search([])
         drh = []
         for user in users:
@@ -357,11 +317,6 @@ class Agent(models.Model):
         return self.env.ref("pointage.report_pointage_absence_of_week").report_action(self)
 
     def get_work_hours_month(self):
-        """
-        Optimisation :
-        - Même principe : une seule recherche et tri,
-          puis on appelle self.ajouter_dates_manquantes(...) .
-        """
         liste_presences = []
         now = fields.Datetime.now()
         now_utc = pytz.utc.localize(now)
@@ -416,10 +371,6 @@ class Agent(models.Model):
         return today - timedelta(days=today.weekday() + 3)
 
     def ajouter_dates_manquantes(self, liste_dates):
-        """
-        Optimisation :
-        - Pas de renommage, on limite les boucles répétitives.
-        """
         maintenant = datetime.now()
         # Calcul de la période : début et fin du mois dernier
         if maintenant.month == 1:
@@ -528,11 +479,6 @@ class Agent(models.Model):
         return liste_dates
 
     def total_work_month(self):
-        """
-        Optimisation :
-        - Accède à la première et dernière date déjà calculées par get_work_hours_month()
-          pour éviter un double calcul.
-        """
         hours_month = self.get_work_hours_month()
         if not hours_month:
             # S'il n'y a pas de données, 0
@@ -549,11 +495,6 @@ class Agent(models.Model):
         return total_hours
 
     def get_day_of_week(self, liste_dates):
-        """
-        Optimisation :
-        - Regroupe la recherche d'attendances plutôt que de boucler sur chaque employé.
-        - Logique inchangée pour la structure.
-        """
         aujourdhui = datetime.now()
         dates_existantes = [elem[0].date() for elem in liste_dates]
         jour_semaine = aujourdhui.weekday()
@@ -659,11 +600,6 @@ class Agent(models.Model):
         return fin_mois_dernier.date()
 
     def get_late_two_day_of_week(self):
-        """
-        Optimisation :
-        - On recherche une seule fois les attendances de tous les employés concernés
-          plutôt que de boucler et faire un search par employee.
-        """
         employees = self.env["hr.employee"].search([
             ('job_title', '!=', 'SG'),
             ('job_title', '!=', 'AG')
@@ -708,11 +644,6 @@ class Agent(models.Model):
             self.send_email_notify("email_template_pointage_notification_retard")
 
     def get_late_notify_tree_day_of_week(self, employee):
-        """
-        Optimisation :
-        - On se base sur get_late_two_day_of_week si possible,
-          mais on respecte la logique existante.
-        """
         liste_retard = []
         start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
         end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 0, 0))
@@ -743,11 +674,6 @@ class Agent(models.Model):
         return result
 
     def send_email_notification_agent(self, temp):
-        """
-        Optimisation :
-        - On récupère la liste de retard via get_late_two_day_of_week() en une seule fois,
-          puis on envoie les emails pour les employés concernés.
-        """
         template = self.env.ref("pointage.%s" % temp)
         if not template:
             return
