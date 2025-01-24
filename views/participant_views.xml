@@ -40,7 +40,7 @@
                 name="Participant(s)"
                 parent="hr_attendance.menu_hr_attendance_root"
                 sequence="14"
-                groups="hr_attendance.group_hr_attendance_kiosk"
+                groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent"
                 action="pointage_participants_form"/>
 
 
