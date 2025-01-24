@@ -24,6 +24,7 @@ class Autorisation(models.Model):
                                ('refuser', 'Refusé'),
                                ('sg', 'SG'),
                                ('ag', 'AG'), ('valider', 'Validée')], default='brouillon', string='Status')
+    _order = 'id desc'
 
     def name_get(self):
         name = []

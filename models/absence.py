@@ -16,6 +16,7 @@ class Absence(models.Model):
         ('unique_employee_date', 'unique(employee_id, day_absence)', 'Cet enregistrement existe deja')
     ]
     _rec_name = 'employee_id'
+    _order = 'id desc'
 
     @api.model
     def track_daily_absence(self):

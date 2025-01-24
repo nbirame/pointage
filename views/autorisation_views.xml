@@ -68,7 +68,7 @@
                 name="Demande d'autorisation de sortie"
                 parent="hr_attendance.menu_hr_attendance_root"
                 sequence="14"
-                groups="pointage.group_pointage_agent"
+                groups="pointage.group_pointage_agent,pointage.group_pointage_drh,pointage.group_pointage_superadmin,pointage.group_pointage_admin,pointage.group_pointage_ag,pointage.group_pointage_ag"
                 action="pointage_autorisation_form"/>
 
 

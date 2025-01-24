@@ -48,17 +48,35 @@
             <field name="perm_unlink" eval="False"/>
             <field name="groups" eval="[(4,ref('pointage.group_pointage_agent'))]"/>
         </record>
-        <record id="pointage_autorisation_rule_top_manager" model="ir.rule">
-            <field name="name">DRH, SG</field>
+        <record id="pointage_autorisation_rule_drh" model="ir.rule">
+            <field name="name">Role DRH</field>
             <field name="model_id" ref="model_pointage_autorisation"/>
             <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('pointage.group_pointage_sg','pointage.group_pointage_drh'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4,ref('pointage.group_pointage_drh'))]"/>
+        </record>
+        <record id="pointage_autorisation_rule_sg" model="ir.rule">
+            <field name="name">Role SG</field>
+            <field name="model_id" ref="model_pointage_autorisation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4,ref('pointage.group_pointage_sg'))]"/>
         </record>
         <record id="pointage_autorisation_rule_ag" model="ir.rule">
             <field name="name">Role AG</field>
             <field name="model_id" ref="model_pointage_autorisation"/>
             <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="groups" eval="[(4, ref('pointage.group_pointage_ag'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4,ref('pointage.group_pointage_ag'))]"/>
         </record>
          <record id="pointage_employee_absence_rule" model="ir.rule">
             <field name="name">Agent</field>
@@ -74,7 +92,7 @@
             <field name="name">Absence role DRH</field>
             <field name="model_id" ref="model_pointage_absence"/>
             <field name="perm_read" eval="1"/>
-            <field name="perm_create" eval=""/>
+            <field name="perm_create" eval="0"/>
             <field name="perm_write" eval="1"/>
             <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[(1, '=', 1)]</field>

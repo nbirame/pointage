@@ -20,6 +20,7 @@ class Biometrique(models.Model):
     pointagedata_ids = fields.One2many("pointage.pointagedata", "biometrique_id", string="Données de Pointage",
                                        store=True)
     validation = fields.Boolean(string="Valider")
+    _order = 'id desc'
 
     @api.onchange("fichier_id", "date_to", "date_from", "date_generated", "validation")
     def _onchange_pointagedata_ids(self):

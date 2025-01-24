@@ -8,6 +8,7 @@ class Participants(models.Model):
     employee_id = fields.Many2one("hr.employee", required=True, string="Employée")
     poste = fields.Char(string="Titre poste", compute="_compute_poste", store=True)
     atelier_id = fields.Many2one("pointage.atelier", string="Employée")
+    _order = 'id desc'
 
     def name_get(self):
         eq = []

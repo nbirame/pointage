@@ -17,6 +17,7 @@ class Justification(models.Model):
         ('drh', 'DRH'),
         ('valider', 'Validé'),
         ('refuser', 'Refusé')], string="Status", default='draft')
+    _order = 'id desc'
 
     def name_get(self):
         justif = []

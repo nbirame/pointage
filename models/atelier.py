@@ -21,6 +21,7 @@ class Atelier(models.Model):
         readonly=True,
         compute="_compute_name"
     )
+    _order = 'id desc'
 
     @api.depends("date_start", "date_end")
     def _compute_name(self):
