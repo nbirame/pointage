@@ -512,7 +512,7 @@
                     <div>Bonjour DRH, <br/>
                        <p t-if="object.get_late_two_day_of_week()">Veillez trouvez ci-dessous le tableau récapitulatif des agents ayant renregistré au moins trois retards durant la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p></br>
 
-                        <table t-if="object.get_late_two_day_of_week()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                        <!--<table t-if="object.get_late_two_day_of_week()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                             <thead class="thead-light" style="background-color:#611610;">
                                 <tr style="background-color:#611610;">
                                     <th style="color:white;">AGENT</th>
@@ -557,7 +557,7 @@
                             </td>
                             </tr>
                             </tbody>
-                        </table>
+                        </table>-->
                         <p t-else="">Il n'y a pas de retard durant la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/></p>
                         </br>
                         <p>Cordialement.</p>
