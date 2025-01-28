@@ -98,12 +98,19 @@ class AbsenceWizard(models.TransientModel):
                 ('date_star', '>=', self.start_date),
                 ('date_end', '<=', self.end_date),
             ])
+            # print(f"Nombre de jour de fete {number_day_party}")
+            # print(f"Le nombre de jour de conge avant for {nombre_jour}")
+            # print(f"Jour de conge {conge_listes}")
             for date in date_fete:
                 if date['date_star'] not in conge_listes:
+                    # print(f"Jour de fete n'est pas dans conge if")
                     conge_listes.append(date['date_star'])
-                    nombre_jour = len(conge_listes)
+                    nombre_jour += number_day_party # len(conge_listes)
+                    # print(f"Le nombre de jour de conge dans for {nombre_jour}")
                 else:
-                    nombre_jour = number_day_party + len(conge_listes)
+                    pass
+                    # nombre_jour = number_day_party + len(conge_listes)
+                    # print(f"Le nombre de jour de conge avant for else {nombre_jour}")
             liste.append(conge_listes)
             liste.append(nombre_jour)
 
