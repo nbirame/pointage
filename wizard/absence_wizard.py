@@ -43,9 +43,6 @@ class AbsenceWizard(models.TransientModel):
                 ]],
                 {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
             )
-            # Extraire les IDs des employés uniques pour éviter des appels répétitifs
-            # employee_ids = list(set([holiday['employee_id'][0] for holiday in data_holidays if holiday['employee_id']]))
-            # Récupérer les employés en une seule requête
             employees = models.execute_kw(
                 db_odoo, uid, SECRET_KEY, 'hr.employee', 'search_read',
                 [[('matricule_pointage', '=', matricule)]],
@@ -65,36 +62,45 @@ class AbsenceWizard(models.TransientModel):
                     date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
                     date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
                     if date_debut >= start_date and date_fin <= end_date:
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
+                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
                         conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
+                                       range((date_fin - date_debut).days + 1)]
                         for jour_conge in conge_liste:
                             conge_listes.append(jour_conge)
                     elif date_debut >= start_date and date_fin >= date_fin:
                         date_fin = end_date
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
+                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
                         conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
+                                       range((date_fin - date_debut).days + 1)]
                         for jour_conge in conge_liste:
                             conge_listes.append(jour_conge)
                     elif date_debut <= start_date and date_fin <= end_date:
                         date_debut = start_date
-                        nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
+                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
                         conge_liste = [date_debut + timedelta(days=i) for i in
-                                         range((date_fin - date_debut).days + 1)]
+                                       range((date_fin - date_debut).days + 1)]
                         for jour_conge in conge_liste:
                             conge_listes.append(jour_conge)
                     else:
-                        pass
-                        # date_debut = start_date
-                        # date_fin = end_date
-                        # nombre_jour = self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        # conge_liste = [date_debut + timedelta(days=i) for i in
-                        #                  range((date_fin - date_debut).days + 1)]
-                        # for jour_conge in conge_liste:
-                        #       conge_listes.append(jour_conge)
+                        date_debut = start_date
+                        date_fin = end_date
+                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
+                        conge_liste = [date_debut + timedelta(days=i) for i in
+                                       range((date_fin - date_debut).days + 1)]
+                        for jour_conge in conge_liste:
+                            conge_listes.append(jour_conge)
+            fete = self.env["vacances.ferier"]
+            date_fete = fete.sudo().search([
+                ('date_star', '>=', self.start_date),
+                ('date_end', '<=', self.end_date),
+            ])
+            for date in date_fete:
+                if date['date_star'] not in conge_listes:
+                    conge_listes.append(date['date_star'])
+                    nombre_jour = len(conge_listes)
             liste.append(conge_listes)
             liste.append(nombre_jour)
+
         return liste
 
     def get_employees_with_absences(self):
@@ -111,11 +117,11 @@ class AbsenceWizard(models.TransientModel):
             ])
             total_worked_hours = round(sum(attendance.worked_hours for attendance in attendance_records), 2)
             absence_days_hollidays = self.get_hollidays(employee.matricule, self.end_date, self.start_date)[1]
-            number_day_of_party = self.env["vacances.ferier"].sudo().search_count([
-                ('date_star', '>=', self.start_date),
-                ('date_end', '<=', self.end_date),
-            ])
-            number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
+            # number_day_of_party = self.env["vacances.ferier"].sudo().search_count([
+            #     ('date_star', '>=', self.start_date),
+            #     ('date_end', '<=', self.end_date),
+            # ])
+            number_of_days_absence_legal = absence_days_hollidays # + number_day_of_party
             total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                 self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
             equipe_mission = self.env["mission.equipe"].search([
@@ -126,11 +132,11 @@ class AbsenceWizard(models.TransientModel):
                 for agent in equipe_mission:
                     if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and ((agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour <= self.end_date) or (agent.mission_id.date_depart <= self.start_date and agent.mission_id.date_retour <= self.end_date) or (agent.mission_id.date_depart <= self.start_date and agent.mission_id.date_retour >= self.end_date)) and (agent.employee_id.id == employee.id):
                         number_day_of_mission += self.nombre_jours_sans_weekend(agent.mission_id.date_depart, agent.mission_id.date_retour)
-                        number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
+                        number_of_days_absence_legal = absence_days_hollidays  + number_day_of_mission # + number_day_of_party
                         total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                             self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
             else:
-                number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
+                number_of_days_absence_legal = absence_days_hollidays # + number_day_of_party
                 total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                     self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
             jours_absence = self.nombre_jours_sans_weekend(self.start_date, self.end_date) - len(
