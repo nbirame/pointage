@@ -112,19 +112,21 @@ class RapportWizard(models.TransientModel):
             ('date_star', '>=', self.date_in_get_rapport),
             ('date_end', '<=', self.date_end_get_rapport),
         ])
-        number_day_of_party = 0
+        number_day_of_party = fete.sudo().search_count([
+                    ('date_star', '>=', self.date_in_get_rapport),
+                    ('date_end', '<=', self.date_end_get_rapport),
+                ])
         equipe_mission = self.env["mission.equipe"].search([
             ('employee_id', '=', self.employee_id.id),
         ])
         for jours_fete in date_fete:
-            if jours_fete['date_star'] not in jour_de_conge[0]:
-                number_day_of_party = fete.sudo().search_count([
-                    ('date_star', '>=', self.date_in_get_rapport),
-                    ('date_end', '<=', self.date_end_get_rapport),
-                ])
-                number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
-            else:
+            fete_date = jours_fete['date_star']
+            date_debut = min(jour_de_conge[0])
+            date_fin = max(jour_de_conge[0])
+            if date_debut <= fete_date <= date_fin:
                 number_of_days_absence_legal = absence_days_hollidays
+            else:
+                number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
         self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                  self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
         # print(f"Le nombre d'heure avant if {self.total_number_of_working_hours}")
@@ -135,19 +137,19 @@ class RapportWizard(models.TransientModel):
                 if (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport) and (agent.employee_id.id == self.employee_id.id):
                     number_day_of_mission += self.nombre_jours_sans_weekend(agent.mission_id.date_depart,
                                                                             agent.mission_id.date_retour)
-                    number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
+                    number_of_days_absence_legal += number_day_of_mission # absence_days_hollidays + number_day_of_party + number_day_of_mission
                     self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                         self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
                 elif (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and agent.mission_id.date_depart >= self.date_in_get_rapport and agent.mission_id.date_retour >= self.date_end_get_rapport and (agent.employee_id.id == self.employee_id.id):
                     number_day_of_mission += self.nombre_jours_sans_weekend(agent.mission_id.date_depart,
                                                                             self.date_end_get_rapport)
-                    number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
+                    number_of_days_absence_legal += number_day_of_mission # absence_days_hollidays + number_day_of_party + number_day_of_mission
                     self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                         self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
                 elif (agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and (agent.employee_id.id == self.employee_id.id) and (agent.mission_id.date_depart <= self.date_in_get_rapport and agent.mission_id.date_retour <= self.date_end_get_rapport):
                     number_day_of_mission += self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                             agent.mission_id.date_retour)
-                    number_of_days_absence_legal = absence_days_hollidays + number_day_of_party + number_day_of_mission
+                    number_of_days_absence_legal += number_day_of_mission # absence_days_hollidays + number_day_of_party + number_day_of_mission
                     self.total_number_of_working_hours = int(
                         (self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                         self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
@@ -156,10 +158,13 @@ class RapportWizard(models.TransientModel):
                     # print(f"Agent dans else---> mission agent: {agent.employee_id.id} id:{self.employee_id.id}")
         else:
             for jours_fete in date_fete:
-                if jours_fete['date_star'] not in jour_de_conge[0]:
-                    number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
-                else:
+                fete_date = jours_fete['date_star']
+                date_debut = min(jour_de_conge[0])
+                date_fin = max(jour_de_conge[0])
+                if date_debut <= fete_date <= date_fin:
                     number_of_days_absence_legal = absence_days_hollidays
+                else:
+                    number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
                 self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                     self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
             # print(f"Le nombre d'heure {self.total_number_of_working_hours}")
