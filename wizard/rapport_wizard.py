@@ -121,10 +121,11 @@ class RapportWizard(models.TransientModel):
         ])
         for jours_fete in date_fete:
             fete_date = jours_fete['date_star']
-            date_debut = min(jour_de_conge[0])
-            date_fin = max(jour_de_conge[0])
-            if date_debut <= fete_date <= date_fin:
-                number_of_days_absence_legal = absence_days_hollidays
+            if jour_de_conge[0]:
+                date_debut = min(jour_de_conge[0])
+                date_fin = max(jour_de_conge[0])
+                if date_debut <= fete_date <= date_fin:
+                    number_of_days_absence_legal = absence_days_hollidays
             else:
                 number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
         self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
@@ -159,10 +160,11 @@ class RapportWizard(models.TransientModel):
         else:
             for jours_fete in date_fete:
                 fete_date = jours_fete['date_star']
-                date_debut = min(jour_de_conge[0])
-                date_fin = max(jour_de_conge[0])
-                if date_debut <= fete_date <= date_fin:
-                    number_of_days_absence_legal = absence_days_hollidays
+                if jour_de_conge[0]:
+                    date_debut = min(jour_de_conge[0])
+                    date_fin = max(jour_de_conge[0])
+                    if date_debut <= fete_date <= date_fin:
+                        number_of_days_absence_legal = absence_days_hollidays
                 else:
                     number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
                 self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
