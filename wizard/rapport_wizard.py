@@ -27,80 +27,76 @@ class RapportWizard(models.TransientModel):
         return jours_ouvres
 
     def get_hollidays(self, fin_mois_dernier, debut_ce_mois):
+        total_jour = 0
+        jours_conge_uniques = set()
         conge_listes = []
-        liste = []
-        nombre_demande_conge = []
-        nombre_jour = 0
         url = "http://erp.fongip.sn:8069"
         db_odoo = "fongip"
         username = "admin@fongip.sn"
         SECRET_KEY = "Fgp@2013"
         common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-        # Cette ligne permet de verifier si la connexion est valide ou non
         uid = common.authenticate(db_odoo, username, SECRET_KEY, {})
-        if uid:
-            models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-            # Récupérer les congés directement pour la plage de dates spécifiée
-            data_holidays = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
-                [[
-                    ('date_from', '!=', False),
-                    ('date_to', '!=', False),
-                    ('date_from', '<=', fin_mois_dernier),
-                    ('date_to', '>=', debut_ce_mois)
-                ]],
-                {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
-            )
-            # Extraire les IDs des employés uniques pour éviter des appels répétitifs
-            employee_ids = list(set([holiday['employee_id'][0] for holiday in data_holidays if holiday['employee_id']]))
-            # Récupérer les employés en une seule requête
-            employees = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.employee', 'search_read',
-                [[('id', 'in', employee_ids)]],
-                {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
-            )
-            # Créer un dictionnaire des employés pour un accès rapide par ID
-            employee_dict = {employee['id']: employee for employee in employees}
-            for holiday in data_holidays:
-                # date_debut
-                employee_id = holiday['employee_id'][0]
-                employee = employee_dict.get(employee_id)
-                if employee and employee['matricule_pointage'] == self.employee_id.matricule:
-                    nombre_demande_conge.append(holiday)
-                    for i in range(len(nombre_demande_conge)):
-                        date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
-                        date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
-                        if date_debut >= debut_ce_mois and date_fin <= fin_mois_dernier:
-                            nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                            conge_liste = [date_debut + timedelta(days=i) for i in
-                                             range((date_fin - date_debut).days + 1)]
-                            for jour_conge in conge_liste:
-                                conge_listes.append(jour_conge)
-                        elif date_debut >= debut_ce_mois and date_fin >= fin_mois_dernier:
-                            date_fin = fin_mois_dernier
-                            nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                            conge_liste = [date_debut + timedelta(days=i) for i in
-                                             range((date_fin - date_debut).days + 1)]
-                            for jour_conge in conge_liste:
-                                conge_listes.append(jour_conge)
-                        elif date_debut <= debut_ce_mois and date_fin <= fin_mois_dernier:
-                            date_debut = debut_ce_mois
-                            nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                            conge_liste = [date_debut + timedelta(days=i) for i in
-                                             range((date_fin - date_debut).days + 1)]
-                            for jour_conge in conge_liste:
-                                conge_listes.append(jour_conge)
-                        else:
-                            date_debut = debut_ce_mois
-                            date_fin = fin_mois_dernier
-                            nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                            conge_liste = [date_debut + timedelta(days=i) for i in
-                                             range((date_fin - date_debut).days + 1)]
-                            for jour_conge in conge_liste:
-                                conge_listes.append(jour_conge)
-            liste.append(conge_listes)
-            liste.append(nombre_jour)
-        return liste
+        if not uid:
+            return [conge_listes, total_jour]
+
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+        data_holidays = models.execute_kw(
+            db_odoo, uid, SECRET_KEY,
+            'hr.holidays', 'search_read',
+            [[
+                ('date_from', '!=', False),
+                ('date_to', '!=', False),
+                ('date_from', '<=', fin_mois_dernier),  # début <= fin de la plage
+                ('date_to', '>=', debut_ce_mois)  # fin >= début de la plage
+            ]],
+            {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
+        )
+        employee_ids = list(set(
+            holiday['employee_id'][0]
+            for holiday in data_holidays
+            if holiday['employee_id']
+        ))
+        employees = models.execute_kw(
+            db_odoo, uid, SECRET_KEY,
+            'hr.employee', 'search_read',
+            [[('id', 'in', employee_ids)]],
+            {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
+        )
+        employee_dict = {emp['id']: emp for emp in employees}
+        for holiday in data_holidays:
+            if not holiday['employee_id']:
+                continue
+
+            employee_id = holiday['employee_id'][0]
+            employee = employee_dict.get(employee_id)
+            if not employee or employee['matricule_pointage'] != self.employee_id.matricule:
+                continue
+            date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
+            date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
+            actual_start = max(date_debut, debut_ce_mois)
+            actual_end = min(date_fin, fin_mois_dernier)
+
+            if actual_start > actual_end:
+                continue
+            conge_range = [
+                actual_start + timedelta(days=i)
+                for i in range((actual_end - actual_start).days + 1)
+            ]
+            for jour in conge_range:
+                if jour.weekday() < 5:
+                    jours_conge_uniques.add(jour)
+        conge_listes = sorted(list(jours_conge_uniques))
+        total_jour = len(conge_listes)
+        fete = self.env["vacances.ferier"]
+        date_fete = fete.sudo().search([
+            ('date_star', '>=', self.date_in_get_rapport),
+            ('date_end', '<=', self.date_end_get_rapport),
+        ])
+        for date in date_fete:
+            if date['date_star'] not in conge_listes:
+                conge_listes.append(date['date_star'])
+                total_jour = len(conge_listes)
+        return [conge_listes, total_jour]
 
     @api.depends("date_in_get_rapport", "date_end_get_rapport", "employee_id")
     def _compute_total_number_of_working_hours(self):
@@ -169,7 +165,6 @@ class RapportWizard(models.TransientModel):
                     number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
                 self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                     self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-            # print(f"Le nombre d'heure {self.total_number_of_working_hours}")
 
     def get_total_work(self):
         total_heure = 0
