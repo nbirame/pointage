@@ -132,6 +132,7 @@ class Absence(models.Model):
             }
 
     def absence_send_email_notify_drh(self):
-        self.send_email_notify("email_template_absence_semaine_notification_drh")
+        if self.get_absence_employees():
+            self.send_email_notify("email_template_absence_semaine_notification_drh")
 
 
