@@ -113,7 +113,8 @@ class AbsenceWizard(models.TransientModel):
                     # print(f"Le nombre de jour de conge avant for else {nombre_jour}")
             liste.append(conge_listes)
             liste.append(nombre_jour)
-
+        print(f"Conge {liste[0]}")
+        print(f"Nombre de jour {liste[1]}")
         return liste
 
     def get_employees_with_absences(self):
@@ -135,8 +136,10 @@ class AbsenceWizard(models.TransientModel):
             #     ('date_end', '<=', self.end_date),
             # ])
             number_of_days_absence_legal = absence_days_hollidays # + number_day_of_party
+            print(f"Nombre d'absence legal {number_of_days_absence_legal}")
             total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                 self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
+            print(f"Total a faire {total_number_of_working_hours}")
             equipe_mission = self.env["mission.equipe"].search([
                 ('employee_id', '=', employee.id),
             ])
@@ -152,6 +155,8 @@ class AbsenceWizard(models.TransientModel):
                 number_of_days_absence_legal = absence_days_hollidays # + number_day_of_party
                 total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                     self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
+                print(f"Absence dans else {number_of_days_absence_legal}")
+                print(f"Total a faire dans else {total_number_of_working_hours}")
             jours_absence = self.nombre_jours_sans_weekend(self.start_date, self.end_date) - len(
                 attendance_records) - number_of_days_absence_legal
             if jours_absence < 0:
@@ -159,6 +164,7 @@ class AbsenceWizard(models.TransientModel):
             ecart = total_worked_hours - total_number_of_working_hours
             liste_absent.append([employee.name, employee.job_title, employee.department_id.name, total_worked_hours,
                                  total_number_of_working_hours, ecart, jours_absence])
+        print(f"Heures ppointage {sorted(liste_absent, key=lambda absence: absence[-2], reverse=True)}")
         return sorted(liste_absent, key=lambda absence: absence[-2], reverse=True)
 
     def action_generate_report_presence(self):
