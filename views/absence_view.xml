@@ -1,16 +1,16 @@
 <odoo>
     <data>
         <!-- explicit list view definition -->
-       <!-- <record id="ir_cron_auto_absence_tracking" model="ir.cron">
-            <field name="name">Liste des absences</field>
+        <record id="ir_cron_auto_absence_tracking" model="ir.cron">
+            <field name="name">Enregistrement Liste des absences</field>
             <field name="model_id" ref="pointage.model_pointage_absence"/>
             <field name="state">code</field>
-            <field name="code">model.absence_send_email_notify_drh()</field>
+            <field name="code">model.track_daily_absence()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">weeks</field>
             <field name="numbercall">-1</field>
             <field name="active">True</field>
-        </record>-->
+        </record>
         <record id="cron_envoyer_absence_semaine_precedente" model="ir.cron">
         <field name="name">Cron absences semaine </field>
         <field name="model_id" ref="pointage.model_pointage_absence"/>
