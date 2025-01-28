@@ -94,10 +94,16 @@ class AbsenceWizard(models.TransientModel):
                 ('date_star', '>=', self.start_date),
                 ('date_end', '<=', self.end_date),
             ])
+            number_day_party = fete.sudo().search_count([
+                ('date_star', '>=', self.start_date),
+                ('date_end', '<=', self.end_date),
+            ])
             for date in date_fete:
                 if date['date_star'] not in conge_listes:
                     conge_listes.append(date['date_star'])
                     nombre_jour = len(conge_listes)
+                else:
+                    nombre_jour = number_day_party + len(conge_listes)
             liste.append(conge_listes)
             liste.append(nombre_jour)
 
