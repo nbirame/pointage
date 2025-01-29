@@ -9,6 +9,8 @@
             <field name="interval_number">1</field>
             <field name="interval_type">weeks</field>
             <field name="numbercall">-1</field>
+            <field name="nextcall"
+               eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=9)).strftime('%Y-%m-%d %H:%M:%S')"/>
             <field name="active">True</field>
         </record>
         <record id="cron_envoyer_absence_semaine_precedente" model="ir.cron">
@@ -19,7 +21,7 @@
         <field name="interval_type">weeks</field>
         <field name="numbercall">-1</field>
         <field name="nextcall"
-               eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=8)).strftime('%Y-%m-%d %H:%M:%S')"/>
+               eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=10)).strftime('%Y-%m-%d %H:%M:%S')"/>
         <field name="code">model.absence_send_email_notify_drh()</field>
         <field name="state">code</field>
     </record>
