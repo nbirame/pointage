@@ -20,102 +20,102 @@ class AbsenceWizard(models.TransientModel):
         return jours_ouvres
 
     def get_hollidays(self, matricule, end_date, start_date):
-        conge_listes = []
-        liste = []
+        conge_jours_set = set()
         nombre_jour = 0
         url = "http://erp.fongip.sn:8069"
         db_odoo = "fongip"
         username = "admin@fongip.sn"
         SECRET_KEY = "Fgp@2013"
-        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-        # Cette ligne permet de verifier si la connexion est valide ou non
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
         uid = common.authenticate(db_odoo, username, SECRET_KEY, {})
-        if uid:
-            models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-            # Récupérer les congés directement pour la plage de dates spécifiée
-            data_holidays = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
-                [[
-                    ('date_from', '!=', False),
-                    ('date_to', '!=', False),
-                    ('date_from', '<=', end_date),
-                    ('date_to', '>=', start_date)
-                ]],
-                {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
-            )
-            employees = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.employee', 'search_read',
-                [[('matricule_pointage', '=', matricule)]],
-                {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
-            )
-            print(f"Liste des employee-------------> {employees}")
-            # Créer un dictionnaire des employés pour un accès rapide par ID
-            employee_dict = {employee['id']: employee for employee in employees}
-            # Filtrer et traiter les congés
-            for holiday in data_holidays:
-                # date_debut
-                employee_id = holiday['employee_id'][0]
-                employee = employee_dict.get(employee_id)
-                # for employee_base in employees_base:
-                if employee and employee['matricule_pointage'] == matricule:
-                    # Convertir les dates et générer la liste des jours de congé
-                    date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
-                    date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
-                    if date_debut >= start_date and date_fin <= end_date:
-                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                       range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut >= start_date and date_fin >= date_fin:
-                        date_fin = end_date
-                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                       range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut <= start_date and date_fin <= end_date:
-                        date_debut = start_date
-                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                       range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    else:
-                        date_debut = start_date
-                        date_fin = end_date
-                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                       range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-            fete = self.env["vacances.ferier"]
-            date_fete = fete.sudo().search([
-                ('date_star', '>=', self.start_date),
-                ('date_end', '<=', self.end_date),
-            ])
-            number_day_party = fete.sudo().search_count([
-                ('date_star', '>=', self.start_date),
-                ('date_end', '<=', self.end_date),
-            ])
-            # print(f"Nombre de jour de fete {number_day_party}")
-            # print(f"Le nombre de jour de conge avant for {nombre_jour}")
-            # print(f"Jour de conge {conge_listes}")
-            for date in date_fete:
-                if date['date_star'] not in conge_listes:
-                    # print(f"Jour de fete n'est pas dans conge if")
-                    conge_listes.append(date['date_star'])
-                    nombre_jour += number_day_party # len(conge_listes)
-                    # print(f"Le nombre de jour de conge dans for {nombre_jour}")
-                else:
-                    pass
-                    # nombre_jour = number_day_party + len(conge_listes)
-                    # print(f"Le nombre de jour de conge avant for else {nombre_jour}")
-            liste.append(conge_listes)
-            liste.append(nombre_jour)
-        print(f"Conge {liste[0]}")
-        print(f"Nombre de jour {liste[1]}")
-        return liste
+        if not uid:
+            # En cas d'échec, on retourne simplement deux valeurs vides
+            return [[], 0]
+
+        models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+
+        # --- Récupérer l'ID employé correspondant au matricule ---
+        employees = models.execute_kw(
+            db_odoo, uid, SECRET_KEY,
+            'hr.employee', 'search_read',
+            [[('matricule_pointage', '=', matricule)]],
+            {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
+        )
+        if not employees:
+            # Si l'employé n'existe pas, on retourne directement
+            return [[], 0]
+
+        # On construit un set avec les IDs d'employé qu'on veut (en théorie 1 seul)
+        employee_ids = {emp['id'] for emp in employees}
+
+        # --- Récupérer les congés qui chevauchent [start_date, end_date] ---
+        data_holidays = models.execute_kw(
+            db_odoo, uid, SECRET_KEY,
+            'hr.holidays', 'search_read',
+            [[
+                ('date_from', '!=', False),
+                ('date_to', '!=', False),
+                ('date_from', '<=', end_date),  # début congé <= fin plage
+                ('date_to', '>=', start_date)  # fin congé >= début plage
+            ]],
+            {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
+        )
+
+        # --- Parcourir chaque congé et calculer l'intersection ---
+        for holiday in data_holidays:
+            emp_id = holiday['employee_id']
+            if not emp_id:
+                continue  # s'il n'y a pas d'employé lié, on ignore
+
+            employee_id = emp_id[0]
+            if employee_id not in employee_ids:
+                continue  # si ce congé n'est pas pour l'employé ciblé
+
+            # Conversion des chaînes en objets date
+            date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
+            date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
+
+            # Intersection du congé avec la plage demandée
+            real_start = max(date_debut, start_date)
+            real_end = min(date_fin, end_date)
+
+            if real_start <= real_end:
+                # On compte le nombre de jours ouvrables (sans weekend) sur la plage
+                nombre_jour += self.nombre_jours_sans_weekend(real_start, real_end)
+
+                # On ajoute chaque jour (pour le détail) dans le set
+                # (si vous voulez exclure les week-ends, faites-le ici ou
+                #  utilisez directement votre logique 'nombre_jours_sans_weekend')
+                delta = (real_end - real_start).days
+                for i in range(delta + 1):
+                    jour_conge = real_start + timedelta(days=i)
+                    conge_jours_set.add(jour_conge)
+
+        # --- Gestion des jours fériés ---
+        fete_env = self.env["vacances.ferier"]
+        # On récupère tous les jours fériés dans la plage [self.start_date, self.end_date].
+        # Si `start_date` / `end_date` correspondent à `self.start_date` et `self.end_date`,
+        # adaptez la requête en conséquence.
+        date_fete = fete_env.sudo().search([
+            ('date_star', '>=', self.start_date),
+            ('date_end', '<=', self.end_date),
+        ])
+        number_day_party = fete_env.sudo().search_count([
+            ('date_star', '>=', self.start_date),
+            ('date_end', '<=', self.end_date),
+        ])
+
+        # On ajoute chaque jour férié, s'il n'est pas déjà dans le set de congés
+        for df in date_fete:
+            if df['date_star'] not in conge_jours_set:
+                conge_jours_set.add(df['date_star'])
+                # Logique actuelle : on ajoute 'number_day_party' au total
+                nombre_jour += number_day_party
+
+        # Conversion set -> liste + tri
+        conge_listes = sorted(list(conge_jours_set))
+
+        return [conge_listes, nombre_jour]
 
     def get_employees_with_absences(self):
         # Liste de presence
