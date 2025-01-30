@@ -146,7 +146,7 @@ class AbsenceWizard(models.TransientModel):
                                                                                 agent.mission_id.date_retour)
                         number_of_days_absence_legal += number_day_of_mission
                         total_number_of_working_hours = int(
-                            (self.nombre_jours_sans_weekend(self.start_datet,
+                            (self.nombre_jours_sans_weekend(self.start_date,
                                                             self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
                     elif (
                             agent.mission_id.state == "en_cours" or agent.mission_id.state == "terminer") and agent.mission_id.date_depart >= self.start_date and agent.mission_id.date_retour >= self.date_end_get_rapport and (
