@@ -119,7 +119,6 @@ class AbsenceWizard(models.TransientModel):
         employees = self.env['hr.employee'].search([('job_title', 'not in', ['SG', 'AG']), ('agence_id.name', '=', 'SIEGE')])
         liste_absent = []
         for employee in employees:
-            print(f"Les agents du Siege: {employee.name}")
             heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
             attendance_records = self.env['hr.attendance'].search([
                 ('employee_id', '=', employee.id),
@@ -131,7 +130,7 @@ class AbsenceWizard(models.TransientModel):
             number_of_days_absence_legal = absence_days_hollidays
             total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                 self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
-            participants = self.env["pointage.participants"].search([('employee_id', '=', self.employee_id.id)])
+            participants = self.env["pointage.participants"].search([('employee_id', '=', employee.id)])
             if participants:
                 number_day_of_atelier = 0
                 for agent in participants:
