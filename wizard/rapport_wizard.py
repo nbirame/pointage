@@ -112,6 +112,8 @@ class RapportWizard(models.TransientModel):
                     ('date_star', '>=', self.date_in_get_rapport),
                     ('date_end', '<=', self.date_end_get_rapport),
                 ])
+        # participants_listes = []
+
         equipe_mission = self.env["mission.equipe"].search([
             ('employee_id', '=', self.employee_id.id),
         ])
@@ -127,6 +129,35 @@ class RapportWizard(models.TransientModel):
         self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                  self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
         # print(f"Le nombre d'heure avant if {self.total_number_of_working_hours}")
+        participants = self.env["pointage.participants"].search([('employee_id', '=', self.employee_id.id)])
+        if participants:
+            number_day_of_atelier = 0
+            for agent in participants:
+                if (
+                        agent.atelier_id.date_from >= self.date_in_get_rapport and agent.atelier_id.date_to <= self.date_end_get_rapport) and (
+                        agent.employee_id.id == self.employee_id.id):
+                    number_day_of_atelier += self.nombre_jours_sans_weekend(agent.atelier_id.date_from,
+                                                                            agent.atelier_id.date_to)
+                    number_of_days_absence_legal += number_day_of_atelier
+                    self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
+                                                                                             self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
+                elif agent.atelier_id.date_from >= self.date_in_get_rapport and agent.atelier_id.date_to >= self.date_end_get_rapport and (
+                        agent.employee_id.id == self.employee_id.id):
+                    number_day_of_atelier += self.nombre_jours_sans_weekend(agent.atelier_id.date_from,
+                                                                            self.date_end_get_rapport)
+                    number_of_days_absence_legal += number_day_of_atelier
+                    self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
+                                                                                             self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
+                elif (agent.employee_id.id == self.employee_id.id) and (
+                        agent.atelier_id.date_from <= self.date_in_get_rapport and agent.atelier_id.date_to <= self.date_end_get_rapport):
+                    number_day_of_atelier += self.nombre_jours_sans_weekend(self.date_in_get_rapport,
+                                                                            agent.atelier_id.date_to)
+                    number_of_days_absence_legal += number_day_of_atelier
+                    self.total_number_of_working_hours = int(
+                        (self.nombre_jours_sans_weekend(self.date_in_get_rapport,
+                                                        self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
+                else:
+                    pass
         if equipe_mission:
             # print("Mission")
             number_day_of_mission = 0
@@ -278,7 +309,7 @@ class RapportWizard(models.TransientModel):
                 if nouvelle_entree not in liste_dates:
                     liste_dates.append(nouvelle_entree)
             elif date in participants_listes:
-                print(f"List des participants: {date}")
+                # print(f"List des participants: {date}")
                 nouvelle_entree = [datetime.combine(date, time(4, 0, 0)),
                                    datetime.combine(date, time(4, 0, 0)),
                                    'En atelier', 0.0, 0]

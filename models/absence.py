@@ -21,9 +21,9 @@ class Absence(models.Model):
     @api.model
     def track_daily_absence(self):
         end_of_last_week = self.env['hr.employee'].last_week_end_date()
-        print(f"Fin semaine {end_of_last_week}")
+        # print(f"Fin semaine {end_of_last_week}")
         start_of_last_week = self.env['hr.employee'].last_week_start_date()
-        print(f"Fin semaine {start_of_last_week}")
+        # print(f"Fin semaine {start_of_last_week}")
         employees = self.env['hr.employee'].search([('job_title', 'not in', ['SG', 'AG']), ('agence_id.name', '=', 'SIEGE')])
         attendance_model = self.env['hr.attendance']
         for single_date in (start_of_last_week + timedelta(n) for n in range(5)):
@@ -54,7 +54,7 @@ class Absence(models.Model):
                     ('check_out', '<=', single_date.strftime('%Y-%m-%d 23:59:59'))
                 ])
                 if not attendance:
-                    print("Test")
+                    # print("Test")
                     if single_date in conges[0]:
                         self.create({
                             'employee_id': employee.id,
