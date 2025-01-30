@@ -376,6 +376,24 @@
                         ]]>
             </field>
         </record>
+        <record id="email_template_notification_directeur" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.employee_id.user_id.employee_parent_id.work_email or ''}}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour Directeur,<br/>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     <!--<span t-out="object.get_url(object.id) or ''"></span>-->
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
         <record id="email_template_notification_drh" model="mail.template">
             <field name="name">Demande d'autorisation de sortie</field>
             <field name="email_from">fongip@fongip.sn</field>

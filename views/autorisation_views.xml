@@ -31,16 +31,18 @@
                         <button string="Remettre en Brouillon" name="action_brouillon" states="confirmer" type="object"/>
                         <button string="Refuser" name="action_refuser" states="drh" type="object" groups="pointage.group_pointage_drh"/>
                         <button string="Refuser" name="action_refuser" states="sg" type="object" groups="pointage.group_pointage_sg"/>
-                        <button string="Refuser" name="action_refuser" states="ag" type="object" groups="pointage.group_pointage_sg"/>
-                        <button string="Confirmer" name="action_drh" states="confirmer" type="object" class="oe_highlight"/>
+                        <button string="Refuser" name="action_refuser" states="ag" type="object" groups="pointage.group_pointage_ag"/>
+                        <button string="Refuser" name="action_refuser" states="ag" type="object" groups="pointage.group_pointage_directeur"/>
+                        <button string="Confirmer" name="action_directeur" states="confirmer" type="object" class="oe_highlight"/>
+                        <button string="Valider" name="action_drh" states="directeur" type="object" class="oe_highlight" groups="pointage.group_pointage_directeur"/>
                         <button string="Valider" name="action_sg" states="drh" type="object" class="oe_highlight" groups="pointage.group_pointage_drh"/>
                         <button string="Valider" name="action_ag" states="sg" type="object" class="oe_highlight" groups="pointage.group_pointage_sg"/>
                         <button string="Valider" name="action_valider" states="ag" type="object" class="oe_highlight" groups="pointage.group_pointage_ag"/>
-                        <field name="state" widget="statusbar" statusbar_visible="refuser,brouillon,confirmer,drh,sg,ag,Valider"/>
+                        <field name="state" widget="statusbar" statusbar_visible="refuser,brouillon,confirmer,directeur,drh,sg,ag,Valider"/>
                     </header>
                     <sheet>
                         <group>
-                            <field name="employee_id"/>
+                            <field name="employee_id" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
                             <field name="matricule"/>
                             <field name="adress"/>
                             <field name="phone"/>
@@ -48,15 +50,15 @@
                             <field name="service"/>
                         </group>
                         <group>
-                            <field name="date"/>
+                            <field name="date" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
                         </group>
                         <group>
-                            <field name="time_out" widget="float_time"/>
-                            <field name="time_in" widget="float_time"/>
+                            <field name="time_out" widget="float_time" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
+                            <field name="time_in" widget="float_time" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
                         </group>
                         <notebook>
-                          <page name="page_lines" string="Motif">
-                             <field name="motif"/>
+                          <page name="page_lines" string="Motif" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}">
+                             <field name="motif" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
                           </page>
                         </notebook>
                     </sheet>

@@ -36,6 +36,11 @@
             <field name="category_id" ref="pointage.module_pointage"/>
             <field name="comment">AGENTS</field>
         </record>
+        <record id="group_pointage_directeur" model="res.groups">
+            <field name="name">Directeur</field>
+            <field name="category_id" ref="pointage.module_pointage"/>
+            <field name="comment">Directeur</field>
+        </record>
     </data>
     <data noupdate="1">
         <record id="pointage_autorisation_rule_employee" model="ir.rule">
@@ -47,6 +52,20 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
             <field name="groups" eval="[(4,ref('pointage.group_pointage_agent'))]"/>
+        </record>
+        <record id="pointage_autorisation_rule_directeur" model="ir.rule">
+            <field name="name">Role Directeur</field>
+            <field name="model_id" ref="model_pointage_autorisation"/>
+            <field name="domain_force">['|', '|',
+            ('employee_id.user_id', '=', user.id),
+            ('employee_id.parent_id.user_id', '=', user.id),
+            ('employee_id.department_id.member_ids.user_id', 'in', [user.id])
+            ]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4,ref('pointage.group_pointage_directeur'))]"/>
         </record>
         <record id="pointage_autorisation_rule_drh" model="ir.rule">
             <field name="name">Role DRH</field>

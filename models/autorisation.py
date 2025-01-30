@@ -20,6 +20,7 @@ class Autorisation(models.Model):
     motif = fields.Text(string="Motif", required=True)
     state = fields.Selection([('brouillon', 'Brouillon'),
                                ('confirmer', 'Confirmer'),
+                              ('directeur', 'Directeur'),
                                ('drh', 'DRH'),
                                ('refuser', 'Refusé'),
                                ('sg', 'SG'),
@@ -68,7 +69,13 @@ class Autorisation(models.Model):
         return True
 
     def action_confirmer(self):
+        print(self.employee_id.user_id.employee_parent_id.work_email)
         self.write({'state': 'confirmer'})
+        return True
+
+    def action_directeur(self):
+        self.write({'state': 'directeur'})
+        self.action_send_email_notifier("email_template_notification_directeur")
         return True
 
     def action_drh(self):

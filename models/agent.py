@@ -563,7 +563,7 @@ class Agent(models.Model):
                     liste_dates.append([
                         datetime.combine(d, time(4, 0, 0)),
                         datetime.combine(d, time(4, 0, 0)),
-                        'En atelier', '', 0.0
+                        'En atelier', 0.0, ''
                     ])
                 elif d in mission_listes:
                     liste_dates.append([
