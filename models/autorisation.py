@@ -24,7 +24,7 @@ class Autorisation(models.Model):
                                ('drh', 'DRH'),
                                ('refuser', 'Refusé'),
                                ('sg', 'SG'),
-                               ('ag', 'AG'), ('valider', 'Validée')], default='brouillon', string='Status')
+                               ('ag', 'AG'), ('valider', 'Validée')], default='confirmer', string='Status')
     _order = 'id desc'
 
     def name_get(self):
@@ -69,27 +69,27 @@ class Autorisation(models.Model):
         return True
 
     def action_confirmer(self):
-        print(self.employee_id.user_id.employee_parent_id.work_email)
-        self.write({'state': 'confirmer'})
+        self.action_send_email_notifier("email_template_notification_directeur")
+        self.write({'state': 'directeur'})
         return True
 
     def action_directeur(self):
-        self.write({'state': 'directeur'})
-        self.action_send_email_notifier("email_template_notification_directeur")
+        self.write({'state': 'drh'})
+        self.action_send_email_notifier("email_template_notification_drh")
         return True
 
     def action_drh(self):
-        self.action_send_email_notifier("email_template_notification_drh")
-        self.write({'state': 'drh'})
+        self.action_send_email_notifier("email_template_notification_sg")
+        self.write({'state': 'sg'})
         return True
 
     def action_sg(self):
-        self.write({'state': 'sg'})
+        self.write({'state': 'ag'})
         self.action_send_email_notifier("email_template_notification_sg")
         return True
 
     def action_ag(self):
-        self.write({'state': 'ag'})
+        self.write({'state': 'valider'})
         self.action_send_email_notifier("email_template_notification_ag")
         return True
 
