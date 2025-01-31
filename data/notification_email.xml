@@ -385,11 +385,11 @@
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
                     <div>Bonjour Directeur,<br/>
-                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une d'autorisation de sortie pour le</p>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une demande d'autorisation de sortie pour le</p>
                      <span t-out="object.date or ''"></span> de
                      <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
                      <!--<span t-out="object.get_url(object.id) or ''"></span>-->
-                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans le navigateur</a>
                     </div>
                         ]]>
             </field>
@@ -403,11 +403,11 @@
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
                     <div>Bonjour DRH,<br/>
-                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une d'autorisation de sortie pour le</p>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une demande d'autorisation de sortie pour le</p>
                      <span t-out="object.date or ''"></span> de
                      <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
                      <!--<span t-out="object.get_url(object.id) or ''"></span>-->
-                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans le navigateur</a>
                     </div>
                         ]]>
             </field>
@@ -421,11 +421,11 @@
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
                     <div>Bonjour SG,<br/>
-                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une d'autorisation de sortie pour le</p>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une demande d'autorisation de sortie pour le</p>
                      <span t-out="object.date or ''"></span> de
                      <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
                      <!--<span t-out="object.get_url(object.id) or ''"></span>-->
-                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans le navigateur</a>
                     </div>
                         ]]>
             </field>
@@ -439,11 +439,11 @@
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
                     <div>Bonjour AG,<br/>
-                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une d'autorisation de sortie pour le</p>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une demande d'autorisation de sortie pour le</p>
                      <span t-out="object.date or ''"></span> de
                      <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
                      <!--<span t-out="object.get_url(object.id) or ''"></span>-->
-                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir le navigateur</a>
                     </div>
                         ]]>
             </field>
