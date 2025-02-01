@@ -5,7 +5,11 @@ class Justification(models.Model):
     _name = "pointage.justification"
     _description = "Justification Absence"
 
-    employee_id = fields.Many2one("hr.employee", string="Agent", required=True)
+    @api.model
+    def _default_user(self):
+        return self.env.context.get('user_id', self.env.user.id)
+
+    employee_id = fields.Many2one("hr.employee", string="Agent",default=_default_user, required=True)
     date_to = fields.Date(string="Date de début", required=True)
     date_from = fields.Date(string="Date de fin", required=True)
     file_justify = fields.Binary(string="Justificatif", store=True)
@@ -25,16 +29,6 @@ class Justification(models.Model):
             rec_name = "%s-%s" % (record.date_to, record.file_name)
             justif.append((record.id, rec_name))
         return justif
-
-    @api.onchange('employee_id')
-    def _onchange_employee_id(self):
-        if not self.employee_id:
-            # Récupérer l'utilisateur connecté
-            user = self.env.user
-            # Récupérer l'employé lié à l'utilisateur
-            employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
-            if employee:
-                self.employee_id = employee
 
     def action_draft(self):
         self.write({'state': 'draft'})
