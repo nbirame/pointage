@@ -9,7 +9,6 @@ class Biometrique(models.Model):
     _description = 'Importation donnees de pointage biometrique'
     _rec_name = 'date'
 
-    # employee_id = fields.Many2one("hr.employee", string="Employé")
     employee_id = fields.Many2one('res.users', string='Importé par', default=lambda self: self.env.user, readonly=True)
     date = fields.Datetime(string="Date d'import", default=lambda self: fields.datetime.now())
     date_generated = fields.Datetime(string="Date d'export")
