@@ -54,7 +54,7 @@ class Originaldata(models.Model):
             date_odoo_format_in = date_object_in.strftime('%Y-%m-%d %H:%M:%S')
             if len(new_liste[i][1]) != 1:
                 # print("Entrer SORTIE")
-                date_object_out = datetime.strptime(new_liste[i][1][1], '%d/%m/%Y %H:%M:%S')
+                date_object_out = datetime.strptime(new_liste[i][1][-1], '%d/%m/%Y %H:%M:%S')
                 date_odoo_format_out = date_object_out.strftime('%Y-%m-%d %H:%M:%S')
                 # print(date_odoo_format_out)
                 presence_valide = {
