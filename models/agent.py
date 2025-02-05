@@ -14,6 +14,7 @@ class Agent(models.Model):
     hours_last_week = fields.Float(string="Nombre d'heure dernier Semaine", compute='_compute_hours_last_week')
     matricule = fields.Integer(string="Matricule")
     agence_id = fields.Many2one('pointage.agence', string="FONGIP")
+    en_aletement = fields.Selection([('allaitement', 'En allaitement'), ('sans_allaitement', 'Sans allaitement')], string="Etat")
 
     def _compute_hours_last_week(self):
         if not self:
@@ -619,13 +620,20 @@ class Agent(models.Model):
         liste_retard = []
         for att in attendances:
             # Si check_in >= 9h => retard
-            if att.check_in.time() >= time(9, 0):
+            if att.check_in.time() >= time(9, 0) and att.employee_id.en_aletement != 'En allaitement':
                 liste_retard.append([
                     att.employee_id.id,
                     att.employee_id.name,
                     att.check_in.time()
                 ])
-
+            elif att.check_in.time() >= time(10, 0) and att.employee_id.en_aletement == 'En allaitement':
+                liste_retard.append([
+                    att.employee_id.id,
+                    att.employee_id.name,
+                    att.check_in.time()
+                ])
+            else:
+                pass
         grouped_data = defaultdict(list)
         for entry in liste_retard:
             grouped_data[(entry[0], entry[1])].append(entry[2])
@@ -654,12 +662,20 @@ class Agent(models.Model):
             ('check_out', '>=', start_last_week_naive),
         ])
         for attendance in attendances:
-            if attendance.check_in.time() >= time(9, 0):
+            if attendance.check_in.time() >= time(9, 0) and attendance.employee_id.en_aletement != 'En allaitement':
                 liste_retard.append([
                     attendance.employee_id.id,
                     attendance.employee_id.name,
                     attendance.check_in.time()
                 ])
+            elif attendance.check_in.time() >= time(10, 0) and attendance.employee_id.en_aletement == 'En allaitement':
+                liste_retard.append([
+                    attendance.employee_id.id,
+                    attendance.employee_id.name,
+                    attendance.check_in.time()
+                ])
+            else:
+                pass
 
         grouped_data = defaultdict(list)
         for entry in liste_retard:

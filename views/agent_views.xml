@@ -151,6 +151,9 @@
             <xpath expr="//field[@name='work_email']" position="after">
                 <field name="matricule"/>
             </xpath>
+            <xpath expr="//field[@name='marital']" position="after">
+                <field name="en_aletement"/>
+            </xpath>
         </field>
     </record>
 
