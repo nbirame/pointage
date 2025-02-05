@@ -620,13 +620,13 @@ class Agent(models.Model):
         liste_retard = []
         for att in attendances:
             # Si check_in >= 9h => retard
-            if att.check_in.time() >= time(9, 0) and att.employee_id.en_aletement != "En allaitement":
+            if att.check_in.time() >= time(9, 0) and att.employee_id.en_aletement != "en_allaitement":
                 liste_retard.append([
                     att.employee_id.id,
                     att.employee_id.name,
                     att.check_in.time()
                 ])
-            elif att.check_in.time() >= time(10, 0) and att.employee_id.en_aletement == "En allaitement":
+            elif att.check_in.time() >= time(10, 0) and att.employee_id.en_aletement == "en_allaitement":
                 liste_retard.append([
                     att.employee_id.id,
                     att.employee_id.name,
@@ -662,13 +662,13 @@ class Agent(models.Model):
             ('check_out', '>=', start_last_week_naive),
         ])
         for attendance in attendances:
-            if attendance.check_in.time() >= time(9, 0) and attendance.employee_id.en_aletement != 'En allaitement':
+            if attendance.check_in.time() >= time(9, 0) and attendance.employee_id.en_aletement != 'en_allaitement':
                 liste_retard.append([
                     attendance.employee_id.id,
                     attendance.employee_id.name,
                     attendance.check_in.time()
                 ])
-            elif attendance.check_in.time() >= time(10, 0) and attendance.employee_id.en_aletement == 'En allaitement':
+            elif attendance.check_in.time() >= time(10, 0) and attendance.employee_id.en_aletement == 'en_allaitement':
                 liste_retard.append([
                     attendance.employee_id.id,
                     attendance.employee_id.name,
