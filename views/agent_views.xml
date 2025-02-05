@@ -10,6 +10,7 @@
         <field name="numbercall">-1</field>
         <field name="nextcall"
                eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=9)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="doall" eval="False"/>
         <field name="code">model.email_notification_send_woork_week()</field>
         <field name="state">code</field>
     </record>
@@ -22,6 +23,7 @@
         <field name="numbercall">-1</field>
         <field name="nextcall"
                eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=9)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="doall" eval="False"/>
         <field name="code">model.send_notify_late_week()</field>
         <field name="state">code</field>
     </record>
@@ -34,6 +36,7 @@
         <field name="numbercall">-1</field>
         <field name="nextcall"
                eval="(datetime.now().replace(hour=9, minute=15, second=0) + relativedelta(day=1, months=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="doall" eval="False"/>
         <field name="code">model.email_notification_send_woork_month()</field>
         <field name="state">code</field>
     </record>
