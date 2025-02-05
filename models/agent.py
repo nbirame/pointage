@@ -620,13 +620,13 @@ class Agent(models.Model):
         liste_retard = []
         for att in attendances:
             # Si check_in >= 9h => retard
-            if att.check_in.time() >= time(9, 0) and att.employee_id.en_aletement != 'En allaitement':
+            if att.check_in.time() >= time(9, 0) and att.employee_id.en_aletement != "En allaitement":
                 liste_retard.append([
                     att.employee_id.id,
                     att.employee_id.name,
                     att.check_in.time()
                 ])
-            elif att.check_in.time() >= time(10, 0) and att.employee_id.en_aletement == 'En allaitement':
+            elif att.check_in.time() >= time(10, 0) and att.employee_id.en_aletement == "En allaitement":
                 liste_retard.append([
                     att.employee_id.id,
                     att.employee_id.name,
