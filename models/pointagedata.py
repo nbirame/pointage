@@ -60,7 +60,7 @@ class Pointagedata(models.Model):
                 date_default_out = datetime.combine(date_object_in.date(), time(17, 30, 0))
             if len(new_liste[i][1]) != 1:
                 # print("Entrer SORTIE")
-                date_object_out = datetime.strptime(new_liste[i][1][1], '%d/%m/%Y %H:%M:%S')
+                date_object_out = datetime.strptime(new_liste[i][1][-1], '%d/%m/%Y %H:%M:%S')
                 date_odoo_format_out = date_object_out.strftime('%Y-%m-%d %H:%M:%S')
                 # print(date_odoo_format_out)
                 presence_valide = {
@@ -85,7 +85,4 @@ class Pointagedata(models.Model):
                         'date_out': date_default_out,
                     }
                     personal_pointage.append(presence_valide)
-
-                # print(new_liste[i][1][1])
-        print(personal_pointage)
         self.env["pointage.donnees.pointage.wizard"].sudo().create(personal_pointage)
