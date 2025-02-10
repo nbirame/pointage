@@ -23,7 +23,8 @@ class AbsenceWizard(models.TransientModel):
         conge_listes = []
         liste = []
         nombre_jour = 0
-        url = "http://erp.fongip.sn:8069"
+        # url = "http://erp.fongip.sn:8069"
+        url = "http://10.0.0.19:8069"
         db_odoo = "fongip"
         username = "admin@fongip.sn"
         SECRET_KEY = "Fgp@2013"
