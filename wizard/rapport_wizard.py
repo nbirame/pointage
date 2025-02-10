@@ -101,6 +101,7 @@ class RapportWizard(models.TransientModel):
 
     @api.depends("date_in_get_rapport", "date_end_get_rapport", "employee_id")
     def _compute_total_number_of_working_hours(self):
+        number_of_days_absence_legal = 0
         jour_de_conge = self.get_hollidays(self.date_end_get_rapport, self.date_in_get_rapport)
         heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
         absence_days_hollidays = jour_de_conge[1]
