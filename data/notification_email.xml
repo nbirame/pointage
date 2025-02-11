@@ -484,7 +484,7 @@
                         ]]>
             </field>
         </record>
-        <record id="email_template_pointage_notification_retard" model="mail.template">
+        <record id="email_templat_pointage_notification_retard" model="mail.template">
             <field name="name">Liste des agents ayant enregistré au moins trois retards durant la période du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.get_drh()}}</field>
