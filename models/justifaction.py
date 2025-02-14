@@ -5,10 +5,6 @@ class Justification(models.Model):
     _name = "pointage.justification"
     _description = "Justification Absence"
 
-    @api.model
-    def _default_user(self):
-        return self.env.context.get('user_id', self.env.user.id)
-
     #employee_id = fields.Many2one("hr.employee", string="Agent",default=_default_user, required=True)
     employee_id = fields.Many2one("hr.employee", string="Agent", default = lambda self: self.env["hr.employee"].search([("user_id", "=", self.env.uid)], limit=1), required=True)
     date_to = fields.Date(string="Date de début", required=True)
