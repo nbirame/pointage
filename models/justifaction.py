@@ -6,7 +6,7 @@ class Justification(models.Model):
     _description = "Justification Absence"
 
     #employee_id = fields.Many2one("hr.employee", string="Agent",default=_default_user, required=True)
-    employee_id = fields.Many2one("hr.employee", string="Agent", default = lambda self: self.env["hr.employee"].search([("user_id", "=", self.env.uid)], limit=1), required=True)
+    employee_id = fields.Many2one("hr.employee", string="Agent", default = lambda self: self.env["hr.employee"].search([("user_id", "=", self.env.uid)], limit=1), required=True, readonly=True,)
     date_to = fields.Date(string="Date de début", required=True)
     date_from = fields.Date(string="Date de fin", required=True)
     file_justify = fields.Binary(string="Justificatif", store=True)
