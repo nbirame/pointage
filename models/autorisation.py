@@ -4,7 +4,7 @@ class Autorisation(models.Model):
     _name = "pointage.autorisation"
     _description = "Demande de sortie"
 
-    employee_id = fields.Many2one('hr.employee', 'Employee', default = lambda self: self.env["hr.employee"].search([("user_id", "=", self.env.uid)], limit=1), required=True)
+    employee_id = fields.Many2one('hr.employee', 'Employee', default = lambda self: self.env["hr.employee"].search([("user_id", "=", self.env.uid)], limit=1), required=True, readonly=True,)
     matricule = fields.Integer(string="Matricule", compute="_compute_matricule", store=True)
     adress = fields.Char(string="Adresse", compute="_compute_adress", store=True)
     phone = fields.Char(string="Tel", compute="_compute_phone", store=True)
