@@ -5,7 +5,7 @@ from odoo.tools import format_datetime
 class Presence(models.Model):
     _inherit = "hr.attendance"
     _description = "Présence"
-    _order = 'check_in asc'
+    _order = 'check_in desc'
 
     # @api.depends('check_in', 'check_out')
     # def _compute_worked_hours(self):
