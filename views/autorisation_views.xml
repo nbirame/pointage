@@ -42,7 +42,7 @@
                     </header>
                     <sheet>
                         <group>
-                            <field name="employee_id" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
+                            <field name="employee_id"/>
                             <field name="matricule"/>
                             <field name="adress"/>
                             <field name="phone"/>
