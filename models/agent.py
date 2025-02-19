@@ -14,7 +14,7 @@ class Agent(models.Model):
     hours_last_week = fields.Float(string="Nombre d'heure dernier Semaine", compute='_compute_hours_last_week')
     matricule = fields.Integer(string="Matricule")
     agence_id = fields.Many2one('pointage.agence', string="FONGIP")
-    en_aletement = fields.Selection(selection_add=[('allaitement', 'En allaitement'), ('sans_allaitement', 'Sans allaitement')], string="Etat")
+    en_aletement = fields.Selection([('allaitement', 'En allaitement'), ('sans_allaitement', 'Sans allaitement')], string="Etat")
 
     def _compute_hours_last_week(self):
         if not self:
