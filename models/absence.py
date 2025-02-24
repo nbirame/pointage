@@ -31,22 +31,22 @@ class Absence(models.Model):
             for employee in employees:
                 missions = []
                 participants_liste = []
-                # equipe = self.env["mission.equipe"].search([('employee_id', '=', employee.id)])
-                # for agant in equipe:
-                #     if (agant.mission_id.state == "en_cours" or agant.mission_id.state == "terminer") and ((
-                #                                                                                                          agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour <= single_date) or (
-                #                                                                                                          agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour >= single_date) or (
-                #                                                                                                          agant.mission_id.date_depart <= single_date and agant.mission_id.date_retour <= single_date)):
-                #         date_debut = agant.mission_id.date_depart
-                #         date_fin = agant.mission_id.date_retour
-                #         missions.extend([date_debut + timedelta(days=i) for i in
-                #                          range((date_fin - date_debut).days + 1)])
-                # participants = self.env["pointage.participants"].search([('employee_id', '=', employee.id)])
-                # for participant in participants:
-                #     date_debut = participant.atelier_id.date_from
-                #     date_fin = participant.atelier_id.date_to
-                #     participants_liste.extend([date_debut + timedelta(days=i) for i in
-                #                           range((date_fin - date_debut).days + 1)])
+                equipe = self.env["mission.equipe"].search([('employee_id', '=', employee.id)])
+                for agant in equipe:
+                    if (agant.mission_id.state == "en_cours" or agant.mission_id.state == "terminer") and ((
+                                                                                                                         agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour <= single_date) or (
+                                                                                                                         agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour >= single_date) or (
+                                                                                                                         agant.mission_id.date_depart <= single_date and agant.mission_id.date_retour <= single_date)):
+                        date_debut = agant.mission_id.date_depart
+                        date_fin = agant.mission_id.date_retour
+                        missions.extend([date_debut + timedelta(days=i) for i in
+                                         range((date_fin - date_debut).days + 1)])
+                participants = self.env["pointage.participants"].search([('employee_id', '=', employee.id)])
+                for participant in participants:
+                    date_debut = participant.atelier_id.date_from
+                    date_fin = participant.atelier_id.date_to
+                    participants_liste.extend([date_debut + timedelta(days=i) for i in
+                                          range((date_fin - date_debut).days + 1)])
 
                 conges = self.env['hr.employee'].get_day_of_hollidays(employee.matricule, end_of_last_week, start_of_last_week)
                 attendance = attendance_model.search([
