@@ -513,7 +513,7 @@ class Agent(models.Model):
                 # Calculer l'intersection
                 real_start = max(dstart, debut_semaine_derniere.date())
                 real_end = min(dend, fin_semaine_derniere.date())
-                if real_start <= real_end:
+                if real_start and real_end and real_start <= real_end:
                     mission_listes.extend(
                         real_start + timedelta(days=i)
                         for i in range((real_end - real_start).days + 1)
