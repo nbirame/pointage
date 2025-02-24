@@ -521,13 +521,14 @@ class Agent(models.Model):
 
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
-        for p in participants:
-            d1 = p.atelier_id.date_from
-            d2 = p.atelier_id.date_to
-            if not isinstance(d1, int) and not isinstance(d2, int):
-                participants_listes.extend([
-                    d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
-                ])
+        if participants:
+            for p in participants:
+                d1 = p.atelier_id.date_from
+                d2 = p.atelier_id.date_to
+                if not isinstance(d1, int) and not isinstance(d2, int):
+                    participants_listes.extend([
+                        d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
+                    ])
 
         conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
         fetes = self.env["vacances.ferier"].sudo().search([])
