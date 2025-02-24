@@ -42,11 +42,13 @@ class Absence(models.Model):
                         missions.extend([date_debut + timedelta(days=i) for i in
                                          range((date_fin - date_debut).days + 1)])
                 participants = self.env["pointage.participants"].search([('employee_id', '=', employee.id)])
-                for participant in participants:
-                    date_debut = participant.atelier_id.date_from
-                    date_fin = participant.atelier_id.date_to
-                    participants_liste.extend([date_debut + timedelta(days=i) for i in
-                                          range((date_fin - date_debut).days + 1)])
+                if participants:
+                    for participant in participants:
+                        date_debut = participant.atelier_id.date_from
+                        date_fin = participant.atelier_id.date_to
+                        if not isinstance(date_debut, int) and not isinstance(date_fin, int):
+                            participants_liste.extend([date_debut + timedelta(days=i) for i in
+                                                  range((date_fin - date_debut).days + 1)])
 
                 conges = self.env['hr.employee'].get_day_of_hollidays(employee.matricule, end_of_last_week, start_of_last_week)
                 attendance = attendance_model.search([
