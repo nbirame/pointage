@@ -1,7 +1,7 @@
 <odoo>
     <data>
         <!-- explicit list view definition -->
-        <record model="ir.ui.view" id="pointage_atelier">
+        <record model="ir.ui.view" id="pointage_atelier_tree">
             <field name="name">Liste atelier</field>
             <field name="model">pointage.atelier</field>
             <field name="arch" type="xml">
