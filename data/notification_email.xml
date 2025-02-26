@@ -705,7 +705,6 @@
                         du <span t-out="object.date_from or ''"></span> au
                         <span t-out="object.date_to or ''"></span>.
                     </p>
-                    <br/>
                     <p>
                         Avec comme motif : <span t-out="object.motif or 'Pas de motif'"></span>
                     </p>
