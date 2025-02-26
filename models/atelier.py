@@ -6,7 +6,7 @@ class Atelier(models.Model):
     _description = "Les personnes qui sont en atelier"
 
     participant_ids = fields.One2many("pointage.participants", "atelier_id", string="Participant(s)")
-    description = fields.Char(string="Description atelier")
+    description = fields.Text(string="Description atelier")
     type_jour = fields.Selection([
         ('journee', 'Journée'),
         ('demi_journee', 'Demi-journée'),
