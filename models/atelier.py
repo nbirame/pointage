@@ -18,21 +18,20 @@ class Atelier(models.Model):
     date_to = fields.Date(string="Date de fin", compute="_compute_date_to", required=True)
     name = fields.Char(
         string="Atelier",
-        readonly=True,
-        compute="_compute_name"
+        required=True
     )
     _order = 'id desc'
 
-    @api.depends("date_start", "date_end")
-    def _compute_name(self):
-        for record in self:
-            if record.date_start and record.date_end:
-                start_date_str = fields.Date.to_string(record.date_start)
-                end_date_str = fields.Date.to_string(record.date_end)
-                record.name = "ATELIER-%s-%s" % (start_date_str, end_date_str)
-            else:
-                # Sinon, on doit s'assurer que `record.name` reçoit une valeur vide ou par défaut
-                record.name = "ATELIER-SANS-DATE"
+    # @api.depends("date_start", "date_end")
+    # def _compute_name(self):
+    #     for record in self:
+    #         if record.date_start and record.date_end:
+    #             start_date_str = fields.Date.to_string(record.date_start)
+    #             end_date_str = fields.Date.to_string(record.date_end)
+    #             record.name = "ATELIER-%s-%s" % (start_date_str, end_date_str)
+    #         else:
+    #             # Sinon, on doit s'assurer que `record.name` reçoit une valeur vide ou par défaut
+    #             record.name = "ATELIER-SANS-DATE"
 
     @api.depends("date_start")
     def _compute_date_from(self):

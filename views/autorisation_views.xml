@@ -35,9 +35,9 @@
                         <button string="Refuser" name="action_refuser" states="directeur" type="object" groups="pointage.group_pointage_directeur"/>
                         <button string="Confirmer" name="action_confirmer" states="confirmer" type="object" class="oe_highlight"/>
                         <button string="Valider" name="action_directeur" states="directeur" type="object" class="oe_highlight" groups="pointage.group_pointage_directeur"/>
-                        <button string="Valider" name="action_drh" states="drh" type="object" class="oe_highlight" groups="pointage.group_pointage_directeur"/>
-                        <button string="Valider" name="action_sg" states="sg" type="object" class="oe_highlight" groups="pointage.group_pointage_drh"/>
-                        <button string="Valider" name="action_ag" states="ag" type="object" class="oe_highlight" groups="pointage.group_pointage_sg"/>
+                        <button string="Valider" name="action_drh" states="drh" type="object" class="oe_highlight" groups="pointage.group_pointage_drh"/>
+                        <button string="Valider" name="action_sg" states="sg" type="object" class="oe_highlight" groups="pointage.group_pointage_sg"/>
+                        <button string="Valider" name="action_ag" states="ag" type="object" class="oe_highlight" groups="pointage.group_pointage_ag"/>
                         <field name="state" widget="statusbar" statusbar_visible="refuser,brouillon,confirmer,directeur,drh,sg,ag,Valider"/>
                     </header>
                     <sheet>
