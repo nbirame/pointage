@@ -44,8 +44,8 @@ class Absence(models.Model):
                 participants = self.env["pointage.participants"].search([('employee_id', '=', employee.id)])
                 if participants:
                     for participant in participants:
-                        date_debut = participant.atelier_id.date_from
-                        date_fin = participant.atelier_id.date_to
+                        date_debut = participant.atelier_id.date_start
+                        date_fin = participant.atelier_id.date_end
                         if not isinstance(date_debut, int) and not isinstance(date_fin, int):
                             participants_liste.extend([date_debut + timedelta(days=i) for i in
                                                   range((date_fin - date_debut).days + 1)])
