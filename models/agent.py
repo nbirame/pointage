@@ -529,6 +529,11 @@ class Agent(models.Model):
                     participants_listes.extend([
                         d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
                     ])
+                else:
+                    participants_listes.extend([
+                        d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
+                    ])
+
 
         conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
         fetes = self.env["vacances.ferier"].sudo().search([])
