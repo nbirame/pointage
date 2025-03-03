@@ -521,15 +521,23 @@ class Agent(models.Model):
 
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
+
         for p in participants:
             d1 = p.atelier_id.date_start
             d2 = p.atelier_id.date_end
-            if d1 and d2 and (d1 <= fin_semaine_derniere.date() and d2 >= debut_semaine_derniere.date()):
-                real_d1 = max(d1, debut_semaine_derniere.date())
-                real_d2 = min(d2, fin_semaine_derniere.date())
-                participants_listes.extend([
-                    real_d1 + timedelta(days=i) for i in range((real_d2 - real_d1).days + 1)
-                ])
+
+            if d1 and d2:
+                # Convertir d1 et d2 en date uniquement
+                d1 = d1.date() if isinstance(d1, datetime) else d1
+                d2 = d2.date() if isinstance(d2, datetime) else d2
+
+                if d1 <= fin_semaine_derniere.date() and d2 >= debut_semaine_derniere.date():
+                    real_d1 = max(d1, debut_semaine_derniere.date())
+                    real_d2 = min(d2, fin_semaine_derniere.date())
+
+                    participants_listes.extend([
+                        real_d1 + timedelta(days=i) for i in range((real_d2 - real_d1).days + 1)
+                    ])
 
 
         conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
