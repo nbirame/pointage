@@ -158,9 +158,9 @@ class Agent(models.Model):
         slots = self.get_work_hours_week()
         nombre_jours = sum(1 for jour in slots if jour[-1] == '')
         if heure_travail:
-            nombre_heure = 40 - nombre_jours * heure_travail.worked_hours
+            nombre_heure = 37.5 - nombre_jours * heure_travail.worked_hours
         else:
-            nombre_heure = 40 - nombre_jours * 8
+            nombre_heure = 37.5 - nombre_jours * 8
         return nombre_heure
 
     def get_work_hours_week(self):
