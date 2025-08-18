@@ -417,8 +417,8 @@ class Agent(models.Model):
         fetes = self.env["resource.calendar.leaves"].sudo().search([])
         fete_listes = []
         for fete in fetes:
-            fd = fete.date_star
-            fe = fete.date_end
+            fd = fete.date_debut
+            fe = fete.date_fin
             nom_fete = fete.party_id.name
             fete_listes.extend(
                 [fd + timedelta(days=i), nom_fete] for i in range((fe - fd).days + 1)
@@ -534,8 +534,8 @@ class Agent(models.Model):
         fetes = self.env["resource.calendar.leaves"].sudo().search([])
         fete_listes = []
         for f in fetes:
-            fd = f.date_star
-            fe = f.date_end
+            fd = f.date_debut
+            fe = f.date_fin
             nom_fete = f.party_id.name
             fete_listes.extend(
                 [fd + timedelta(days=i), nom_fete]
