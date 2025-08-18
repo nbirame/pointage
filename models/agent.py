@@ -47,8 +47,8 @@ class Agent(models.Model):
 
     def get_hollidays(self, fin_mois_dernier, debut_ce_mois):
         conge_listes = []
-        url = "http://erp.fongip.sn:8069"
-        # url = "http://10.0.0.19:8069"
+        # url = "http://erp.fongip.sn:8069"
+        url = "http://10.0.0.19:8069"
         db_odoo = "fongip"
         username = "admin@fongip.sn"
         SECRET_KEY = "Fgp@2013"
@@ -91,8 +91,8 @@ class Agent(models.Model):
         conge_listes = []
         liste = []
         nombre_jour = 0
-        url = "http://erp.fongip.sn:8069"
-        # url = "http://10.0.0.19:8069"
+        # url = "http://erp.fongip.sn:8069"
+        url = "http://10.0.0.19:8069"
         db_odoo = "fongip"
         username = "admin@fongip.sn"
         SECRET_KEY = "Fgp@2013"
@@ -404,8 +404,8 @@ class Agent(models.Model):
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
         for p in participants:
-            d1 = p.atelier_id.date_start
-            d2 = p.atelier_id.date_end
+            d1 = p.atelier_id.date_from
+            d2 = p.atelier_id.date_to
             participants_listes.extend(
                 d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
             )
@@ -521,24 +521,14 @@ class Agent(models.Model):
 
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
-
-        for p in participants:
-            d1 = p.atelier_id.date_start
-            d2 = p.atelier_id.date_end
-
-            if d1 and d2:
-                # Convertir d1 et d2 en date uniquement
-                d1 = d1.date() if isinstance(d1, datetime) else d1
-                d2 = d2.date() if isinstance(d2, datetime) else d2
-
-                if d1 <= fin_semaine_derniere.date() and d2 >= debut_semaine_derniere.date():
-                    real_d1 = max(d1, debut_semaine_derniere.date())
-                    real_d2 = min(d2, fin_semaine_derniere.date())
-
+        if participants:
+            for p in participants:
+                d1 = p.atelier_id.date_from
+                d2 = p.atelier_id.date_to
+                if not isinstance(d1, int) and not isinstance(d2, int):
                     participants_listes.extend([
-                        real_d1 + timedelta(days=i) for i in range((real_d2 - real_d1).days + 1)
+                        d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
                     ])
-
 
         conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
         fetes = self.env["vacances.ferier"].sudo().search([])
@@ -725,6 +715,5 @@ class Agent(models.Model):
                 )
         self.env["mail.mail"].sudo().process_email_queue()
 
-    #methode d'eno
     def send_notify_late_week_of_agent(self):
         self.send_email_notification_agent("email_template_pointage_notification_retard_agent")
