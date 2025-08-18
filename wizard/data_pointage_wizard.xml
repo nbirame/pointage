@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="model_donnees_pointage_wizard_action" model="ir.actions.server">
+        <field name="name">VALIDER</field>
+        <!--<field name="type">ir.actions.server</field>-->
+        <field name="model_id" ref="model_pointage_donnees_pointage_wizard"/>
+        <field name="binding_model_id" ref="model_pointage_donnees_pointage_wizard"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.confirmer_data()</field>
+    </record>
+    <record model="ir.ui.view" id="pointage_donnees_wizard">
+        <field name="name">Liste Pointage Temporaire</field>
+        <field name="model">pointage.donnees.pointage.wizard</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="employee_id"/>
+                <field name="matricule"/>
+                <field name="date_in"/>
+                <field name="date_out"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="pointage_donnees_wizard_form">
+        <field name="name">Présence Temporaire</field>
+        <field name="res_model">pointage.donnees.pointage.wizard</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <record id="donnees_pointage_wizard_view_form" model="ir.ui.view">
+        <field name="name">pointage.donnees.pointage.wizard.form</field>
+        <field name="model">pointage.donnees.pointage.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Donnees de pointage">
+                <group class="oe_title">
+                    <field name="matricule"/>
+                    <field name="employee_id"/>
+                    <field name="date_in"/>
+                    <field name="date_out"/>
+                </group>
+                <footer>
+                    <button name="confirmer_data" string="Valider" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <menuitem
+            id="pointage_wizard_mode"
+            name="Temporaire"
+            parent="hr_attendance.menu_hr_attendance_root"
+            sequence="13"
+            groups="hr_attendance.group_hr_attendance_kiosk"
+            action="pointage_donnees_wizard_form"/>
+</odoo>

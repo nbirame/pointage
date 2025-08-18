@@ -1,0 +1,48 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="pointage_participants">
+            <field name="name">Liste atelier</field>
+            <field name="model">pointage.participants</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="employee_id"/>
+                    <field name="post"/>
+                    <field name="atelier_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="pointage_participants_form">
+            <field name="name">Participant(s) atelier</field>
+            <field name="res_model">pointage.atelier</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!--  action open form view -->
+        <record id="participants_import_view_form" model="ir.ui.view">
+            <field name="name">pointage.participants.form</field>
+            <field name="model">pointage.participants</field>
+            <field name="arch" type="xml">
+                <form string="Fiche participants">
+                    <sheet>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="post"/>
+                            <field name="atelier_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <menuitem
+                id="pointage_participants_data"
+                name="Participant(s)"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="14"
+                groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent"
+                action="pointage_participants_form"/>
+
+
+    </data>
+</odoo>

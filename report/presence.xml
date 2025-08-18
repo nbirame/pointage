@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="report_pointage_presence" model="ir.actions.report">
+            <field name="name">Présence</field>
+            <field name="model">hr.employee</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pointage.report_presence</field>
+            <field name="report_file">pointage.report_presence</field>
+            <field name="print_report_name">'Présence de  - %s' % object.name</field>
+        </record>
+        <record id="report_pointage_retard_agent" model="ir.actions.report">
+            <field name="name">Retards Agents</field>
+            <field name="model">hr.employee</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pointage.report_retard_agent</field>
+            <field name="report_file">pointage.report_retard_agent</field>
+            <field name="print_report_name">Retard</field>
+        </record>
+        <record id="report_pointage_presence_person_wizard" model="ir.actions.report">
+            <field name="name">Rapport Présence</field>
+            <field name="model">pointage.rapport.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pointage.report_presence_person_wizard</field>
+            <field name="report_file">pointage.report_presence_person_wizard</field>
+            <field name="print_report_name">'Présence de  - %s' % object.employee_id.name</field>
+        </record>
+        <record id="report_pointage_presence_wizard" model="ir.actions.report">
+            <field name="name">Rapport Présence</field>
+            <field name="model">pointage.presence.report.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pointage.report_presence_day_wizard</field>
+            <field name="report_file">pointage.report_presence_day_wizard</field>
+            <field name="print_report_name">'Rapport liste de présence'</field>
+        </record>
+        <record id="report_pointage_presence_of_day_wizard" model="ir.actions.report">
+            <field name="name">Rapport Pointage</field>
+            <field name="model">pointage.absence.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pointage.report_presence_of_day_wizard</field>
+            <field name="report_file">pointage.report_presence_of_day_wizard</field>
+            <field name="print_report_name">'Rapport liste des présences'</field>
+        </record>
+        <record id="report_pointage_absence_of_week" model="ir.actions.report">
+            <field name="name">Rapport Agent ayant plus de deux abasences</field>
+            <field name="model">pointage.absence</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pointage.report_absence_of_week</field>
+            <field name="report_file">pointage.report_absence_of_week</field>
+            <field name="print_report_name">'Rapport liste des personnes ayant au mois de deux jours d\'absence'</field>
+        </record>
+        <record id="report_pointage_retard_wizard" model="ir.actions.report">
+            <field name="name">Rapport Retards</field>
+            <field name="model">pointage.later.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pointage.report_later_wizard</field>
+            <field name="report_file">pointage.report_later_wizard</field>
+            <field name="print_report_name">'Retards'</field>
+        </record>
+    </data>
+    <!--<report
+            string="Présence"
+            id="report_pointage_presence"
+            model="hr.employee"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_presence"
+            file="pointage.report_presence"
+            print_report_name="('Présence de '+object.name)"
+    />-->
+    <!--<report
+            string="Retards Agents"
+            id="report_pointage_retard_agent"
+            model="hr.employee"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_retard_agent"
+            file="pointage.report_retard_agent"
+            print_report_name="Retard"
+    />-->
+    <!--<report
+            string="Rapport Présence"
+            id="report_pointage_presence_person_wizard"
+            model="pointage.rapport.wizard"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_presence_person_wizard"
+            file="pointage.report_presence_person_wizard"
+            print_report_name="('Présence de '+object.employee_id.name)"
+    />-->
+   <!-- <report
+            string="Rapport Présence"
+            id="report_pointage_presence_wizard"
+            model="pointage.presence.report.wizard"
+            report_type="qweb-pdf"
+            menu="True"
+            name="pointage.report_presence_day_wizard"
+            file="pointage.report_presence_day_wizard"
+            print_report_name="('Rapport liste de présence')"
+    />-->
+   <!-- <report
+            string="Rapport Pointage"
+            id="report_pointage_presence_of_day_wizard"
+            model="pointage.absence.wizard"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_presence_of_day_wizard"
+            file="pointage.report_presence_of_day_wizard"
+            print_report_name="('Rapport liste des présences')"
+    />-->
+    <!--<report
+            string="Rapport Agent ayant plus de deux abasences"
+            id="report_pointage_absence_of_week"
+            model="pointage.absence"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_absence_of_week"
+            file="pointage.report_absence_of_week"
+            print_report_name="('Rapport liste des personnes ayant au mois de deux jours d\'absence')"
+    />-->
+   <!--  <report
+            string="Rapport Retards"
+            id="report_pointage_retard_wizard"
+            model="pointage.later.wizard"
+            report_type="qweb-pdf"
+            menu="False"
+            name="pointage.report_later_wizard"
+            file="pointage.report_later_wizard"
+            print_report_name="('Retards ')"
+    />-->
+</odoo>

@@ -1,0 +1,62 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="pointage_atelier_tree">
+            <field name="name">Liste atelier</field>
+            <field name="model">pointage.atelier</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="pointage_atelier_form">
+            <field name="name">Participant(s) atelier</field>
+            <field name="res_model">pointage.atelier</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!--  action open form view -->
+        <record id="atelier_import_view_form" model="ir.ui.view">
+            <field name="name">pointage.atelier.form</field>
+            <field name="model">pointage.atelier</field>
+            <field name="arch" type="xml">
+                <form string="Fiche participant atelier">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="type_jour"/>
+                            <field name="description"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <notebook>
+                          <page name="page_lines" string="Participant(s)">
+                             <field name="participant_ids">
+                                     <tree string="La liste des participants" editable="bottom">
+                                        <field name="employee_id"/>
+                                        <field name="poste"/>
+                                     </tree>
+                             </field>
+                          </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <menuitem
+                id="pointage_atelier_data"
+                name="Participant(s) atelier"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="13"
+                groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent"
+                action="pointage_atelier_form"/>
+
+
+    </data>
+</odoo>

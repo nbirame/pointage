@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<odoo>
+    <record model="ir.actions.act_window" id="pointage_donnees_rapport_wizard_form">
+        <field name="name">Rapport Présence</field>
+        <field name="res_model">pointage.rapport.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <record id="pointage_rapport_wizard_view_form" model="ir.ui.view">
+        <field name="name">pointage.rapport.wizard.form</field>
+        <field name="model">pointage.rapport.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Rapport de pointage">
+                <group class="oe_title">
+                    <field name="employee_id"/>
+                    <field name="date_in_get_rapport"/>
+                    <field name="date_end_get_rapport"/>
+                </group>
+                <footer>
+                    <button name="print_rapport" string="GENERER" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

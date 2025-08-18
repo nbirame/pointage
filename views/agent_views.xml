@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Planifiez le cron pour exécuter la fonction chaque lundi à 8h du matin -->
+    <record id="cron_envoyer_heures_semaine_precedente" model="ir.cron">
+        <field name="name">Envoyer heures semaine précédente</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">weeks</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall"
+               eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=9)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="doall" eval="False"/>
+        <field name="code">model.email_notification_send_woork_week()</field>
+        <field name="state">code</field>
+    </record>
+    <record id="cron_envoyer_retard_semaine_precedente" model="ir.cron">
+        <field name="name">Agents ayant au moins deux retard semaine précédente</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">weeks</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall"
+               eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=9)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="doall" eval="False"/>
+        <field name="code">model.send_notify_late_week()</field>
+        <field name="state">code</field>
+    </record>
+    <record id="cron_envoyer_presence_mois" model="ir.cron">
+        <field name="name">Précédence mois précédente</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall"
+               eval="(datetime.now().replace(hour=9, minute=15, second=0) + relativedelta(day=1, months=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="doall" eval="False"/>
+        <field name="code">model.email_notification_send_woork_month()</field>
+        <field name="state">code</field>
+    </record>
+    <record id="view_agent_form_inherit_hr_attendance" model="ir.ui.view">
+        <field name="name">hr.employee</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">22</field>
+        <field name="groups_id" eval="[(4,ref('hr_attendance.group_hr_attendance_user'))]"/>
+        <field name="arch" type="xml">
+            <div class="oe_button_box" name="button_box">
+                <button name="%(hr_attendance.hr_attendance_action)d"
+                        class="oe_stat_button"
+                        icon="fa-clock-o"
+                        type="action"
+                        context="{'search_default_employee_id': id, 'search_default_check_in_filter': '1'}"
+                        help="Worked hours last week">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="hours_last_week" widget="float_time"/>
+                            Heures
+                        </span>
+                        <span class="o_stat_text">
+                            Dernier Semaine
+                        </span>
+                    </div>
+                </button>
+                <!--<button name="email_notification_send_woork_week"
+                        string="Rapport Semaine"
+                        type="object"
+                        icon="fa-bell"
+                        class="oe_stat_button"/>-->
+                <button name="email_notification_send_woork_week_agent"
+                        string="Heures Travaillées"
+                        type="object"
+                        icon="fa-bell"
+                        class="oe_stat_button"/>
+                <button name="action_send_email_notify_drh"
+                        string="Absence de la Semaine"
+                        type="object"
+                        icon="fa-bell"
+                        class="oe_stat_button"/>
+                <button name="email_notification_send_woork_month_agent"
+                        string="Rapport Mois"
+                        type="object"
+                        icon="fa-bell-o"
+                        class="oe_stat_button"/>
+                <button name="print_report_presence"
+                        string="IMPRIMER"
+                        type="object"
+                        icon="fa-print"
+                        class="oe_highlight"/>
+                <button name="print_report_absence_week"
+                        string="ABSENCE SEMAINE"
+                        type="object"
+                        icon="fa-print"
+                        class="oe_highlight"/>
+                <button name="send_notify_late_week"
+                        string="Retard SEMAINE"
+                        type="object"
+                        icon="fa-bell-o"
+                        class="oe_highlight"/>
+                <button name="send_notify_late_week_of_agent"
+                        string="Retard Agent"
+                        type="object"
+                        icon="fa-bell-o"
+                        class="oe_highlight"/>
+                <button name="%(pointage.pointage_donnees_rapport_wizard_form)d"
+                        string="Rapport Presence"
+                        type="action"
+                        icon="fa-pencil"
+                        class="oe_highlight"/>
+                <button name="%(pointage.pointage_presence_rapport_wizard_form)d"
+                        string="Liste de presence"
+                        type="action"
+                        icon="fa-print"
+                        class="oe_highlight"/>
+                <button name="%(pointage.pointage_presence_of_day_rapport_wizard_form)d"
+                        string="Heures Pointage"
+                        type="action"
+                        icon="fa-print"
+                        class="oe_highlight"/>
+                <button name="%(pointage.pointage_later_rapport_wizard_form)d"
+                        string="Retards Pointage"
+                        type="action"
+                        icon="fa-print"
+                        class="oe_highlight"/>
+
+            </div>
+
+
+        </field>
+    </record>
+    <record id="view_employee_tree" model="ir.ui.view">
+        <field name="name">hr.employee.tree</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_email']" position="after">
+                <field name="matricule"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_employee_form" model="ir.ui.view">
+        <field name="name">hr.employee.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_title']" position="after">
+                <field name="agence_id" placeholder="SIEGE ou l'Agence"/>
+            </xpath>
+            <xpath expr="//field[@name='work_email']" position="after">
+                <field name="matricule"/>
+            </xpath>
+            <xpath expr="//field[@name='marital']" position="after">
+                <field name="en_aletement"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

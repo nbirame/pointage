@@ -1,0 +1,78 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="pointage_autorisation">
+            <field name="name">Liste des demades de sortie</field>
+            <field name="model">pointage.autorisation</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="employee_id"/>
+                    <field name="date"/>
+                    <field name="time_out" widget="float_time"/>
+                    <field name="time_in" widget="float_time"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="pointage_autorisation_form">
+            <field name="name">Autorisation de sortie</field>
+            <field name="res_model">pointage.autorisation</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!--  action open form view -->
+        <record id="pointage_import_view_form" model="ir.ui.view">
+            <field name="name">pointage.autorisation.form</field>
+            <field name="model">pointage.autorisation</field>
+            <field name="arch" type="xml">
+                <form string="Fiche demande d'autorisation de sortie">
+                    <header>
+                        <button string="Soumettre" name="action_confirmer" states="brouillon" type="object" class="oe_highlight"/>
+                        <button string="Remettre en Brouillon" name="action_brouillon" states="confirmer" type="object"/>
+                        <button string="Refuser" name="action_refuser" states="drh" type="object" groups="pointage.group_pointage_drh"/>
+                        <button string="Refuser" name="action_refuser" states="sg" type="object" groups="pointage.group_pointage_sg"/>
+                        <button string="Refuser" name="action_refuser" states="ag" type="object" groups="pointage.group_pointage_ag"/>
+                        <button string="Refuser" name="action_refuser" states="directeur" type="object" groups="pointage.group_pointage_directeur"/>
+                        <button string="Confirmer" name="action_confirmer" states="confirmer" type="object" class="oe_highlight"/>
+                        <button string="Valider" name="action_directeur" states="directeur" type="object" class="oe_highlight" groups="pointage.group_pointage_directeur"/>
+                        <button string="Valider" name="action_drh" states="drh" type="object" class="oe_highlight" groups="pointage.group_pointage_drh"/>
+                        <button string="Valider" name="action_sg" states="sg" type="object" class="oe_highlight" groups="pointage.group_pointage_sg"/>
+                        <button string="Valider" name="action_ag" states="ag" type="object" class="oe_highlight" groups="pointage.group_pointage_ag"/>
+                        <field name="state" widget="statusbar" statusbar_visible="refuser,brouillon,confirmer,directeur,drh,sg,ag,Valider"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="matricule"/>
+                            <field name="adress"/>
+                            <field name="phone"/>
+                            <field name="fonction"/>
+                            <field name="service"/>
+                        </group>
+                        <group>
+                            <field name="date" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
+                        </group>
+                        <group>
+                            <field name="time_out" widget="float_time" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
+                            <field name="time_in" widget="float_time" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
+                        </group>
+                        <notebook>
+                          <page name="page_lines" string="Motif" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}">
+                             <field name="motif" attrs="{'readonly':[('state', 'not in', ['brouillon', 'confirmer'])]}"/>
+                          </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <menuitem
+                id="pointage_autorisaton_data"
+                name="Demande d'autorisation de sortie"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="14"
+                groups="pointage.group_pointage_agent,pointage.group_pointage_drh,pointage.group_pointage_superadmin,pointage.group_pointage_admin,pointage.group_pointage_ag,pointage.group_pointage_ag"
+                action="pointage_autorisation_form"/>
+
+
+    </data>
+</odoo>

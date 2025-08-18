@@ -1,0 +1,68 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="pointage_data">
+            <field name="name">Liste Pointage</field>
+            <field name="model">pointage.pointagedata</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="date_time"/>
+                    <field name="date_of_pointing"/>
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="user_policy"/>
+                    <field name="employee_id"/>
+                    <field name="morpho_device"/>
+                    <field name="key_data"/>
+                    <field name="access_data"/>
+                    <field name="date"/>
+                    <field name="date_generated"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="pointage_biometrique_data_de_form">
+            <field name="name">Présence Biométrique</field>
+            <field name="res_model">pointage.pointagedata</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!--  action open form view -->
+        <record id="biometrique_import_view_form" model="ir.ui.view">
+            <field name="name">pointage.pointagedata.form</field>
+            <field name="model">pointage.pointagedata</field>
+            <field name="arch" type="xml">
+                <form string="Fiche de présence" edit="0">
+                    <sheet>
+                        <group>
+                            <field name="date_time"/>
+                            <field name="date_of_pointing"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="user_policy"/>
+                            <field name="employee_id"/>
+                            <field name="morpho_device"/>
+                            <field name="key_data"/>
+                            <field name="access_data"/>
+                            <field name="date"/>
+                            <field name="date_generated"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <menuitem
+                id="pointage_biometrique_original_data"
+                name="Présence Biometrique"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="13"
+                groups="hr_attendance.group_hr_attendance_kiosk"
+                action="pointage_biometrique_data_de_form"/>
+
+
+    </data>
+</odoo>

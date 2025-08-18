@@ -1,0 +1,80 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record id="ir_cron_auto_absence_tracking" model="ir.cron">
+            <field name="name">Enregistrement Liste des absences</field>
+            <field name="model_id" ref="pointage.model_pointage_absence"/>
+            <field name="state">code</field>
+            <field name="code">model.track_daily_absence()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall"
+               eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=9)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="active">True</field>
+        </record>
+        <record id="cron_envoyer_absence_semaine_precedente" model="ir.cron">
+        <field name="name">Cron absences semaine </field>
+        <field name="model_id" ref="pointage.model_pointage_absence"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">weeks</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall"
+               eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=10)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="doall" eval="False"/>
+        <field name="code">model.absence_send_email_notify_drh()</field>
+        <field name="state">code</field>
+    </record>
+        <record model="ir.ui.view" id="pointage_absence">
+            <field name="name">Liste d'absences</field>
+            <field name="model">pointage.absence</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="employee_id"/>
+                    <field name="day_absence"/>
+                    <field name="state"/>
+                    <field name="reason"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="pointage_absence_form">
+            <field name="name">Liste d'absence</field>
+            <field name="res_model">pointage.absence</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!--  action open form view -->
+        <record id="agence_import_view_form" model="ir.ui.view">
+            <field name="name">pointage.absence.form</field>
+            <field name="model">pointage.absence</field>
+            <field name="arch" type="xml">
+                <form string="Absence">
+                    <sheet>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="day_absence"/>
+                            <field name="state"/>
+                            <field name="justify_id"/>
+                        </group>
+                        <notebook>
+                            <page string="Motif">
+                                <field name="reason"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <menuitem
+                id="pointage_agence_data"
+                name="Liste absence"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="14"
+                groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent"
+                action="pointage_absence_form"/>
+
+
+    </data>
+</odoo>

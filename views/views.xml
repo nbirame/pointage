@@ -1,0 +1,77 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="pointage_biometrique">
+            <field name="name">Liste Pointage</field>
+            <field name="model">pointage.biometrique</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="employee_id"/>
+                    <field name="date"/>
+                    <field name="date_generated"/>
+                    <field name="date_to"/>
+                    <field name="date_from"/>
+                    <field name="fichier_id" widget="binary" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="pointage_biometrique_de_form">
+            <field name="name">Pointage</field>
+            <field name="res_model">pointage.biometrique</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!--  action open form view -->
+        <record id="biometrique_import_view_form" model="ir.ui.view">
+            <field name="name">pointage.biometrique.form</field>
+            <field name="model">pointage.biometrique</field>
+            <field name="arch" type="xml">
+                <form string="Fiche de présence" edit="0">
+                    <sheet>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="date_generated"/>
+                            <field name="date_to"/>
+                            <field name="date_from"/>
+                        </group>
+                        <group>
+                            <field name="fichier_id"/>
+                        </group>
+                        <notebook>
+                            <page name="page_lines" string="Pointage Biometrique">
+                                <field name="pointagedata_ids">
+                                    <tree string="Liste de presence" editable="bottom">
+                                        <field name="date_time"/>
+                                        <field name="date_of_pointing"/>
+                                        <field name="first_name"/>
+                                        <field name="last_name"/>
+                                        <field name="user_policy"/>
+                                        <field name="employee_id"/>
+                                        <field name="morpho_device"/>
+                                        <field name="key_data"/>
+                                        <field name="access_data"/>
+                                        <field name="date"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <menuitem
+                id="pointage_biometrique_mode"
+                name="Importer"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="11"
+                groups="hr_attendance.group_hr_attendance_kiosk"
+                action="pointage_biometrique_de_form"/>
+
+
+    </data>
+</odoo>

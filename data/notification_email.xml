@@ -1,0 +1,732 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!--Email template -->
+        <record id="email_template_pointage_notification" model="mail.template">
+            <field name="name">Récapitulatif de votre présence du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.work_email or ''}}</field>
+            <field name="subject">Récapitulatif de votre présence du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+        <!-- On stocke ici le résultat de get_work_hours_week() pour éviter de l'appeler
+             plusieurs fois dans chaque case du tableau -->
+             <t t-set="start_week" t-value="object.last_week_start_date()"/>
+        <t t-set="end_week" t-value="object.last_week_end_date()"/>
+        <t t-set="week_attendance" t-value="object.get_work_hours_week()"/>
+        <div>
+            Bonjour <span t-out="object.name or ''"/>, <br/>
+            <p>Veuillez trouver ci-dessous le tableau récapitulatif de votre présence
+            pour la période du
+            <t t-esc="start_week.strftime('%Y-%m-%d')" t-options="{'widget': 'date'}"/>
+            au
+            <t t-esc="end_week.strftime('%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
+
+            <p>Cordialement.</p>
+
+            <table class="table table-bordered" width="590" border="1" cellpadding="0"
+                   cellspacing="0" style="min-width: 590px; background-color: white;
+                   padding: 0px 8px 0px 8px; border-collapse:separate;">
+                <thead class="thead-light" style="background-color:#611610;">
+                    <tr>
+                        <th></th>
+                        <th style="color:white;">Lundi</th>
+                        <th style="color:white;">Mardi</th>
+                        <th style="color:white;">Mercredi</th>
+                        <th style="color:white;">Jeudi</th>
+                        <th style="color:white;">Vendredi</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                <!-- PARTIE ENTRÉE -->
+                <tr>
+                    <td style="background-color:#611610;">
+                        <p style="text-align:center;color:white;">Entrée<p>
+                    </td>
+
+                    <!-- Exemple pour la colonne Lundi.
+                         On référence désormais week_attendance[0] au lieu d'appeler
+                         object.get_work_hours_week()[0] -->
+                    <td t-if="week_attendance and week_attendance[0]">
+                        <span t-if="week_attendance[0][0].strftime('%H:%M:%S') == '00:00:00'">
+                            Absent
+                        </span>
+                        <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '03:00:00'">
+                            En congé
+                        </span>
+                        <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '04:00:00'">
+                            En atelier
+                        </span>
+                        <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '02:00:00'">
+                            En mission
+                        </span>
+                        <span t-elif="week_attendance[0][0].strftime('%H:%M:%S') == '23:59:59'">
+                            <t t-esc="week_attendance[0][-3]"/>
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[0][0].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+
+                    <!-- MARDI -->
+                    <td t-if="week_attendance and week_attendance[1]">
+                        <span t-if="week_attendance[1][0].strftime('%H:%M:%S') == '00:00:00'">
+                            Absent
+                        </span>
+                        <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '03:00:00'">
+                            En congé
+                        </span>
+                        <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '04:00:00'">
+                            En atelier
+                        </span>
+                        <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '02:00:00'">
+                            En mission
+                        </span>
+                        <span t-elif="week_attendance[1][0].strftime('%H:%M:%S') == '23:59:59'">
+                            <t t-esc="week_attendance[1][-3]"/>
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[1][0].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+
+                    <!-- MERCREDI -->
+                    <td t-if="week_attendance and week_attendance[2]">
+                        <!-- Idem, on vérifie les codes horaires -->
+                        <span t-if="week_attendance[2][0].strftime('%H:%M:%S') == '00:00:00'">
+                            Absent
+                        </span>
+                        <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '23:59:59'">
+                            <t t-esc="week_attendance[2][-3]"/>
+                        </span>
+                        <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '03:00:00'">
+                            En congé
+                        </span>
+                        <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '04:00:00'">
+                            En atelier
+                        </span>
+                        <span t-elif="week_attendance[2][0].strftime('%H:%M:%S') == '02:00:00'">
+                            En mission
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[2][0].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+
+                    <!-- JEUDI -->
+                    <td t-if="week_attendance and week_attendance[3]">
+                        <span t-if="week_attendance[3][0].strftime('%H:%M:%S') == '00:00:00'">
+                            Absent
+                        </span>
+                        <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '23:59:59'">
+                            <t t-esc="week_attendance[3][-3]"/>
+                        </span>
+                        <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '03:00:00'">
+                            En congé
+                        </span>
+                        <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '04:00:00'">
+                            En atelier
+                        </span>
+                        <span t-elif="week_attendance[3][0].strftime('%H:%M:%S') == '02:00:00'">
+                            En mission
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[3][0].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+
+                    <!-- VENDREDI -->
+                    <td t-if="week_attendance and week_attendance[4]">
+                        <span t-if="week_attendance[4][0].strftime('%H:%M:%S') == '00:00:00'">
+                            Absent
+                        </span>
+                        <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '23:59:59'">
+                            Jour férié
+                        </span>
+                        <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '03:00:00'">
+                            En congé
+                        </span>
+                        <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '04:00:00'">
+                            En atelier
+                        </span>
+                        <span t-elif="week_attendance[4][0].strftime('%H:%M:%S') == '02:00:00'">
+                            En mission
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[4][0].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+                </tr>
+
+                <!-- PARTIE SORTIE -->
+                <tr>
+                    <td style="background-color:#611610;">
+                        <p style="text-align:center;color:white;">Sortie<p>
+                    </td>
+
+                    <!-- Lundi Sortie -->
+                    <td t-if="week_attendance and week_attendance[0]">
+                        <span t-if="week_attendance[0][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                            <!-- Rien ou un commentaire -->
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[0][1].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+                    <!-- Mardi Sortie -->
+                    <td t-if="week_attendance and week_attendance[1]">
+                        <span t-if="week_attendance[1][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[1][1].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+
+                    <!-- Mercredi Sortie -->
+                    <td t-if="week_attendance and week_attendance[2]">
+                        <span t-if="week_attendance[2][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[2][1].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+
+                    <!-- Jeudi Sortie -->
+                    <td t-if="week_attendance and week_attendance[3]">
+                        <span t-if="week_attendance[3][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[3][1].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+
+                    <!-- Vendredi Sortie -->
+                    <td t-if="week_attendance and week_attendance[4]">
+                        <span t-if="week_attendance[4][1].strftime('%H:%M:%S') in ['00:00:00','23:59:59','03:00:00','04:00:00','02:00:00']">
+                        </span>
+                        <span t-else="">
+                            <t t-esc="week_attendance[4][1].strftime('%H:%M:%S')"/>
+                        </span>
+                    </td>
+                </tr>
+
+                <!-- PARTIE DURÉE -->
+                <tr>
+                    <td style="background-color:#611610;">
+                        <p style="text-align:center;color:white;">Durée<p>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[0]">
+                        <span t-if="week_attendance[0][-1] != ''">
+                            <t t-esc="week_attendance[0][-1]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[1]">
+                        <span t-if="week_attendance[1][-1] != ''">
+                            <t t-esc="week_attendance[1][-1]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[2]">
+                        <span t-if="week_attendance[2][-1] != ''">
+                            <t t-esc="week_attendance[2][-1]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[3]">
+                        <span t-if="week_attendance[3][-1] != ''">
+                            <t t-esc="week_attendance[3][-1]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[4]">
+                        <span t-if="week_attendance[4][-1] != ''">
+                            <t t-esc="week_attendance[4][-1]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                </tr>
+
+                <!-- PARTIE ÉCART -->
+                <tr>
+                    <td style="background-color:#611610;">
+                        <p style="text-align:center;color:white;">Ecart<p>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[0]">
+                        <span t-if="week_attendance[0][-2]">
+                            <t t-esc="week_attendance[0][-2]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[1]">
+                        <span t-if="week_attendance[1][-2]">
+                            <t t-esc="week_attendance[1][-2]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[2]">
+                        <span t-if="week_attendance[2][-2]">
+                            <t t-esc="week_attendance[2][-2]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[3]">
+                        <span t-if="week_attendance[3][-2]">
+                            <t t-esc="week_attendance[3][-2]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                    <td t-if="week_attendance and week_attendance[4]">
+                        <span t-if="week_attendance[4][-2]">
+                            <t t-esc="week_attendance[4][-2]" t-options="{'widget': 'float_time'}"/>
+                        </span>
+                    </td>
+                </tr>
+
+                <!-- TOTAL SEMAINE -->
+                <tr style="background-color:#611610;">
+                    <td colspan="6" style="text-align:center;color:white;">
+                        Total présence:
+                        <t t-esc="object.hours_last_week" t-options="{'widget': 'float_time'}"/>
+                        /
+                        <t t-esc="object.total_hours_of_week()" t-options="{'widget': 'float_time'}"/>
+                        (
+                        <t t-esc="object.ecart_worked_week()" t-options="{'widget': 'float_time'}"/>
+                        Ecart
+                        )
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </t>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_pointage_notification_report_month" model="mail.template">
+            <field name="name">Présence</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.work_email or ''}}</field>
+            <field name="subject">Récapitulatif de votre présence du {{object.get_start_of_last_month().strftime( '%d-%m-%Y')}} au {{object.fin_du_mois_dernier().strftime( '%d-%m-%Y')}}</field>
+            <field name="report_name">Rapport Pointage</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="report_template" ref="pointage.report_pointage_presence"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+                    <div>Bonjour <span t-out="object.name or ''"></span>, <br/>
+                       <p>Veuillez trouver ci-joint la fiche récaputilative de votre présence pour la période du
+                       <t t-esc="object.get_start_of_last_month().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
+                       au <t t-esc="object.fin_du_mois_dernier().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.
+
+                        <p>
+                            Cordialement.
+                        </p>
+                    </div>
+                    </t>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_absence_semaine_notification_drh" model="mail.template">
+            <field name="name">Liste des agents ayant enregistré au moins deux jours d'absence durant la période</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.get_groupe_drh()}}</field>
+            <field name="subject">Liste des agents ayant enregistré au moins deux jours d'absence durant la période du {{object.date_debut_semaine().strftime( '%d-%m-%Y')}} au {{object.date_fin_emaine().strftime( '%d-%m-%Y')}}</field>
+            <field name="model_id" ref="pointage.model_pointage_absence"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+                    <div>Bonjour DRH, <br/>
+                       <p>Veuillez trouver ci-dessous le tableau récapitulatif des agents ayant enregistré au moins deux jours d'absence durant la période du <t t-esc="object.date_debut_semaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>  au <t t-esc="object.date_fin_emaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p>
+                       </br>
+                       <table t-if="object.get_absence_employees()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
+                               style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; font-family: arial, sans-serif;
+                                border-collapse: collapse;">
+                            <thead class="thead-light" style="background-color:#611610;">
+                                <tr>
+                                    <th style="text-align:center;color:white;">N°</th>
+                                    <th style="text-align:center;color:white;">Employé</th>
+                                    <th style="text-align:center;color:white;">Fonction</th>
+                                    <th style="text-align:center;color:white;">Service</th>
+                                    <th style="text-align:center;color:white;">Absence (en jours)</th>
+                                </tr>
+                            </thead>
+                            <tbody t-foreach="object.get_absence_employees()" t-as="absence">
+                                <tr>
+                                    <td style="text-align:center;">
+                                       <span t-esc="absence_index+1"/>
+                                    </td>
+
+                                    <td>
+                                        <span t-esc="absence[0]"/>
+                                    </td>
+                                    <td >
+                                        <span t-esc="absence[1]"/>
+                                    </td>
+                                    <td >
+                                        <span t-esc="absence[2]"/>
+                                    </td>
+                                    <td style="text-align:center">
+                                        <span t-esc="absence[3]"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>
+                            Cordialement.
+                        </p>
+                    </div>
+                    </t>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_directeur" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.employee_id.user_id.employee_parent_id.work_email or ''}}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour Directeur,<br/>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une demande d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     <!--<span t-out="object.get_url(object.id) or ''"></span>-->
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans le navigateur</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_drh" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.get_drh()}}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour DRH,<br/>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une demande d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     <!--<span t-out="object.get_url(object.id) or ''"></span>-->
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans le navigateur</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_sg" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.get_sg()}}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour SG,<br/>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une demande d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     <!--<span t-out="object.get_url(object.id) or ''"></span>-->
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans le navigateur</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_ag" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.get_ag()}}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour AG,<br/>
+                     <p> L'agent <span t-out="object.employee_id.name or ''"></span><br/>a fait une demande d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     <!--<span t-out="object.get_url(object.id) or ''"></span>-->
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir le navigateur</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_agentAccept" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.employee_id.work_email}}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour <span t-out="object.employee_id.name or ''"/>,<br/>
+                     <p> Votre demande  d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     est validé
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans Odoo</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_notification_agentRefus" model="mail.template">
+            <field name="name">Demande d'autorisation de sortie</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.employee_id.work_email}}</field>
+            <field name="subject">Demande d'autorisation de sortie par {{object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_autorisation"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour <span t-out="object.employee_id.name or ''"/>,<br/>
+                     <p> Votre demande  d'autorisation de sortie pour le</p>
+                     <span t-out="object.date or ''"></span> de
+                     <span t-out="object.time_out or ''"></span> à  <span t-out="object.time_in or ''"></span> <br/>
+                     est refusé
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir dans Odoo</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_pointage_notification_retard" model="mail.template">
+            <field name="name">Liste des agents ayant enregistré au moins trois retards durant la période du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.get_drh()}}</field>
+            <field name="subject">Liste des agents ayant enregistré au moins trois retards durant la période du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+                   <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #000;
+        }
+        th {
+            background-color: #800000;
+            color: white;
+        }
+        td {
+            background-color: #fff;
+        }
+        th:nth-child(2), td:nth-child(2) { /* Lundi */
+            width: 150px; /* Augmente la largeur */
+        }
+        th:nth-child(3), td:nth-child(3) { /* Mardi */
+            width: 150px;
+        }
+         th:nth-child(4), td:nth-child(4) { /* Mardi */
+            width: 150px;
+        }
+         th:nth-child(5), td:nth-child(5) { /* Mardi */
+            width: 150px;
+        }
+         th:nth-child(6), td:nth-child(6) { /* Mardi */
+            width: 150px;
+        }
+        /* Vous pouvez ajuster chaque colonne ici */
+    </style>
+                    <div>Bonjour DRH, <br/>
+                       <p t-if="object.get_late_two_day_of_week()">Veillez trouvez ci-joint le tableau récapitulatif des agents ayant renregistré au moins trois retards durant la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p></br>
+
+                        <table t-if="object.get_late_two_day_of_week()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                            <thead class="thead-light" style="background-color:#611610;">
+                                <tr style="background-color:#611610;">
+                                    <th style="color:white;">AGENT</th>
+                                    <th style="color:white;">Lundi</th>
+                                    <th style="color:white;">Mardi</th>
+                                    <th style="color:white;">Mercredi</th>
+                                    <th style="color:white;">Jeudi</th>
+                                    <th style="color:white;">Vendredi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr t-foreach="object.get_late_two_day_of_week()" t-as="retard">
+                            <td style="background-color:#611610;">
+                                <p style="text-align:center;color:white;">
+                                    <t t-esc="retard[1]"/>
+                                <p>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[2]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[3]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[4]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[5]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[6]"/>
+                                </span>
+                            </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p t-else="">Il n'y a pas de retard durant la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/></p>
+                        </br>
+                        <p>Cordialement.</p>
+                    </div>
+                    </t>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_template_pointage_notification_retard_agent" model="mail.template">
+            <field name="name">Attention au retards du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.user_id.work_email or ''}}</field>
+            <field name="subject">Attention, vous avez au moins trois retards du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
+            <field name="report_name">Rapport Retard</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <!--<field name="report_template" ref="pointage.report_pointage_presence"/>-->
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+                   <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #000;
+        }
+        th {
+            background-color: #800000;
+            color: white;
+        }
+        td {
+            background-color: #fff;
+        }
+        th:nth-child(2), td:nth-child(2) { /* Lundi */
+            width: 150px; /* Augmente la largeur */
+        }
+        th:nth-child(3), td:nth-child(3) { /* Mardi */
+            width: 150px;
+        }
+         th:nth-child(4), td:nth-child(4) { /* Mardi */
+            width: 150px;
+        }
+         th:nth-child(5), td:nth-child(5) { /* Mardi */
+            width: 150px;
+        }
+         th:nth-child(6), td:nth-child(6) { /* Mardi */
+            width: 150px;
+        }
+        /* Vous pouvez ajuster chaque colonne ici */
+    </style>
+                    <div>Cher collaborateur,<br/>
+                    Nous avons constaté, de votre part, le non-respect des horaires de travail applicables au personnel et arrêtées comme suit : 8H30 - 17H30 du lundi au vendredi,
+                    soit 40 heures par semaine. Notre dernier constat date du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.
+                    Par conséquent, vous êtes priés de prendre toutes les dispositions nécessaires pour pallier ces manquements.
+
+                    Dans le cas contraire nous serons dans l’obligation de prendre les mesures administratives appropriées à votre encontre.
+
+                       <p>Vous avez ci-dessous le tableau récapitulatif de vos retards.</p>
+
+                        <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                            <thead class="thead-light" style="background-color:#611610;">
+                                <tr style="background-color:#611610;">
+                                    <th style="color:white;">AGENT</th>
+                                    <th style="color:white;">Lundi</th>
+                                    <th style="color:white;">Mardi</th>
+                                    <th style="color:white;">Mercredi</th>
+                                    <th style="color:white;">Jeudi</th>
+                                    <th style="color:white;">Vendredi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr t-foreach="object.get_late_notify_tree_day_of_week(object.id)" t-as="retard">
+                            <td style="background-color:#611610;">
+                                <p style="text-align:center;color:white;">
+                                    <t t-esc="retard[1]"/>
+                                <p>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[2]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[3]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[4]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[5]"/>
+                                </span>
+                            </td>
+                            <td>
+                                <span>
+                                    <t t-esc="retard[6]"/>
+                                </span>
+                            </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p>Bien cordialement </p>
+                    </div>
+                    </t>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_justification_absence_notification_drh" model="mail.template">
+            <field name="name">Justification absence</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.groupe_drh()}}</field>
+            <field name="subject">Justification d'absence par {{ object.employee_id.name or ''}}</field>
+            <field name="model_id" ref="pointage.model_pointage_justification"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour DRH,<br/>
+                     <p>
+                        L'agent <span t-out="object.employee_id.name or ''"></span><br/>
+                        a envoyé une justification d'absence
+                        du <span t-out="object.date_from or ''"></span> au
+                        <span t-out="object.date_to or ''"></span>.
+                    </p>
+                    <p>
+                        Avec comme motif : <span t-out="object.motif or 'Pas de motif'"></span>
+                    </p>
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+        <record id="email_justification_refuser_notification_agent" model="mail.template">
+            <field name="name">Justification refusée</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.employee_id.work_email}}</field>
+            <field name="subject">Justification d'absence refusée</field>
+            <field name="model_id" ref="pointage.model_pointage_justification"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                    <div>Bonjour <span t-out="object.employee_id.name or ''"></span>,<br/>
+                     <p> Votre justification n'est valide</p>
+                     <a t-attf-href="{{object.get_url(object.id) }}">Ouvrir la plate</a>
+                     <p>Cordialement.</p>
+                    </div>
+                        ]]>
+            </field>
+        </record>
+    </data>
+</odoo>

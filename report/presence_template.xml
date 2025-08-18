@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_presence">
+        <div class="header" style="margin-top: 0px;">
+            <img src="/pointage/static/src/img/fon.jpeg" alt="Logo" class="w-910 h-3"/>
+        </div>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="object">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h3 style="text-align:center;color:#800000;margin-top:50px;"
+                            t-if="object.get_work_hours_month()">
+                            Fiche récaputilative des pointages
+                            <span t-esc="object.get_work_hours_month()[0][0].strftime('%d/%m/%Y')"/>
+                            au <span t-esc="object.get_work_hours_month()[-1][0].strftime('%d/%m/%Y')"/>.
+                        </h3>
+                        <span style="font-weight: bold;">Employé:
+                        </span><span style="font-weight: lighter;" t-field="object.name"/><br/>
+                        <span style="font-weight: bold;">Responsable Service:
+                        </span>
+                         <span style="font-weight: lighter;" t-field="object.parent_id.name"/><br/>
+                        <span style="font-weight: bold;">Service: </span>  <span style="font-weight: lighter;" t-field="object.user_id.employee_parent_id.department_id.name"/><br/>
+                        <span style="font-weight: bold;">Presence effective(en heures):
+                        </span>
+                        <span t-set="hours" t-value="int(object.hours_last_month)"/>
+                            <span t-set="minutes" t-value="int((object.hours_last_month - hours) * 60)"/>
+                            <span style="font-weight: lighter;" t-esc="hours"/>H:
+                            <span style="font-weight: lighter;" t-esc="minutes"/><br/>
+                        <span style="font-weight: bold;">Sur un total de : </span><span style="font-weight: lighter;" t-esc="object.total_work_month()"/>Heures<br/>
+                        <span style="font-weight: bold;">Ecart : </span>
+                        <span t-if="object.ecart_worked_month() >= 0" style="background-color: green;">
+                            <span t-esc="object.ecart_worked_month()" t-options="{'widget':'float_time'}"/> Heure(s)
+                        </span>
+                        <span t-else="" style="background-color: red;">
+                            <span t-esc="object.ecart_worked_month()" t-options="{'widget':'float_time'}"/> Heure(s)
+                        </span>
+                        <p style="text-align:center;font-weight: bold; color:#800000;">Historique</p>
+                        <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
+                               style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                            <thead>
+                                <tr>
+                                    <th>N°</th>
+                                    <th>Date</th>
+                                    <th>Entrée</th>
+                                    <th>Sortie</th>
+                                    <th>Présence(en heures)</th>
+                                    <th>Ecart</th>
+                                </tr>
+                            </thead>
+                            <tbody t-foreach="object.get_work_hours_month()" t-as="pair">
+                                <tr>
+                                    <td>
+                                        <span t-esc="pair_index+1"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="pair[0].strftime('%d/%m/%Y')"/>
+                                    </td>
+                                    <td t-if="pair[:-1]">
+                                        <span t-if="pair[:-1][0].strftime('%H:%M:%S') == '00:00:00'">
+                                            Absent
+                                        </span>
+                                        <span t-elif="pair[:-1][0].strftime('%H:%M:%S') == '23:59:59'">
+                                             <span t-esc="pair[:-1][-2]"/>
+                                        </span>
+                                        <span t-elif="pair[:-1][0].strftime('%H:%M:%S') == '03:00:00'">
+                                            En congé
+                                        </span>
+                                        <span t-elif="pair[:-1][0].strftime('%H:%M:%S') == '04:00:00'">
+                                            En Atelier
+                                        </span>
+                                        <span t-elif="pair[:-1][0].strftime('%H:%M:%S') == '02:00:00'">
+                                            En mission
+                                        </span>
+                                        <span t-else="">
+                                            <t t-esc="pair[:-1][0].strftime('%H:%M:%S')"/>
+                                        </span>
+                                    </td>
+                                    <td t-if="pair[:-1]">
+                                        <span t-if="pair[:-1][1]">
+                                            <span t-if="pair[:-1][1].strftime('%H:%M:%S') == '00:00:00'">
+
+                                            </span>
+                                            <span t-elif="pair[:-1][1].strftime('%H:%M:%S') == '23:59:59'">
+
+                                            </span>
+                                            <span t-elif="pair[:-1][1].strftime('%H:%M:%S') == '03:00:00'">
+
+                                            </span>
+                                            <span t-elif="pair[:-1][1].strftime('%H:%M:%S') == '04:00:00'">
+
+                                            </span>
+                                            <span t-elif="pair[:-1][1].strftime('%H:%M:%S') == '02:00:00'">
+
+                                            </span>
+                                            <span t-else="">
+                                                <span t-esc="pair[:-1][1].strftime('%H:%M:%S')"/>
+                                            </span>
+                                        </span>
+                                        <span t-else="">
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span t-set="hours" t-value="int(pair[-1])"/>
+                                        <span t-set="minutes" t-value="int((pair[-1] - hours) * 60)"/>
+                                        <span t-if="hours > 0" t-esc="hours"/> <span t-if="hours > 0">:</span>
+                                        <span t-if="minutes > 0" t-esc="minutes"/>
+                                        <br/>
+                                    </td>
+                                    <td t-if="pair[-2]">
+                                        <span t-esc="pair[-2]" t-options="{'widget':'float_time'}"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-right">
+                            Fait à Dakar, le
+                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                        </p>
+                        <h6 class="text-right">
+                            La Directrice des Ressources Humaines
+                        </h6>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>

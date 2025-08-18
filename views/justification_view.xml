@@ -1,0 +1,62 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="pointage_justification">
+            <field name="name">Justification absences</field>
+            <field name="model">pointage.justification</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="employee_id"/>
+                    <field name="date_to"/>
+                    <field name="date_from"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="pointage_justification_form">
+            <field name="name">Justification d'absence</field>
+            <field name="res_model">pointage.justification</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!--  action open form view -->
+        <record id="absence_justification_view_form" model="ir.ui.view">
+            <field name="name">pointage.justification.form</field>
+            <field name="model">pointage.justification</field>
+            <field name="arch" type="xml">
+                <form string="Justification absence">
+                    <header>
+                        <button string="Soumettre" name="action_confirm" states="draft" type="object" class="oe_highlight"/>
+                        <button string="Remettre en Brouillon" name="action_draft" states="confirm" type="object"/>
+                        <button string="Refuser" name="action_refuser" states="drh" type="object" groups="pointage.group_pointage_drh"/>
+                        <button string="Confirmer" name="action_drh" states="confirm" type="object" class="oe_highlight"/>
+                        <button string="Valider" name="action_valider" states="drh" type="object" class="oe_highlight" groups="pointage.group_pointage_drh"/>
+                        <field name="state" widget="statusbar" statusbar_visible="valider,draft,confirm,drh,refuser"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="date_to"/>
+                            <field name="date_from"/>
+                            <field name="file_justify" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
+                        </group>
+                        <notebook>
+                            <page name="page_lines" string="Motif d'absence">
+                                <field name="motif"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <menuitem
+                id="pointage_justification_absence"
+                name="Justification absence"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="15"
+                groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent"
+                action="pointage_justification_form"/>
+
+
+    </data>
+</odoo>
