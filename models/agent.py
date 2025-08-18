@@ -531,7 +531,7 @@ class Agent(models.Model):
                     ])
 
         conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
-        fetes = self.env["vacances.ferier"].sudo().search([])
+        fetes = self.env["resource.calendar.leaves"].sudo().search([])
         fete_listes = []
         for f in fetes:
             fd = f.date_star
