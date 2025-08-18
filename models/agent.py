@@ -725,5 +725,6 @@ class Agent(models.Model):
                 )
         self.env["mail.mail"].sudo().process_email_queue()
 
+    #methode d'envoie email
     def send_notify_late_week_of_agent(self):
         self.send_email_notification_agent("email_template_pointage_notification_retard_agent")
