@@ -7,6 +7,7 @@
             <field name="email_from">fongip@fongip.sn</field>
             <field name="email_to">{{object.work_email or ''}}</field>
             <field name="subject">Récapitulatif de votre présence du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
+            <!--<field name="report_name">Rapport Pointage</field>-->
             <field name="model_id" ref="hr.model_hr_employee"/>
             <field name="auto_delete" eval="True"/>
             <field name="body_html"><![CDATA[
