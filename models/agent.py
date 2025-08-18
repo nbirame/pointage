@@ -404,8 +404,8 @@ class Agent(models.Model):
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
         for p in participants:
-            d1 = p.atelier_id.date_from
-            d2 = p.atelier_id.date_to
+            d1 = p.atelier_id.date_start
+            d2 = p.atelier_id.date_end
             participants_listes.extend(
                 d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
             )
@@ -523,8 +523,8 @@ class Agent(models.Model):
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
         if participants:
             for p in participants:
-                d1 = p.atelier_id.date_from
-                d2 = p.atelier_id.date_to
+                d1 = p.atelier_id.date_start
+                d2 = p.atelier_id.date_end
                 if not isinstance(d1, int) and not isinstance(d2, int):
                     participants_listes.extend([
                         d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
