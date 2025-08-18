@@ -404,8 +404,8 @@ class Agent(models.Model):
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
         for p in participants:
-            d1 = p.atelier_id.date_start
-            d2 = p.atelier_id.date_end
+            d1 = p.atelier_id.date_from
+            d2 = p.atelier_id.date_to
             participants_listes.extend(
                 d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
             )
@@ -414,11 +414,11 @@ class Agent(models.Model):
         conge_listes = self.get_hollidays(fin_mois_dernier, debut_mois_dernier)
 
         # Récup Fêtes
-        fetes = self.env["resource.calendar.leaves"].sudo().search([])
+        fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for fete in fetes:
-            fd = fete.date_debut
-            fe = fete.date_fin
+            fd = fete.date_star
+            fe = fete.date_end
             nom_fete = fete.party_id.name
             fete_listes.extend(
                 [fd + timedelta(days=i), nom_fete] for i in range((fe - fd).days + 1)
@@ -523,19 +523,19 @@ class Agent(models.Model):
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
         if participants:
             for p in participants:
-                d1 = p.atelier_id.date_start
-                d2 = p.atelier_id.date_end
+                d1 = p.atelier_id.date_from
+                d2 = p.atelier_id.date_to
                 if not isinstance(d1, int) and not isinstance(d2, int):
                     participants_listes.extend([
                         d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
                     ])
 
         conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
-        fetes = self.env["resource.calendar.leaves"].sudo().search([])
+        fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for f in fetes:
-            fd = f.date_debut
-            fe = f.date_fin
+            fd = f.date_star
+            fe = f.date_end
             nom_fete = f.party_id.name
             fete_listes.extend(
                 [fd + timedelta(days=i), nom_fete]
