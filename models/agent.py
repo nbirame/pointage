@@ -519,16 +519,30 @@ class Agent(models.Model):
                         for i in range((real_end - real_start).days + 1)
                     )
 
+        # participants_listes = []
+        # participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
+        # if participants:
+        #     for p in participants:
+        #         d1 = p.atelier_id.date_start
+        #         d2 = p.atelier_id.date_end
+        #         if not isinstance(d1, int) and not isinstance(d2, int):
+        #             participants_listes.extend([
+        #                 d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
+        #             ])
+
         participants_listes = []
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
         if participants:
             for p in participants:
-                d1 = p.atelier_id.date_start
-                d2 = p.atelier_id.date_end
-                if not isinstance(d1, int) and not isinstance(d2, int):
-                    participants_listes.extend([
-                        d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
-                    ])
+                d1 = p.atelier_id.date_from
+                d2 = p.atelier_id.date_to
+                real_start = max(d1, debut_semaine_derniere.date())
+                real_end = min(d2, fin_semaine_derniere.date())
+                if real_start <= real_end:
+                    participants_listes.extend(
+                        real_start + timedelta(days=i)
+                        for i in range((real_end - real_start).days + 1)
+                    )
 
         conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
         fetes = self.env["vacances.ferier"].sudo().search([])
