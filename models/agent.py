@@ -534,8 +534,8 @@ class Agent(models.Model):
         participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
         if participants:
             for p in participants:
-                d1 = p.atelier_id.date_from
-                d2 = p.atelier_id.date_to
+                d1 = p.atelier_id.date_start
+                d2 = p.atelier_id.date_end
                 real_start = max(d1, debut_semaine_derniere.date())
                 real_end = min(d2, fin_semaine_derniere.date())
                 if real_start <= real_end:

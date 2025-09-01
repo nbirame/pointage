@@ -7,7 +7,7 @@
     <list default="true" id="87cded7a-50e9-4130-9546-c4488fa17f1a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../mission" beforeDir="false" afterPath="$PROJECT_DIR$/../mission" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../odoo_custom_dashboard" beforeDir="false" afterPath="$PROJECT_DIR$/../odoo_custom_dashboard" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$" beforeDir="false" afterPath="$PROJECT_DIR$" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/agent.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../vacances" beforeDir="false" afterPath="$PROJECT_DIR$/../vacances" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
