@@ -36,13 +36,19 @@
                             <field name="date_end"/>
                         </group>
                         <notebook>
-                          <page name="page_lines" string="Participant(s)">
-                             <field name="participant_ids">
+                          <page name="page_lines" string="AGENT">
+                              <group>
+                                  <field name="employee_id"/>
+                              </group>
+                              <group>
+                                  <field name="poste"/>
+                              </group>
+                            <!-- <field name="participant_ids">
                                      <tree string="La liste des participants" editable="bottom">
                                         <field name="employee_id"/>
                                         <field name="poste"/>
                                      </tree>
-                             </field>
+                             </field>-->
                           </page>
                         </notebook>
                     </sheet>

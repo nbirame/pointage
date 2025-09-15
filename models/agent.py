@@ -402,10 +402,10 @@ class Agent(models.Model):
 
         # Récup Participants
         participants_listes = []
-        participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
+        participants = self.env["pointage.atelier"].search([('employee_id', '=', self.id)])
         for p in participants:
-            d1 = p.atelier_id.date_start
-            d2 = p.atelier_id.date_end
+            d1 = p.date_start
+            d2 = p.date_end
             participants_listes.extend(
                 d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
             )
@@ -531,12 +531,12 @@ class Agent(models.Model):
         #             ])
 
         participants_listes = []
-        participants = self.env["pointage.participants"].search([('employee_id', '=', self.id)])
+        participants = self.env["pointage.atelier"].search([('employee_id', '=', self.id)])
         if participants:
             for p in participants:
-                if p.atelier_id.date_start and p.atelier_id.date_end:
-                    d1 = p.atelier_id.date_start.date()
-                    d2 = p.atelier_id.date_end.date()
+                if p.date_start and p.date_end:
+                    d1 = p.date_start.date()
+                    d2 = p.date_end.date()
                     real_start = max(d1, debut_semaine_derniere.date())
                     real_end = min(d2, fin_semaine_derniere.date())
 

@@ -41,14 +41,23 @@ class Absence(models.Model):
                         date_fin = agant.mission_id.date_retour
                         missions.extend([date_debut + timedelta(days=i) for i in
                                          range((date_fin - date_debut).days + 1)])
-                participants = self.env["pointage.participants"].search([('employee_id', '=', employee.id)])
+                participants = self.env["pointage.atelier"].search([('employee_id', '=', employee.id)])
                 if participants:
                     for participant in participants:
-                        date_debut = participant.atelier_id.date_start
-                        date_fin = participant.atelier_id.date_end
+                        date_debut = participant.date_start
+                        date_fin = participant.date_end
                         if not isinstance(date_debut, int) and not isinstance(date_fin, int):
                             participants_liste.extend([date_debut + timedelta(days=i) for i in
                                                   range((date_fin - date_debut).days + 1)])
+                fetes = self.env["vacances.ferier"].sudo().search([])
+                fete_listes = []
+                for fete in fetes:
+                    fd = fete.date_star
+                    fe = fete.date_end
+                    nom_fete = fete.party_id.name
+                    fete_listes.extend(
+                        [fd + timedelta(days=i), nom_fete] for i in range((fe - fd).days + 1)
+                    )
 
                 conges = self.env['hr.employee'].get_day_of_hollidays(employee.matricule, end_of_last_week, start_of_last_week)
                 attendance = attendance_model.search([
@@ -79,12 +88,20 @@ class Absence(models.Model):
                             'state': 'justifier',
                             'reason': 'En Mission'
                         })
+                    elif single_date in fete_listes:
+                        self.create({
+                            'employee_id': employee.id,
+                            'day_absence': single_date,
+                            'state': 'justifier',
+                            'reason': 'Férié'
+                        })
                     else:
                         self.create({
                             'employee_id': employee.id,
                             'day_absence': single_date,
                             'state': 'absent',
                         })
+
 
     @api.onchange('justify_id')
     def _onchange_reason(self):

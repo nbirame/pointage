@@ -25,12 +25,12 @@
             <field name="arch" type="xml">
                 <form string="Justification absence">
                     <header>
-                        <button string="Soumettre" name="action_confirm" states="draft" type="object" class="oe_highlight"/>
-                        <button string="Remettre en Brouillon" name="action_draft" states="confirm" type="object"/>
+                        <button string="Soumettre" name="action_confirm" states="draft" type="object" class="oe_highlight btn btn-warning"/>
+                        <button string="Remettre en Brouillon" name="action_draft" states="confirm" type="object" class="oe_highlight btn btn-warning"/>
                         <button string="Refuser" name="action_refuser" states="drh" type="object" groups="pointage.group_pointage_drh"/>
-                        <button string="Confirmer" name="action_drh" states="confirm" type="object" class="oe_highlight"/>
-                        <button string="Valider" name="action_valider" states="drh" type="object" class="oe_highlight" groups="pointage.group_pointage_drh"/>
-                        <field name="state" widget="statusbar" statusbar_visible="valider,draft,confirm,drh,refuser"/>
+                        <button string="Confirmer" name="action_drh" states="confirm" type="object" class="oe_highlight btn btn-success"/>
+                        <button string="Valider" name="action_valider" states="drh" type="object" class="oe_highlight btn btn-success" groups="pointage.group_pointage_drh"/>
+                        <field name="state" widget="statusbar" statusbar_visible="valider,draft,confirm,drh"/>
                     </header>
                     <sheet>
                         <group>
@@ -54,7 +54,7 @@
                 name="Justification absence"
                 parent="hr_attendance.menu_hr_attendance_root"
                 sequence="15"
-                groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent"
+                groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent,pointage.group_pointage_assistant_drh"
                 action="pointage_justification_form"/>
 
 

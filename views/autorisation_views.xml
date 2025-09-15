@@ -27,18 +27,18 @@
             <field name="arch" type="xml">
                 <form string="Fiche demande d'autorisation de sortie">
                     <header>
-                        <button string="Soumettre" name="action_confirmer" states="brouillon" type="object" class="oe_highlight"/>
-                        <button string="Remettre en Brouillon" name="action_brouillon" states="confirmer" type="object"/>
-                        <button string="Refuser" name="action_refuser" states="drh" type="object" groups="pointage.group_pointage_drh"/>
-                        <button string="Refuser" name="action_refuser" states="sg" type="object" groups="pointage.group_pointage_sg"/>
-                        <button string="Refuser" name="action_refuser" states="ag" type="object" groups="pointage.group_pointage_ag"/>
-                        <button string="Refuser" name="action_refuser" states="directeur" type="object" groups="pointage.group_pointage_directeur"/>
-                        <button string="Confirmer" name="action_confirmer" states="confirmer" type="object" class="oe_highlight"/>
-                        <button string="Valider" name="action_directeur" states="directeur" type="object" class="oe_highlight" groups="pointage.group_pointage_directeur"/>
-                        <button string="Valider" name="action_drh" states="drh" type="object" class="oe_highlight" groups="pointage.group_pointage_drh"/>
-                        <button string="Valider" name="action_sg" states="sg" type="object" class="oe_highlight" groups="pointage.group_pointage_sg"/>
-                        <button string="Valider" name="action_ag" states="ag" type="object" class="oe_highlight" groups="pointage.group_pointage_ag"/>
-                        <field name="state" widget="statusbar" statusbar_visible="refuser,brouillon,confirmer,directeur,drh,sg,ag,Valider"/>
+                        <button string="Soumettre" name="action_confirmer" states="brouillon" type="object" class="oe_highlight btn btn-warning"/>
+                        <button string="Remettre en Brouillon" name="action_brouillon" states="confirmer" type="object" class="oe_highlight btn btn-warning"/>
+                        <button string="Valider" name="action_directeur" states="directeur" type="object" class="oe_highlight btn btn-success" groups="pointage.group_pointage_directeur"/>
+                        <button string="Valider" name="action_drh" states="drh" type="object" class="oe_highlight btn btn-success" groups="pointage.group_pointage_drh"/>
+                        <button string="Valider" name="action_sg" states="sg" type="object" class="oe_highlight btn btn-success" groups="pointage.group_pointage_sg"/>
+                        <button string="Refuser" name="action_refuser" states="drh" type="object" groups="pointage.group_pointage_drh" class="oe_highlight btn btn-danger"/>
+                        <button string="Refuser" name="action_refuser" states="sg" type="object" groups="pointage.group_pointage_sg" class="oe_highlight btn btn-danger"/>
+                        <button string="Refuser" name="action_refuser" states="ag" type="object" groups="pointage.group_pointage_ag" class="oe_highlight btn btn-danger"/>
+                        <button string="Refuser" name="action_refuser" states="directeur" type="object" groups="pointage.group_pointage_directeur" class="oe_highlight btn btn-danger"/>
+                        <button string="Confirmer" name="action_confirmer" states="confirmer" type="object" class="oe_highlight btn btn-success"/>
+                        <!--<button string="Valider" name="action_ag" states="ag" type="object" class="oe_highlight" groups="pointage.group_pointage_ag"/>-->
+                        <field name="state" widget="statusbar" statusbar_visible="brouillon,confirmer,directeur,drh,sg,valider"/>
                     </header>
                     <sheet>
                         <group>
@@ -70,7 +70,7 @@
                 name="Demande d'autorisation de sortie"
                 parent="hr_attendance.menu_hr_attendance_root"
                 sequence="14"
-                groups="pointage.group_pointage_agent,pointage.group_pointage_drh,pointage.group_pointage_superadmin,pointage.group_pointage_admin,pointage.group_pointage_ag,pointage.group_pointage_ag"
+                groups="pointage.group_pointage_agent,pointage.group_pointage_drh,pointage.group_pointage_superadmin,pointage.group_pointage_admin,pointage.group_pointage_ag,pointage.group_pointage_ag,pointage.group_pointage_assistant_drh"
                 action="pointage_autorisation_form"/>
 
 

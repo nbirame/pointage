@@ -19,8 +19,7 @@ class Autorisation(models.Model):
                               ('directeur', 'Directeur'),
                                ('drh', 'DRH'),
                                ('refuser', 'Refusé'),
-                               ('sg', 'SG'),
-                               ('ag', 'AG'), ('valider', 'Validée')], default='confirmer', string='Status')
+                               ('sg', 'SG'), ('valider', 'Validée')], default='confirmer', string='Status')
     _order = 'id desc'
 
     def name_get(self):
@@ -80,14 +79,15 @@ class Autorisation(models.Model):
         return True
 
     def action_sg(self):
-        self.write({'state': 'ag'})
-        self.action_send_email_notifier("email_template_notification_sg")
+        self.write({'state': 'valider'})
+        self.action_send_email_notifier("email_template_notification_agentAccept")
+        # self.action_send_email_notifier("email_template_notification_sg")
         return True
 
-    def action_ag(self):
-        self.write({'state': 'valider'})
-        self.action_send_email_notifier("email_template_notification_ag")
-        return True
+    # def action_ag(self):
+    #     self.write({'state': 'valider'})
+    #     self.action_send_email_notifier("email_template_notification_ag")
+    #     return True
 
     def action_valider(self):
         self.write({'state': 'valider'})

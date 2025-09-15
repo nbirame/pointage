@@ -72,7 +72,7 @@
                 name="Liste absence"
                 parent="hr_attendance.menu_hr_attendance_root"
                 sequence="14"
-                groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent"
+                groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent,pointage.group_pointage_assistant_drh"
                 action="pointage_absence_form"/>
 
 
