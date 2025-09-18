@@ -88,7 +88,7 @@ class RapportWizard(models.TransientModel):
                     jours_conge_uniques.add(jour)
         conge_listes = sorted(list(jours_conge_uniques))
         total_jour = len(conge_listes)
-        fete = self.env["vacances.ferier"]
+        fete = self.env["resource.calendar.leaves"]
         date_fete = fete.sudo().search([
             ('date_star', '>=', self.date_in_get_rapport),
             ('date_end', '<=', self.date_end_get_rapport),
@@ -105,7 +105,7 @@ class RapportWizard(models.TransientModel):
         jour_de_conge = self.get_hollidays(self.date_end_get_rapport, self.date_in_get_rapport)
         heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
         absence_days_hollidays = jour_de_conge[1]
-        fete = self.env["vacances.ferier"]
+        fete = self.env["resource.calendar.leaves"]
         date_fete = fete.sudo().search([
             ('date_star', '>=', self.date_in_get_rapport),
             ('date_end', '<=', self.date_end_get_rapport),
@@ -131,29 +131,29 @@ class RapportWizard(models.TransientModel):
         self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                  self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
         # print(f"Le nombre d'heure avant if {self.total_number_of_working_hours}")
-        participants = self.env["pointage.participants"].search([('employee_id', '=', self.employee_id.id)])
+        participants = self.env["pointage.atelier"].search([('employee_id', '=', self.employee_id.id)])
         if participants:
             number_day_of_atelier = 0
             for agent in participants:
                 if (
-                        agent.atelier_id.date_from >= self.date_in_get_rapport and agent.atelier_id.date_to <= self.date_end_get_rapport) and (
+                        agent.date_from >= self.date_in_get_rapport and agent.date_to <= self.date_end_get_rapport) and (
                         agent.employee_id.id == self.employee_id.id):
-                    number_day_of_atelier += self.nombre_jours_sans_weekend(agent.atelier_id.date_from,
-                                                                            agent.atelier_id.date_to)
+                    number_day_of_atelier += self.nombre_jours_sans_weekend(agent.date_from,
+                                                                            agent.date_to)
                     number_of_days_absence_legal += number_day_of_atelier
                     self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                              self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                elif agent.atelier_id.date_from >= self.date_in_get_rapport and agent.atelier_id.date_to >= self.date_end_get_rapport and (
+                elif agent.date_from >= self.date_in_get_rapport and agent.date_to >= self.date_end_get_rapport and (
                         agent.employee_id.id == self.employee_id.id):
-                    number_day_of_atelier += self.nombre_jours_sans_weekend(agent.atelier_id.date_from,
+                    number_day_of_atelier += self.nombre_jours_sans_weekend(agent.date_from,
                                                                             self.date_end_get_rapport)
                     number_of_days_absence_legal += number_day_of_atelier
                     self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                              self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
                 elif (agent.employee_id.id == self.employee_id.id) and (
-                        agent.atelier_id.date_from <= self.date_in_get_rapport and agent.atelier_id.date_to <= self.date_end_get_rapport):
+                        agent.date_from <= self.date_in_get_rapport and agent.date_to <= self.date_end_get_rapport):
                     number_day_of_atelier += self.nombre_jours_sans_weekend(self.date_in_get_rapport,
-                                                                            agent.atelier_id.date_to)
+                                                                            agent.date_to)
                     number_of_days_absence_legal += number_day_of_atelier
                     self.total_number_of_working_hours = int(
                         (self.nombre_jours_sans_weekend(self.date_in_get_rapport,
@@ -259,11 +259,11 @@ class RapportWizard(models.TransientModel):
                 for jour_mission in mission_liste:
                     mission_listes.append(jour_mission)
         participants_listes = []
-        participants = self.env["pointage.participants"].search([('employee_id', '=', self.employee_id.id)])
+        participants = self.env["pointage.atelier"].search([('employee_id', '=', self.employee_id.id)])
         # print(f"Participants: {participants}")
         for employee in participants:
-            date_debut = employee.atelier_id.date_from
-            date_fin = employee.atelier_id.date_to
+            date_debut = employee.date_from
+            date_fin = employee.date_to
             participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
             for jour_atelier in participants_liste:
                 participants_listes.append(jour_atelier)

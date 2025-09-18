@@ -2,16 +2,16 @@
 <odoo>
     <template id="report_absence_of_week">
         <div class="header" style="margin-top: 0px;">
-            <img src="/pointage/static/src/img/fon.jpeg" alt="Logo" class="w-910 h-3"/>
+            <img src="/pointage/static/src/img/fon.png" alt="Logo" class="w-910 h-3"/>
         </div>
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="object">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <h3 style="text-align:center;color:#800000;margin-top:0px; font-weight: bold;">
+                        <h3 style="text-align:center;color:#1A428A;margin-top:0px; font-weight: bold;">
                             Liste des agents ayant au moins deux absences durant la période :
                         </h3>
-                        <p style="text-align:center; color:#800000; font-weight: 200;">
+                        <p style="text-align:center; color:#1A428A; font-weight: 200;">
                              Du
                             <span t-esc="object.date_debut_semaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
                             au <span t-esc="object.date_fin_emaine().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.

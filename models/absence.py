@@ -49,7 +49,7 @@ class Absence(models.Model):
                         if not isinstance(date_debut, int) and not isinstance(date_fin, int):
                             participants_liste.extend([date_debut + timedelta(days=i) for i in
                                                   range((date_fin - date_debut).days + 1)])
-                fetes = self.env["vacances.ferier"].sudo().search([])
+                fetes = self.env["resource.calendar.leaves"].sudo().search([])
                 fete_listes = []
                 for fete in fetes:
                     fd = fete.date_star

@@ -7,10 +7,19 @@
     <list default="true" id="87cded7a-50e9-4130-9546-c4488fa17f1a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../mission" beforeDir="false" afterPath="$PROJECT_DIR$/../mission" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../odoo_custom_dashboard" beforeDir="false" afterPath="$PROJECT_DIR$/../odoo_custom_dashboard" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$" beforeDir="false" afterPath="$PROJECT_DIR$" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/autorisation.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/autorisation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views/autorisation_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/views/autorisation_views.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/notification_email.xml" beforeDir="false" afterPath="$PROJECT_DIR$/data/notification_email.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/absence.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/absence.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/absence_week_template.xml" beforeDir="false" afterPath="$PROJECT_DIR$/report/absence_week_template.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/presence_template.xml" beforeDir="false" afterPath="$PROJECT_DIR$/report/presence_template.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/presence_template_personaliser.xml" beforeDir="false" afterPath="$PROJECT_DIR$/report/presence_template_personaliser.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/rapport_absence_liste_template.xml" beforeDir="false" afterPath="$PROJECT_DIR$/report/rapport_absence_liste_template.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/rapport_presence_template.xml" beforeDir="false" afterPath="$PROJECT_DIR$/report/rapport_presence_template.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/retard_agent_template.xml" beforeDir="false" afterPath="$PROJECT_DIR$/report/retard_agent_template.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/retard_template.xml" beforeDir="false" afterPath="$PROJECT_DIR$/report/retard_template.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/src/img/fon.jpeg" beforeDir="false" afterPath="$PROJECT_DIR$/static/src/img/fonEx.jpeg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wizard/absence_wizard.py" beforeDir="false" afterPath="$PROJECT_DIR$/wizard/absence_wizard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wizard/rapport_wizard.py" beforeDir="false" afterPath="$PROJECT_DIR$/wizard/rapport_wizard.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../vacances" beforeDir="false" afterPath="$PROJECT_DIR$/../vacances" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -29,13 +38,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Business/pointage&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "D:/RHODOO/pointage"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Business\pointage\static\src\img" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

@@ -20,6 +20,24 @@
             <field name="res_model">pointage.autorisation</field>
             <field name="view_mode">tree,form</field>
         </record>
+        <record model="ir.actions.act_window" id="pointage_autorisation_sg_form">
+            <field name="name">Validation autorisation de sortie par SG</field>
+            <field name="res_model">pointage.autorisation</field>
+            <field name="view_mode">tree,form</field>
+             <field name="domain">[('state','=','sg')]</field>
+        </record>
+         <record model="ir.actions.act_window" id="pointage_autorisation_drh_form">
+            <field name="name">Validation autorisation de sortie par DRH</field>
+            <field name="res_model">pointage.autorisation</field>
+            <field name="view_mode">tree,form</field>
+             <field name="domain">[('state','=','drh')]</field>
+        </record>
+        <record model="ir.actions.act_window" id="pointage_autorisation_directeur_form">
+            <field name="name">Validation autorisation de sortie par Directeur</field>
+            <field name="res_model">pointage.autorisation</field>
+            <field name="view_mode">tree,form</field>
+             <field name="domain">[('state','=','directeur')]</field>
+        </record>
         <!--  action open form view -->
         <record id="pointage_import_view_form" model="ir.ui.view">
             <field name="name">pointage.autorisation.form</field>
@@ -72,6 +90,27 @@
                 sequence="14"
                 groups="pointage.group_pointage_agent,pointage.group_pointage_drh,pointage.group_pointage_superadmin,pointage.group_pointage_admin,pointage.group_pointage_ag,pointage.group_pointage_ag,pointage.group_pointage_assistant_drh"
                 action="pointage_autorisation_form"/>
+        <menuitem
+                id="pointage_autorisaton_sg_data"
+                name="Validation autorisation de sortie"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="15"
+                groups="pointage.group_pointage_directeur"
+                action="pointage_autorisation_sg_form"/>
+        <menuitem
+                id="pointage_autorisaton_drh_data"
+                name="Demande d'autorisation de sortie"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="16"
+                groups="pointage.group_pointage_drh"
+                action="pointage_autorisation_drh_form"/>
+        <menuitem
+                id="pointage_autorisaton_directeur_data"
+                name="Validation autorisation de sortie"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="17"
+                groups="pointage.group_pointage_directeur"
+                action="pointage_autorisation_directeur_form"/>
 
 
     </data>

@@ -30,7 +30,7 @@
             <table class="table table-bordered" width="590" border="1" cellpadding="0"
                    cellspacing="0" style="min-width: 590px; background-color: white;
                    padding: 0px 8px 0px 8px; border-collapse:separate;">
-                <thead class="thead-light" style="background-color:#611610;">
+                <thead class="thead-light" style="background-color:#1A428A;">
                     <tr>
                         <th></th>
                         <th style="color:white;">Lundi</th>
@@ -44,7 +44,7 @@
 
                 <!-- PARTIE ENTRÉE -->
                 <tr>
-                    <td style="background-color:#611610;">
+                    <td style="background-color:#1A428A;">
                         <p style="text-align:center;color:white;">Entrée<p>
                     </td>
 
@@ -164,7 +164,7 @@
 
                 <!-- PARTIE SORTIE -->
                 <tr>
-                    <td style="background-color:#611610;">
+                    <td style="background-color:#1A428A;">
                         <p style="text-align:center;color:white;">Sortie<p>
                     </td>
 
@@ -216,7 +216,7 @@
 
                 <!-- PARTIE DURÉE -->
                 <tr>
-                    <td style="background-color:#611610;">
+                    <td style="background-color:#1A428A;">
                         <p style="text-align:center;color:white;">Durée<p>
                     </td>
                     <td t-if="week_attendance and week_attendance[0]">
@@ -248,7 +248,7 @@
 
                 <!-- PARTIE ÉCART -->
                 <tr>
-                    <td style="background-color:#611610;">
+                    <td style="background-color:#1A428A;">
                         <p style="text-align:center;color:white;">Ecart<p>
                     </td>
                     <td t-if="week_attendance and week_attendance[0]">
@@ -279,7 +279,7 @@
                 </tr>
 
                 <!-- TOTAL SEMAINE -->
-                <tr style="background-color:#611610;">
+                <tr style="background-color:#1A428A;">
                     <td colspan="6" style="text-align:center;color:white;">
                         Total présence:
                         <t t-esc="object.hours_last_week" t-options="{'widget': 'float_time'}"/>
@@ -338,7 +338,7 @@
                        <table t-if="object.get_absence_employees()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
                                style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; font-family: arial, sans-serif;
                                 border-collapse: collapse;">
-                            <thead class="thead-light" style="background-color:#611610;">
+                            <thead class="thead-light" style="background-color:#1A428A;">
                                 <tr>
                                     <th style="text-align:center;color:white;">N°</th>
                                     <th style="text-align:center;color:white;">Employé</th>
@@ -531,8 +531,8 @@
                        <p t-if="object.get_late_two_day_of_week()">Veillez trouvez ci-joint le tableau récapitulatif des agents ayant renregistré au moins trois retards durant la période du <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/> au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.</p></br>
 
                         <table t-if="object.get_late_two_day_of_week()" class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
-                            <thead class="thead-light" style="background-color:#611610;">
-                                <tr style="background-color:#611610;">
+                            <thead class="thead-light" style="background-color:#1A428A;">
+                                <tr style="background-color:#1A428A;">
                                     <th style="color:white;">AGENT</th>
                                     <th style="color:white;">Lundi</th>
                                     <th style="color:white;">Mardi</th>
@@ -543,7 +543,7 @@
                             </thead>
                             <tbody>
                             <tr t-foreach="object.get_late_two_day_of_week()" t-as="retard">
-                            <td style="background-color:#611610;">
+                            <td style="background-color:#1A428A;">
                                 <p style="text-align:center;color:white;">
                                     <t t-esc="retard[1]"/>
                                 <p>
@@ -639,8 +639,8 @@
                        <p>Vous avez ci-dessous le tableau récapitulatif de vos retards.</p>
 
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
-                            <thead class="thead-light" style="background-color:#611610;">
-                                <tr style="background-color:#611610;">
+                            <thead class="thead-light" style="background-color:#1A428A;">
+                                <tr style="background-color:#1A428A;">
                                     <th style="color:white;">AGENT</th>
                                     <th style="color:white;">Lundi</th>
                                     <th style="color:white;">Mardi</th>
@@ -651,7 +651,7 @@
                             </thead>
                             <tbody>
                             <tr t-foreach="object.get_late_notify_tree_day_of_week(object.id)" t-as="retard">
-                            <td style="background-color:#611610;">
+                            <td style="background-color:#1A428A;">
                                 <p style="text-align:center;color:white;">
                                     <t t-esc="retard[1]"/>
                                 <p>

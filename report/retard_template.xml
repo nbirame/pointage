@@ -2,18 +2,18 @@
 <odoo>
     <template id="report_later_wizard">
         <div class="header" style="margin-top: 0px;">
-            <img src="/pointage/static/src/img/fon.jpeg" alt="Logo" class="w-910 h-3"/>
+            <img src="/pointage/static/src/img/fon.png" alt="Logo" class="w-910 h-3"/>
         </div>
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="object">
                 <t t-call="web.external_layout">
                     <div class="page" t-if="object.get_late_tree_day_of_week_wizard()">
-                        <h3 style="text-align:center;color:#800000;margin-top:50px;">
+                        <h3 style="text-align:center;color:#1A428A;margin-top:50px;">
                             Récaputilative des agents ayant enregistré au moins trois retards durant la période du
                             <span t-esc="object.start_date" t-options='{"widget": "date"}'/>
                             au <span t-esc="object.end_date" t-options='{"widget": "date"}'/>.
                         </h3>
-                        <p style="text-align:center;font-weight: bold; color:#800000;">Historique</p>
+                        <p style="text-align:center;font-weight: bold; color:#1A428A;">Historique</p>
                         <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
                                style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                             <thead>
@@ -54,7 +54,7 @@
                         </h6>
                     </div>
                     <div t-else="">
-                        <h3 style="text-align:center;color:#800000;margin-top:50px;">
+                        <h3 style="text-align:center;color:#1A428A;margin-top:50px;">
                             Il n'y a pas de retard
                             <span t-esc="object.start_date" t-options='{"widget": "date"}'/>
                             au <span t-esc="object.end_date" t-options='{"widget": "date"}'/>.

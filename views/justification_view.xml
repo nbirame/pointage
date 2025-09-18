@@ -18,6 +18,12 @@
             <field name="res_model">pointage.justification</field>
             <field name="view_mode">tree,form</field>
         </record>
+        <record model="ir.actions.act_window" id="pointage_justification_drh_form">
+            <field name="name">Validation Justification d'absence</field>
+            <field name="res_model">pointage.justification</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','=','drh')]</field>
+        </record>
         <!--  action open form view -->
         <record id="absence_justification_view_form" model="ir.ui.view">
             <field name="name">pointage.justification.form</field>
@@ -56,6 +62,13 @@
                 sequence="15"
                 groups="hr_attendance.group_hr_attendance_kiosk,pointage.group_pointage_agent,pointage.group_pointage_assistant_drh"
                 action="pointage_justification_form"/>
+        <menuitem
+                id="pointage_justification_absence"
+                name="Justification absence"
+                parent="hr_attendance.menu_hr_attendance_root"
+                sequence="16"
+                groups="pointage.group_pointage_drh"
+                action="pointage_justification_drh_form"/>
 
 
     </data>
