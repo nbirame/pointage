@@ -95,11 +95,11 @@
                 name="Validation autorisation de sortie"
                 parent="hr_attendance.menu_hr_attendance_root"
                 sequence="15"
-                groups="pointage.group_pointage_directeur"
+                groups="pointage.group_pointage_sg"
                 action="pointage_autorisation_sg_form"/>
         <menuitem
                 id="pointage_autorisaton_drh_data"
-                name="Demande d'autorisation de sortie"
+                name="Validation autorisation de sortie"
                 parent="hr_attendance.menu_hr_attendance_root"
                 sequence="16"
                 groups="pointage.group_pointage_drh"
