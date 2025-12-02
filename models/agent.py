@@ -547,30 +547,31 @@ class Agent(models.Model):
                         )
 
         # conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
-        conge_listes = []
+        conge_dates = set()
+
         conges = self.env["hr.leave"].search([
             ('employee_id', '=', self.id),
             ('state', 'in', ['ag', 'validate']),
+            # Gestion de chevauchement d'intervalle (important !)
+            ('request_date_from', '<=', fin_semaine_derniere),
+            ('request_date_to', '>=', debut_semaine_derniere),
         ])
 
-        if conges:
-            for c in conges:
-                if c.request_date_from and c.request_date_to:
-                    d1 = c.request_date_from
-                    d2 = c.request_date_to
+        for c in conges:
+            if c.request_date_from and c.request_date_to:
+                d1 = c.request_date_from
+                d2 = c.request_date_to
 
-                    # Tu peux ajouter une limite si tu veux, sinon enlève ces deux lignes
-                    # real_start = max(d1, debut_semaine_derniere.date())
-                    # real_end = min(d2, fin_semaine_derniere.date())
-                    real_start = d1
-                    real_end = d2
+                # Appliquer la limite dans l’intervalle
+                real_start = max(d1, debut_semaine_derniere)
+                real_end = min(d2, fin_semaine_derniere)
 
-                    if real_start <= real_end:
-                        conge_listes.extend(
-                            real_start + timedelta(days=i)
-                            for i in range((real_end - real_start).days + 1)
-                        )
-                        
+                if real_start <= real_end:
+                    conge_dates.update(
+                        real_start + timedelta(days=i)
+                        for i in range((real_end - real_start).days + 1)
+                    )
+
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for f in fetes:
