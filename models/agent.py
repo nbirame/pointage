@@ -547,7 +547,7 @@ class Agent(models.Model):
                         )
 
         # conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
-        conge_listes = set()
+        conge_listes = []
 
         # Récupérer uniquement les congés qui chevauchent la période
         conges = self.env["hr.leave"].search([
@@ -568,11 +568,11 @@ class Agent(models.Model):
                 real_end = min(d2, fin_semaine_derniere)
 
                 # Si l'intervalle est valide
-                # if real_start <= real_end:
-                conge_listes.update(
-                    real_start + timedelta(days=i)
-                    for i in range((real_end - real_start).days + 1)
-                )
+                if real_start <= real_end:
+                    conge_listes.append(
+                        real_start + timedelta(days=i)
+                        for i in range((real_end - real_start).days + 1)
+                    )
 
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
