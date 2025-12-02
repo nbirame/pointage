@@ -573,7 +573,7 @@ class Agent(models.Model):
                         real_start + timedelta(days=i)
                         for i in range((real_end - real_start).days + 1)
                     )
-
+        print(conge_listes)
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for f in fetes:
