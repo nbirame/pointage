@@ -547,7 +547,7 @@ class Agent(models.Model):
                         )
 
         # conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
-        conge_dates = set()
+        conge_listes = set()
 
         # Récupérer uniquement les congés qui chevauchent la période
         conges = self.env["hr.leave"].search([
@@ -569,7 +569,7 @@ class Agent(models.Model):
 
                 # Si l'intervalle est valide
                 if real_start <= real_end:
-                    conge_dates.update(
+                    conge_listes.update(
                         real_start + timedelta(days=i)
                         for i in range((real_end - real_start).days + 1)
                     )
