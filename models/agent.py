@@ -568,11 +568,11 @@ class Agent(models.Model):
                 real_end = min(d2, fin_semaine_derniere)
 
                 # Si l'intervalle est valide
-                if real_start <= real_end:
-                    conge_listes.update(
-                        real_start + timedelta(days=i)
-                        for i in range((real_end - real_start).days + 1)
-                    )
+                # if real_start <= real_end:
+                conge_listes.update(
+                    real_start + timedelta(days=i)
+                    for i in range((real_end - real_start).days + 1)
+                )
 
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
