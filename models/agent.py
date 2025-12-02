@@ -549,23 +549,25 @@ class Agent(models.Model):
         # conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
         conge_dates = set()
 
+        # Récupérer uniquement les congés qui chevauchent la période
         conges = self.env["hr.leave"].search([
             ('employee_id', '=', self.id),
             ('state', 'in', ['ag', 'validate']),
-            # Gestion de chevauchement d'intervalle (important !)
             ('request_date_from', '<=', fin_semaine_derniere),
             ('request_date_to', '>=', debut_semaine_derniere),
         ])
 
+        # Convertir les congés en dates journalières
         for c in conges:
             if c.request_date_from and c.request_date_to:
                 d1 = c.request_date_from
                 d2 = c.request_date_to
 
-                # Appliquer la limite dans l’intervalle
+                # Limiter aux bornes de la semaine dernière
                 real_start = max(d1, debut_semaine_derniere)
                 real_end = min(d2, fin_semaine_derniere)
 
+                # Si l'intervalle est valide
                 if real_start <= real_end:
                     conge_dates.update(
                         real_start + timedelta(days=i)
