@@ -546,7 +546,13 @@ class Agent(models.Model):
                             for i in range((real_end - real_start).days + 1)
                         )
 
-        conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
+        # conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
+        conge_listes = self.env['hr.leave'].search([
+            ('employee_id', '=', self.id),
+            ('state', 'in', ['ag', 'validate']),
+            ('date_from', '<=', fin_semaine_derniere.date()),
+            ('date_to', '>=', debut_semaine_derniere.date()),
+        ])
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for f in fetes:
