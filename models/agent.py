@@ -553,8 +553,8 @@ class Agent(models.Model):
         conges = self.env["hr.leave"].search([
             ('employee_id', '=', self.id),
             ('state', 'in', ['ag', 'validate']),
-            ('request_date_from', '<=', fin_semaine_derniere),
-            ('request_date_to', '>=', debut_semaine_derniere),
+            ('request_date_from', '<=', fin_semaine_derniere.date()),  # ensure .date()
+            ('request_date_to', '>=', debut_semaine_derniere.date()),
         ])
 
         # Convertir les congés en dates journalières
@@ -564,12 +564,12 @@ class Agent(models.Model):
                 d2 = c.request_date_to
 
                 # Limiter aux bornes de la semaine dernière
-                real_start = max(d1, debut_semaine_derniere)
-                real_end = min(d2, fin_semaine_derniere)
+                real_start = max(d1, debut_semaine_derniere.date())
+                real_end = min(d2, fin_semaine_derniere.date())
 
                 # Si l'intervalle est valide
                 if real_start <= real_end:
-                    conge_listes.append(
+                    conge_listes.extend(
                         real_start + timedelta(days=i)
                         for i in range((real_end - real_start).days + 1)
                     )
