@@ -217,105 +217,76 @@ class RapportWizard(models.TransientModel):
         return self.env.ref("pointage.report_pointage_presence_person_wizard").report_action(self)
 
     def ajouter_dates_manquantes(self, liste_dates):
-        # Extraire les dates de la liste donnée
-        dates_existantes = [elem[0].date() for elem in liste_dates]
-        mission_listes = []
+        # Extraire les dates existantes
+        dates_existantes = set(elem[0].date() for elem in liste_dates)
+
+        # ---- Missions ----
+        mission_listes = set()
         equipe = self.env["mission.equipe"].search([('employee_id', '=', self.employee_id.id)])
         for employee in equipe:
-            if (employee.mission_id.state == "en_cours" or employee.mission_id.state == "terminer") and ((employee.mission_id.date_depart >= self.date_in_get_rapport and employee.mission_id.date_retour <= self.date_end_get_rapport) or (employee.mission_id.date_depart <= self.date_in_get_rapport and employee.mission_id.date_retour <= self.date_end_get_rapport) or employee.mission_id.date_depart >= self.date_in_get_rapport and employee.mission_id.date_retour >= self.date_end_get_rapport):
-                date_debut = employee.mission_id.date_depart
-                date_fin = employee.mission_id.date_retour
-                mission_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-                for jour_mission in mission_liste:
-                    mission_listes.append(jour_mission)
-        participants_listes = []
+            mission = employee.mission_id
+            if mission.state in ("en_cours", "terminer"):
+                real_start = max(mission.date_depart, self.date_in_get_rapport)
+                real_end = min(mission.date_retour, self.date_end_get_rapport)
+                if real_start <= real_end:
+                    for i in range((real_end - real_start).days + 1):
+                        mission_listes.add(real_start + timedelta(days=i))
 
-        # Récupérer uniquement les ateliers qui chevauchent la période du rapport
+        # ---- Ateliers ----
+        participants_listes = set()
         participants = self.env["pointage.atelier"].search([
             ('employee_id', '=', self.employee_id.id),
             ('date_end', '>=', self.date_in_get_rapport),
             ('date_start', '<=', self.date_end_get_rapport),
         ])
-
         for atelier in participants:
-            # Conversion sécurisée en date si besoin
             date_debut = atelier.date_start.date() if isinstance(atelier.date_start, datetime) else atelier.date_start
             date_fin = atelier.date_end.date() if isinstance(atelier.date_end, datetime) else atelier.date_end
-
-            # Calcul de l'intersection avec la période du rapport
             real_start = max(date_debut, self.date_in_get_rapport)
             real_end = min(date_fin, self.date_end_get_rapport)
-
             if real_start <= real_end:
-                # Liste des jours d'atelier dans la période
-                atelier_jours = [real_start + timedelta(days=i) for i in range((real_end - real_start).days + 1)]
-                participants_listes.extend(atelier_jours)
+                for i in range((real_end - real_start).days + 1):
+                    participants_listes.add(real_start + timedelta(days=i))
 
-                print("---------------------------------------------------------------------")
-                print(f"Liste des jours d'atelier: {atelier_jours} (de {real_start} à {real_end})")
-                print("_____________________________________________________________________")
+        # ---- Congés ----
+        conge_listes = set(self.get_hollidays(self.date_end_get_rapport, self.date_in_get_rapport)[0])
 
-            for jour_atelier in participants_listes:
-                participants_listes.append(jour_atelier)
-        print(f"Liste des jours d'atelier {participants_listes}")
-        conge_listes = self.get_hollidays(self.date_end_get_rapport, self.date_in_get_rapport)[0]
-        # print(f"Conge {conge_listes}")
-
+        # ---- Jours fériés ----
         fetes = self.env["vacances.ferier"].sudo().search([])
-        fete_listes = []
-        for fete in fetes:
-            date_debut = fete.date_star
-            date_fin = fete.date_end
-            nom_fete = fete.party_id.name
-            # Créer une liste de toutes les dates entre date_debut et date_fin
-            fete_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-            # print(fete_liste)
-            for jour_fete in fete_liste:
-                fete_listes.append([jour_fete, nom_fete])
-        # Trouver la date de début et de fin dans la liste existante
-        date_debut = self.date_in_get_rapport
-        date_fin = self.date_end_get_rapport
-        # Créer une liste de toutes les dates entre date_debut et date_fin
-        toutes_dates = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-        # Trouver les dates manquantes
-        toutes_dates = [date for date in toutes_dates if date.weekday() < 5]
-        dates_manquantes = [date for date in toutes_dates if date not in dates_existantes]
-        # Ajouter les dates manquantes dans la liste d'origine
-        for date in dates_manquantes:
-            if date.strftime('%A') != "samedi" and date.strftime('%A') != "dimanche" and date not in [f[0] for f in fete_listes] and date not in conge_listes and date not in mission_listes and date not in participants_listes:
-                #  print('Helloo')
-                # Créer une entrée vide pour chaque date manquante
-                nouvelle_entree = [datetime.combine(date, datetime.min.time()), datetime.combine(date, datetime.min.time()),
-                                   0.0, 0.0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
-            elif date in [f[0] for f in fete_listes]:
+        fete_listes = {f.date_star + timedelta(days=i): f.party_id.name
+                       for f in fetes
+                       for i in range((f.date_end - f.date_star).days + 1)}
+
+        # ---- Créer toutes les dates de la période ----
+        toutes_dates = [self.date_in_get_rapport + timedelta(days=i)
+                        for i in range((self.date_end_get_rapport - self.date_in_get_rapport).days + 1)
+                        if (self.date_in_get_rapport + timedelta(days=i)).weekday() < 5]
+
+        # ---- Ajouter les dates manquantes ----
+        for date in toutes_dates:
+            if date in dates_existantes:
+                continue
+            if date in fete_listes:
                 nouvelle_entree = [datetime.combine(date, datetime.max.time()),
                                    datetime.combine(date, datetime.max.time()),
-                                   next(f[1] for f in fete_listes if date == f[0]), 0.0, 0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
+                                   fete_listes[date], 0.0, 0]
             elif date in conge_listes:
                 nouvelle_entree = [datetime.combine(date, time(3, 0, 0)),
                                    datetime.combine(date, time(3, 0, 0)),
-                                   'En conge', 0.0, 0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
+                                   'En congé', 0.0, 0]
             elif date in participants_listes:
-                # print(f"List des participants: {date}")
                 nouvelle_entree = [datetime.combine(date, time(4, 0, 0)),
                                    datetime.combine(date, time(4, 0, 0)),
                                    'En atelier', 0.0, 0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
             elif date in mission_listes:
                 nouvelle_entree = [datetime.combine(date, time(2, 0, 0)),
                                    datetime.combine(date, time(2, 0, 0)),
                                    'En mission', 0.0, 0]
-                if nouvelle_entree not in liste_dates:
-                    liste_dates.append(nouvelle_entree)
             else:
-                pass
+                nouvelle_entree = [datetime.combine(date, datetime.min.time()),
+                                   datetime.combine(date, datetime.min.time()),
+                                   0.0, 0.0]
+            liste_dates.append(nouvelle_entree)
 
         return liste_dates
 
