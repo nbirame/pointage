@@ -27,66 +27,30 @@ class RapportWizard(models.TransientModel):
         return jours_ouvres
 
     def get_hollidays(self, fin_mois_dernier, debut_ce_mois):
-        total_jour = 0
-        jours_conge_uniques = set()
         conge_listes = []
-        url = "http://erp.fongip.sn:8069"
-        # url = "http://10.0.0.19:8069"
-        db_odoo = "fongip"
-        username = "admin@fongip.sn"
-        SECRET_KEY = "Fgp@2013"
-        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-        uid = common.authenticate(db_odoo, username, SECRET_KEY, {})
-        if not uid:
-            return [conge_listes, total_jour]
 
-        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-        data_holidays = models.execute_kw(
-            db_odoo, uid, SECRET_KEY,
-            'hr.holidays', 'search_read',
-            [[
-                ('date_from', '!=', False),
-                ('date_to', '!=', False),
-                ('date_from', '<=', fin_mois_dernier),  # début <= fin de la plage
-                ('date_to', '>=', debut_ce_mois)  # fin >= début de la plage
-            ]],
-            {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
-        )
-        employee_ids = list(set(
-            holiday['employee_id'][0]
-            for holiday in data_holidays
-            if holiday['employee_id']
-        ))
-        employees = models.execute_kw(
-            db_odoo, uid, SECRET_KEY,
-            'hr.employee', 'search_read',
-            [[('id', 'in', employee_ids)]],
-            {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
-        )
-        employee_dict = {emp['id']: emp for emp in employees}
-        for holiday in data_holidays:
-            if not holiday['employee_id']:
-                continue
+        # Récupérer uniquement les congés qui chevauchent la période
+        conges = self.env["hr.leave"].search([
+            ('employee_id', '=', self.id),
+            ('state', 'in', ['validate1', 'validate']),
+            ('request_date_from', '<=', fin_mois_dernier.date()),  # ensure .date()
+            ('request_date_to', '>=', debut_ce_mois.date()),
+        ])
+        # Convertir les congés en dates journalières
+        for c in conges:
+            if c.request_date_from and c.request_date_to:
+                d1 = c.request_date_from
+                d2 = c.request_date_to
+                # Limiter aux bornes de la semaine dernière
+                real_start = max(d1, debut_ce_mois.date())
+                real_end = min(d2, fin_mois_dernier.date())
 
-            employee_id = holiday['employee_id'][0]
-            employee = employee_dict.get(employee_id)
-            if not employee or employee['matricule_pointage'] != self.employee_id.matricule:
-                continue
-            date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
-            date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
-            actual_start = max(date_debut, debut_ce_mois)
-            actual_end = min(date_fin, fin_mois_dernier)
-
-            if actual_start > actual_end:
-                continue
-            conge_range = [
-                actual_start + timedelta(days=i)
-                for i in range((actual_end - actual_start).days + 1)
-            ]
-            for jour in conge_range:
-                if jour.weekday() < 5:
-                    jours_conge_uniques.add(jour)
-        conge_listes = sorted(list(jours_conge_uniques))
+                # Si l'intervalle est valide
+                if real_start <= real_end:
+                    conge_listes.extend(
+                        real_start + timedelta(days=i)
+                        for i in range((real_end - real_start).days + 1)
+                    )
         total_jour = len(conge_listes)
         fete = self.env["resource.calendar.leaves"]
         date_fete = fete.sudo().search([
