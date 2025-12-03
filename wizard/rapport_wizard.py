@@ -101,38 +101,33 @@ class RapportWizard(models.TransientModel):
                 number_of_days_absence_legal = absence_days_hollidays + number_day_of_party
         self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                  self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-        # print(f"Le nombre d'heure avant if {self.total_number_of_working_hours}")
-        participants = self.env["pointage.atelier"].search([('employee_id', '=', self.employee_id.id)])
+        participants = self.env["pointage.atelier"].search([
+            ('employee_id', '=', self.employee_id.id)
+        ])
+
         if participants:
             number_day_of_atelier = 0
+
             for agent in participants:
-                date_start = agent.date_start.date()
-                date_end = agent.date_end.date()
-                if (
-                        date_start >= self.date_in_get_rapport and date_end <= self.date_end_get_rapport) and (
-                        agent.employee_id.id == self.employee_id.id):
-                    number_day_of_atelier += self.nombre_jours_sans_weekend(date_start,
-                                                                            date_end)
-                    number_of_days_absence_legal += number_day_of_atelier
-                    self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
-                                                                                             self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                elif date_start >= self.date_in_get_rapport and date_end >= self.date_end_get_rapport and (
-                        agent.employee_id.id == self.employee_id.id):
-                    number_day_of_atelier += self.nombre_jours_sans_weekend(date_start,
-                                                                            self.date_end_get_rapport)
-                    number_of_days_absence_legal += number_day_of_atelier
-                    self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
-                                                                                             self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                elif (agent.employee_id.id == self.employee_id.id) and (
-                        date_start <= self.date_in_get_rapport and date_end <= self.date_end_get_rapport):
-                    number_day_of_atelier += self.nombre_jours_sans_weekend(self.date_in_get_rapport,
-                                                                            date_end)
-                    number_of_days_absence_legal += number_day_of_atelier
-                    self.total_number_of_working_hours = int(
-                        (self.nombre_jours_sans_weekend(self.date_in_get_rapport,
-                                                        self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                else:
-                    pass
+                # Conversion sécurisée en date
+                date_start = agent.date_start.date() if isinstance(agent.date_start, datetime) else agent.date_start
+                date_end = agent.date_end.date() if isinstance(agent.date_end, datetime) else agent.date_end
+
+                # Vérifier le chevauchement avec la période du rapport
+                real_start = max(date_start, self.date_in_get_rapport)
+                real_end = min(date_end, self.date_end_get_rapport)
+
+                if real_start <= real_end:
+                    jours_atelier = self.nombre_jours_sans_weekend(real_start, real_end)
+                    number_day_of_atelier += jours_atelier
+
+            number_of_days_absence_legal += number_day_of_atelier
+            self.total_number_of_working_hours = int(
+                (self.nombre_jours_sans_weekend(self.date_in_get_rapport,
+                                                self.date_end_get_rapport) - number_of_days_absence_legal)
+                * heure_travail.worked_hours
+            )
+
         if equipe_mission:
             # print("Mission")
             number_day_of_mission = 0
