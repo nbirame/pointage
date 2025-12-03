@@ -106,25 +106,27 @@ class RapportWizard(models.TransientModel):
         if participants:
             number_day_of_atelier = 0
             for agent in participants:
+                date_start = agent.date_start.date()
+                date_end = agent.date_end.date()
                 if (
-                        agent.date_start >= self.date_in_get_rapport and agent.date_end <= self.date_end_get_rapport) and (
+                        date_start >= self.date_in_get_rapport and date_end <= self.date_end_get_rapport) and (
                         agent.employee_id.id == self.employee_id.id):
-                    number_day_of_atelier += self.nombre_jours_sans_weekend(agent.date_start,
-                                                                            agent.date_end)
+                    number_day_of_atelier += self.nombre_jours_sans_weekend(date_start,
+                                                                            date_end)
                     number_of_days_absence_legal += number_day_of_atelier
                     self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                              self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                elif agent.date_start >= self.date_in_get_rapport and agent.date_to >= self.date_end_get_rapport and (
+                elif date_start >= self.date_in_get_rapport and date_end >= self.date_end_get_rapport and (
                         agent.employee_id.id == self.employee_id.id):
-                    number_day_of_atelier += self.nombre_jours_sans_weekend(agent.date_start,
+                    number_day_of_atelier += self.nombre_jours_sans_weekend(date_start,
                                                                             self.date_end_get_rapport)
                     number_of_days_absence_legal += number_day_of_atelier
                     self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                              self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
                 elif (agent.employee_id.id == self.employee_id.id) and (
-                        agent.date_start <= self.date_in_get_rapport and agent.date_end <= self.date_end_get_rapport):
+                        date_start <= self.date_in_get_rapport and date_end <= self.date_end_get_rapport):
                     number_day_of_atelier += self.nombre_jours_sans_weekend(self.date_in_get_rapport,
-                                                                            agent.date_end)
+                                                                            date_end)
                     number_of_days_absence_legal += number_day_of_atelier
                     self.total_number_of_working_hours = int(
                         (self.nombre_jours_sans_weekend(self.date_in_get_rapport,
