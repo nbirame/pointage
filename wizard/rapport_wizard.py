@@ -36,7 +36,7 @@ class RapportWizard(models.TransientModel):
 
         # Récupérer uniquement les congés qui chevauchent la période
         conges = self.env["hr.leave"].search([
-            ('employee_id', '=', self.id),
+            ('employee_id', '=', self.employee_id.id),
             ('state', 'in', ['validate1', 'validate']),
             ('request_date_from', '<=', fin_mois_dernier),  # ensure .date()
             ('request_date_to', '>=', debut_ce_mois),
