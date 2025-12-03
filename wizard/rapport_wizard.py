@@ -116,7 +116,9 @@ class RapportWizard(models.TransientModel):
                 # Vérifier le chevauchement avec la période du rapport
                 real_start = max(date_start, self.date_in_get_rapport)
                 real_end = min(date_end, self.date_end_get_rapport)
-
+                print("---------------------------------------------------------------------------------------------------------------------------------------------------------")
+                print(f"-------------------------Liste des jours d'atelier: {date_start} et {date_end}--------real_start: {real_start} <= real_end:  {real_end}--------------------")
+                print("____________________________________________________________________________________________________________________________________________________________")
                 if real_start <= real_end:
                     jours_atelier = self.nombre_jours_sans_weekend(real_start, real_end)
                     number_day_of_atelier += jours_atelier
@@ -233,6 +235,12 @@ class RapportWizard(models.TransientModel):
             date_debut = employee.date_start
             date_fin = employee.date_end
             participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
+            print(
+                "---------------------------------------------------------------------------------------------------------------------------------------------------------")
+            print(
+                f"-------------------------Liste des jours d'atelier: {participants_liste} et {date_debut}--------{date_fin}--------------------")
+            print(
+                "____________________________________________________________________________________________________________________________________________________________")
             for jour_atelier in participants_liste:
                 participants_listes.append(jour_atelier)
         conge_listes = self.get_hollidays(self.date_end_get_rapport, self.date_in_get_rapport)[0]
