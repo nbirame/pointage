@@ -44,9 +44,9 @@ class PresenceReportWizard(models.TransientModel):
                         for i in range((real_end - real_start).days + 1)
                     )
             # liste.append(conge_listes)
-        nombre_jour = len(liste)
-        liste.append(nombre_jour)
-        return liste
+        # nombre_jour = len(liste)
+        # liste.append(nombre_jour)
+        return liste, len(liste)
 
     def get_employees_with_presence(self): #get_employees_with_presence
         employees = self.env['hr.employee'].search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG'), ('agence_id.name', '=', 'SIEGE')])
