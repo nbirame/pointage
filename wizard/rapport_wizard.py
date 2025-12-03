@@ -229,20 +229,35 @@ class RapportWizard(models.TransientModel):
                 for jour_mission in mission_liste:
                     mission_listes.append(jour_mission)
         participants_listes = []
-        participants = self.env["pointage.atelier"].search([('employee_id', '=', self.employee_id.id)])
-        # print(f"Participants: {participants}")
-        for employee in participants:
-            date_debut = employee.date_start
-            date_fin = employee.date_end
-            participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
-            print(
-                "---------------------------------------------------------------------------------------------------------------------------------------------------------")
-            print(
-                f"-------------------------Liste des jours d'atelier: {participants_liste} et {date_debut}--------{date_fin}--------------------")
-            print(
-                "____________________________________________________________________________________________________________________________________________________________")
-            for jour_atelier in participants_liste:
+
+        # Récupérer uniquement les ateliers qui chevauchent la période du rapport
+        participants = self.env["pointage.atelier"].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('date_end', '>=', self.date_in_get_rapport),
+            ('date_start', '<=', self.date_end_get_rapport),
+        ])
+
+        for atelier in participants:
+            # Conversion sécurisée en date si besoin
+            date_debut = atelier.date_start.date() if isinstance(atelier.date_start, datetime) else atelier.date_start
+            date_fin = atelier.date_end.date() if isinstance(atelier.date_end, datetime) else atelier.date_end
+
+            # Calcul de l'intersection avec la période du rapport
+            real_start = max(date_debut, self.date_in_get_rapport)
+            real_end = min(date_fin, self.date_end_get_rapport)
+
+            if real_start <= real_end:
+                # Liste des jours d'atelier dans la période
+                atelier_jours = [real_start + timedelta(days=i) for i in range((real_end - real_start).days + 1)]
+                participants_listes.extend(atelier_jours)
+
+                print("---------------------------------------------------------------------")
+                print(f"Liste des jours d'atelier: {atelier_jours} (de {real_start} à {real_end})")
+                print("_____________________________________________________________________")
+
+            for jour_atelier in participants_listes:
                 participants_listes.append(jour_atelier)
+        print(f"Liste des jours d'atelier {participants_listes}")
         conge_listes = self.get_hollidays(self.date_end_get_rapport, self.date_in_get_rapport)[0]
         # print(f"Conge {conge_listes}")
 
