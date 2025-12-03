@@ -27,6 +27,11 @@ class PresenceReportWizard(models.TransientModel):
         return jours_ouvres
 
     def get_hollidays(self, matricule, end_date, start_date):
+        # Convertir en date (IMPORTANT)
+        if isinstance(start_date, datetime):
+            start_date = start_date.date()
+        if isinstance(end_date, datetime):
+            end_date = end_date.date()
         """Retourne (liste_des_jours, nombre_de_jours) sans jamais générer une erreur."""
         try:
             # Sécuriser le type date

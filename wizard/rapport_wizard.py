@@ -27,6 +27,11 @@ class RapportWizard(models.TransientModel):
         return jours_ouvres
 
     def get_hollidays(self, fin_mois_dernier, debut_ce_mois):
+        # Convertir en date (IMPORTANT)
+        if isinstance(debut_ce_mois, datetime):
+            start_date = debut_ce_mois.date()
+        if isinstance(fin_mois_dernier, datetime):
+            end_date = fin_mois_dernier.date()
         conge_listes = []
 
         # Récupérer uniquement les congés qui chevauchent la période
