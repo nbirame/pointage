@@ -102,28 +102,29 @@ class RapportWizard(models.TransientModel):
         self.total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                                                  self.date_end_get_rapport) - number_of_days_absence_legal) * heure_travail.worked_hours)
         participants = self.env["pointage.atelier"].search([
-            ('employee_id', '=', self.employee_id.id)
+            ('employee_id', '=', self.employee_id.id),
+            ('date_start', '<=', self.date_end_get_rapport),
+            ('date_end', '>=', self.date_in_get_rapport),
         ])
 
         if participants:
             number_day_of_atelier = 0
 
-            for agent in participants:
-                # Conversion sécurisée en date
-                date_start = agent.date_start.date() if isinstance(agent.date_start, datetime) else agent.date_start
-                date_end = agent.date_end.date() if isinstance(agent.date_end, datetime) else agent.date_end
+            for atelier in participants:
 
-                # Vérifier le chevauchement avec la période du rapport
+                # Extraction propre des dates en type date
+                date_start = getattr(atelier.date_start, "date", lambda: atelier.date_start)()
+                date_end = getattr(atelier.date_end, "date", lambda: atelier.date_end)()
+
+                # Calcul de l'intersection avec la période
                 real_start = max(date_start, self.date_in_get_rapport)
                 real_end = min(date_end, self.date_end_get_rapport)
-                print("---------------------------------------------------------------------------------------------------------------------------------------------------------")
-                print(f"-------------------------Liste des jours d'atelier: {date_start} et {date_end}--------real_start: {real_start} <= real_end:  {real_end}--------------------")
-                print("____________________________________________________________________________________________________________________________________________________________")
+
                 if real_start <= real_end:
-                    jours_atelier = self.nombre_jours_sans_weekend(real_start, real_end)
-                    number_day_of_atelier += jours_atelier
+                    number_day_of_atelier += self.nombre_jours_sans_weekend(real_start, real_end)
 
             number_of_days_absence_legal += number_day_of_atelier
+
             self.total_number_of_working_hours = int(
                 (self.nombre_jours_sans_weekend(self.date_in_get_rapport,
                                                 self.date_end_get_rapport) - number_of_days_absence_legal)
