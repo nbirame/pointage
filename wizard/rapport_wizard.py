@@ -74,6 +74,8 @@ class RapportWizard(models.TransientModel):
         jour_de_conge = self.get_hollidays(self.date_end_get_rapport, self.date_in_get_rapport)
         heure_travail = self.env["pointage.working.hours"].search([], order='id desc', limit=1)
         absence_days_hollidays = jour_de_conge[1]
+        if absence_days_hollidays:
+            number_of_days_absence_legal = absence_days_hollidays
         fete = self.env["resource.calendar.leaves"]
         date_fete = fete.sudo().search([
             ('date_star', '>=', self.date_in_get_rapport),
