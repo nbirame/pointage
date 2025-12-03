@@ -235,8 +235,8 @@ class RapportWizard(models.TransientModel):
         participants = self.env["pointage.atelier"].search([('employee_id', '=', self.employee_id.id)])
         # print(f"Participants: {participants}")
         for employee in participants:
-            date_debut = employee.date_from
-            date_fin = employee.date_to
+            date_debut = employee.date_start
+            date_fin = employee.date_end
             participants_liste = [date_debut + timedelta(days=i) for i in range((date_fin - date_debut).days + 1)]
             for jour_atelier in participants_liste:
                 participants_listes.append(jour_atelier)
