@@ -44,7 +44,7 @@ class PresenceReportWizard(models.TransientModel):
                         for i in range((real_end - real_start).days + 1)
                     )
             # liste.append(conge_listes)
-        nombre_jour = len(list)
+        nombre_jour = len(liste)
         liste.append(nombre_jour)
         return liste
 
