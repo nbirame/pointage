@@ -562,7 +562,9 @@ class Agent(models.Model):
             if c.request_date_from and c.request_date_to:
                 d1 = c.request_date_from
                 d2 = c.request_date_to
-
+                print("_________________________________-----------------------_____________________")
+                print(f"Listes des dates de congees ----------- {d1}-------{d2}----------------")
+                print("---------------------------------_______________________-----------------------")
                 # Limiter aux bornes de la semaine dernière
                 real_start = max(d1, debut_semaine_derniere.date())
                 real_end = min(d2, fin_semaine_derniere.date())
