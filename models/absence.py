@@ -22,9 +22,9 @@ class Absence(models.Model):
     @api.model
     def track_daily_absence(self):
         end_of_last_week = self.env['hr.employee'].last_week_end_date()
-        # print(f"Fin semaine {end_of_last_week}")
+        print(f"Fin semaine {end_of_last_week}")
         start_of_last_week = self.env['hr.employee'].last_week_start_date()
-        # print(f"Fin semaine {start_of_last_week}")
+        print(f"Fin semaine {start_of_last_week}")
         employees = self.env['hr.employee'].search([('job_title', 'not in', ['SG', 'AG']), ('agence_id.name', '=', 'SIEGE')])
         attendance_model = self.env['hr.attendance']
         for single_date in (start_of_last_week + timedelta(n) for n in range(5)):
@@ -64,7 +64,7 @@ class Absence(models.Model):
 
                 # Récupérer uniquement les congés qui chevauchent la période
                 conges = self.env["hr.leave"].search([
-                    ('employee_id', '=', self.id),
+                    ('employee_id', '=', employee.id),
                     ('state', 'in', ['validate1', 'validate']),
                     ('request_date_from', '<=', end_of_last_week),  # ensure .date()
                     ('request_date_to', '>=', start_of_last_week),
