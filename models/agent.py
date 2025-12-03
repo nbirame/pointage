@@ -552,9 +552,7 @@ class Agent(models.Model):
         # Récupérer uniquement les congés qui chevauchent la période
         conges = self.env["hr.leave"].search([
             ('employee_id', '=', self.id),
-            ('state', 'in', ['ag', 'validate']),
-            ('request_date_from', '<=', fin_semaine_derniere.date()),  # ensure .date()
-            ('request_date_to', '>=', debut_semaine_derniere.date()),
+            ('state', 'in', ['ag', 'validate'])
         ])
         print("_________________________________-----------------------_____________________")
         print(f"Listes des jours de congees ----------- {conges}-----------------------")
