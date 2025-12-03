@@ -23,97 +23,46 @@ class AbsenceWizard(models.TransientModel):
         conge_listes = []
         liste = []
         nombre_jour = 0
-        url = "http://erp.fongip.sn:8069"
-        # url = "http://10.0.0.19:8069"
-        db_odoo = "fongip"
-        username = "admin@fongip.sn"
-        SECRET_KEY = "Fgp@2013"
-        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-        # Cette ligne permet de verifier si la connexion est valide ou non
-        uid = common.authenticate(db_odoo, username, SECRET_KEY, {})
-        if uid:
-            models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-            # Récupérer les congés directement pour la plage de dates spécifiée
-            data_holidays = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.holidays', 'search_read',
-                [[
-                    ('date_from', '!=', False),
-                    ('date_to', '!=', False),
-                    ('date_from', '<=', end_date),
-                    ('date_to', '>=', start_date)
-                ]],
-                {'fields': ['id', 'state', 'date_from', 'date_to', 'employee_id']}
-            )
-            employees = models.execute_kw(
-                db_odoo, uid, SECRET_KEY, 'hr.employee', 'search_read',
-                [[('matricule_pointage', '=', matricule)]],
-                {'fields': ['id', 'name', 'private_email', 'matricule_pointage']}
-            )
-            print(f"Liste des employee-------------> {employees}")
-            # Créer un dictionnaire des employés pour un accès rapide par ID
-            employee_dict = {employee['id']: employee for employee in employees}
-            # Filtrer et traiter les congés
-            for holiday in data_holidays:
-                # date_debut
-                employee_id = holiday['employee_id'][0]
-                employee = employee_dict.get(employee_id)
-                # for employee_base in employees_base:
-                if employee and employee['matricule_pointage'] == matricule:
-                    # Convertir les dates et générer la liste des jours de congé
-                    date_debut = datetime.strptime(holiday['date_from'], "%Y-%m-%d").date()
-                    date_fin = datetime.strptime(holiday['date_to'], "%Y-%m-%d").date()
-                    if date_debut >= start_date and date_fin <= end_date:
-                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                       range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut >= start_date and date_fin >= end_date:
-                        date_fin = end_date
-                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                       range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut <= start_date and date_fin <= end_date:
-                        date_debut = start_date
-                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                       range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    elif date_debut <= start_date and date_fin >= end_date:
-                        # date_fin = start_date
-                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                       range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-                    else:
-                        date_debut = start_date
-                        date_fin = end_date
-                        nombre_jour += self.nombre_jours_sans_weekend(date_debut, date_fin)
-                        conge_liste = [date_debut + timedelta(days=i) for i in
-                                       range((date_fin - date_debut).days + 1)]
-                        for jour_conge in conge_liste:
-                            conge_listes.append(jour_conge)
-            fete = self.env["resource.calendar.leaves"]
-            date_fete = fete.sudo().search([
-                ('date_star', '>=', self.start_date),
-                ('date_end', '<=', self.end_date),
-            ])
-            number_day_party = fete.sudo().search_count([
-                ('date_star', '>=', self.start_date),
-                ('date_end', '<=', self.end_date),
-            ])
-            for date in date_fete:
-                if date['date_star'] not in conge_listes:
-                    conge_listes.append(date['date_star'])
-                    nombre_jour += number_day_party
-                else:
-                    pass
-            liste.append(conge_listes)
-            liste.append(nombre_jour)
+
+        # Récupérer uniquement les congés qui chevauchent la période
+        conges = self.env["hr.leave"].search([
+            ('employee_id', '=', matricule),
+            ('state', 'in', ['validate1', 'validate']),
+            ('request_date_from', '<=', end_date.date()),  # ensure .date()
+            ('request_date_to', '>=', start_date.date()),
+        ])
+        # Convertir les congés en dates journalières
+        for c in conges:
+            if c.request_date_from and c.request_date_to:
+                d1 = c.request_date_from
+                d2 = c.request_date_to
+                # Limiter aux bornes de la semaine dernière
+                real_start = max(d1, start_date.date())
+                real_end = min(d2, end_date.date())
+
+                # Si l'intervalle est valide
+                if real_start <= real_end:
+                    conge_listes.extend(
+                        real_start + timedelta(days=i)
+                        for i in range((real_end - real_start).days + 1)
+                    )
+        fete = self.env["resource.calendar.leaves"]
+        date_fete = fete.sudo().search([
+            ('date_star', '>=', self.start_date),
+            ('date_end', '<=', self.end_date),
+        ])
+        number_day_party = fete.sudo().search_count([
+            ('date_star', '>=', self.start_date),
+            ('date_end', '<=', self.end_date),
+        ])
+        for date in date_fete:
+            if date['date_star'] not in conge_listes:
+                conge_listes.append(date['date_star'])
+                nombre_jour += number_day_party
+            else:
+                pass
+        liste.append(conge_listes)
+        liste.append(nombre_jour)
         return liste
 
     def get_employees_with_absences(self):
@@ -127,7 +76,7 @@ class AbsenceWizard(models.TransientModel):
                 ('check_out', '<=', self.end_date),
             ])
             total_worked_hours = round(sum(attendance.worked_hours for attendance in attendance_records), 2)
-            absence_days_hollidays = self.get_hollidays(employee.matricule, self.end_date, self.start_date)[1]
+            absence_days_hollidays = self.get_hollidays(employee.id, self.end_date, self.start_date)[1]
             number_of_days_absence_legal = absence_days_hollidays
             total_number_of_working_hours = int((self.nombre_jours_sans_weekend(self.start_date,
                                                                                 self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)

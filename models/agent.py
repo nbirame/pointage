@@ -47,11 +47,10 @@ class Agent(models.Model):
 
     def get_hollidays(self, fin_mois_dernier, debut_ce_mois):
         conge_listes = []
-        url = "http://erp.fongip.sn:8069"
-        # url = "http://10.0.0.19:8069"
-        db_odoo = "fongip"
-        username = "admin@fongip.sn"
-        SECRET_KEY = "Fgp@2013"
+        url = ""
+        db_odoo = ""
+        username = ""
+        SECRET_KEY = ""
         common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
         uid = common.authenticate(db_odoo, username, SECRET_KEY, {})
         if uid:
@@ -91,11 +90,10 @@ class Agent(models.Model):
         conge_listes = []
         liste = []
         nombre_jour = 0
-        url = "http://erp.fongip.sn:8069"
-        # url = "http://10.0.0.19:8069"
-        db_odoo = "fongip"
-        username = "admin@fongip.sn"
-        SECRET_KEY = "Fgp@2013"
+        url = ""
+        db_odoo = ""
+        username = ""
+        SECRET_KEY = ""
         common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
         uid = common.authenticate(db_odoo, username, SECRET_KEY, {})
         if uid:
@@ -411,7 +409,31 @@ class Agent(models.Model):
             )
 
         # Récup Congés
-        conge_listes = self.get_hollidays(fin_mois_dernier, debut_mois_dernier)
+        # conge_listes = self.get_hollidays(fin_mois_dernier, debut_mois_dernier)
+        conge_listes = []
+
+        # Récupérer uniquement les congés qui chevauchent la période
+        conges = self.env["hr.leave"].search([
+            ('employee_id', '=', self.id),
+            ('state', 'in', ['validate1', 'validate']),
+            ('request_date_from', '<=', fin_mois_dernier.date()),  # ensure .date()
+            ('request_date_to', '>=', debut_mois_dernier.date()),
+        ])
+        # Convertir les congés en dates journalières
+        for c in conges:
+            if c.request_date_from and c.request_date_to:
+                d1 = c.request_date_from
+                d2 = c.request_date_to
+                # Limiter aux bornes de la semaine dernière
+                real_start = max(d1, debut_mois_dernier.date())
+                real_end = min(d2, fin_mois_dernier.date())
+
+                # Si l'intervalle est valide
+                if real_start <= real_end:
+                    conge_listes.extend(
+                        real_start + timedelta(days=i)
+                        for i in range((real_end - real_start).days + 1)
+                    )
 
         # Récup Fêtes
         fetes = self.env["vacances.ferier"].sudo().search([])
@@ -556,17 +578,11 @@ class Agent(models.Model):
             ('request_date_from', '<=', fin_semaine_derniere.date()),  # ensure .date()
             ('request_date_to', '>=', debut_semaine_derniere.date()),
         ])
-        print("_________________________________-----------------------_____________________")
-        print(f"Listes des jours de congees ----------- {conges}-----------------------")
-        print("---------------------------------_______________________-----------------------")
         # Convertir les congés en dates journalières
         for c in conges:
             if c.request_date_from and c.request_date_to:
                 d1 = c.request_date_from
                 d2 = c.request_date_to
-                print("_________________________________-----------------------_____________________")
-                print(f"Listes des dates de congees -----------{c.employee_id.name}: {d1}-------{d2}----------------")
-                print("---------------------------------_______________________-----------------------")
                 # Limiter aux bornes de la semaine dernière
                 real_start = max(d1, debut_semaine_derniere.date())
                 real_end = min(d2, fin_semaine_derniere.date())
@@ -577,9 +593,6 @@ class Agent(models.Model):
                         real_start + timedelta(days=i)
                         for i in range((real_end - real_start).days + 1)
                     )
-        print("_________________________________-----------------------_____________________")
-        print(f"Listes des jours de congees ----------- {conge_listes}-----------------------")
-        print("---------------------------------_______________________-----------------------")
         fetes = self.env["vacances.ferier"].sudo().search([])
         fete_listes = []
         for f in fetes:

@@ -59,7 +59,32 @@ class Absence(models.Model):
                         [fd + timedelta(days=i), nom_fete] for i in range((fe - fd).days + 1)
                     )
 
-                conges = self.env['hr.employee'].get_day_of_hollidays(employee.matricule, end_of_last_week, start_of_last_week)
+                # conges = self.env['hr.employee'].get_day_of_hollidays(employee.matricule, end_of_last_week, start_of_last_week)
+                conge_listes = []
+
+                # Récupérer uniquement les congés qui chevauchent la période
+                conges = self.env["hr.leave"].search([
+                    ('employee_id', '=', self.id),
+                    ('state', 'in', ['validate1', 'validate']),
+                    ('request_date_from', '<=', end_of_last_week.date()),  # ensure .date()
+                    ('request_date_to', '>=', start_of_last_week.date()),
+                ])
+                # Convertir les congés en dates journalières
+                for c in conges:
+                    if c.request_date_from and c.request_date_to:
+                        d1 = c.request_date_from
+                        d2 = c.request_date_to
+                        # Limiter aux bornes de la semaine dernière
+                        real_start = max(d1, start_of_last_week.date())
+                        real_end = min(d2, end_of_last_week.date())
+
+                        # Si l'intervalle est valide
+                        if real_start <= real_end:
+                            conge_listes.extend(
+                                real_start + timedelta(days=i)
+                                for i in range((real_end - real_start).days + 1)
+                            )
+
                 attendance = attendance_model.search([
                     ('employee_id', '=', employee.id),
                     ('check_in', '>=', single_date.strftime('%Y-%m-%d 00:00:00')),
@@ -67,7 +92,7 @@ class Absence(models.Model):
                 ])
                 if not attendance:
                     # print("Test")
-                    if single_date in conges[0]:
+                    if single_date in conge_listes:
                         self.create({
                             'employee_id': employee.id,
                             'day_absence': single_date,
