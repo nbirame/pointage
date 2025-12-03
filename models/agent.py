@@ -556,7 +556,9 @@ class Agent(models.Model):
             ('request_date_from', '<=', fin_semaine_derniere.date()),  # ensure .date()
             ('request_date_to', '>=', debut_semaine_derniere.date()),
         ])
-
+        print("_________________________________-----------------------_____________________")
+        print(f"Listes des jours de congees ----------- {conges}-----------------------")
+        print("---------------------------------_______________________-----------------------")
         # Convertir les congés en dates journalières
         for c in conges:
             if c.request_date_from and c.request_date_to:
