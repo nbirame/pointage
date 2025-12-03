@@ -398,15 +398,22 @@ class Agent(models.Model):
                         for i in range((real_end - real_start).days + 1)
                     )
 
-        # Récup Participants
-        participants_listes = []
-        participants = self.env["pointage.atelier"].search([('employee_id', '=', self.id)])
-        for p in participants:
-            d1 = p.date_start
-            d2 = p.date_end
-            participants_listes.extend(
-                d1 + timedelta(days=i) for i in range((d2 - d1).days + 1)
-            )
+                # ---- Ateliers ----
+                participants_listes = set()
+                participants = self.env["pointage.atelier"].search([
+                    ('employee_id', '=', self.id),
+                    ('date_end', '>=', debut_mois_dernier.date()),
+                    ('date_start', '<=', fin_mois_dernier.date()),
+                ])
+                for atelier in participants:
+                    date_debut = atelier.date_start.date() if isinstance(atelier.date_start,
+                                                                         datetime) else atelier.date_start
+                    date_fin = atelier.date_end.date() if isinstance(atelier.date_end, datetime) else atelier.date_end
+                    real_start = max(date_debut, self.date_in_get_rapport)
+                    real_end = min(date_fin, self.date_end_get_rapport)
+                    if real_start <= real_end:
+                        for i in range((real_end - real_start).days + 1):
+                            participants_listes.add(real_start + timedelta(days=i))
 
         # Récup Congés
         # conge_listes = self.get_hollidays(fin_mois_dernier, debut_mois_dernier)
