@@ -66,8 +66,8 @@ class Absence(models.Model):
                 conges = self.env["hr.leave"].search([
                     ('employee_id', '=', self.id),
                     ('state', 'in', ['validate1', 'validate']),
-                    ('request_date_from', '<=', end_of_last_week.date()),  # ensure .date()
-                    ('request_date_to', '>=', start_of_last_week.date()),
+                    ('request_date_from', '<=', end_of_last_week),  # ensure .date()
+                    ('request_date_to', '>=', start_of_last_week),
                 ])
                 # Convertir les congés en dates journalières
                 for c in conges:
@@ -75,8 +75,8 @@ class Absence(models.Model):
                         d1 = c.request_date_from
                         d2 = c.request_date_to
                         # Limiter aux bornes de la semaine dernière
-                        real_start = max(d1, start_of_last_week.date())
-                        real_end = min(d2, end_of_last_week.date())
+                        real_start = max(d1, start_of_last_week)
+                        real_end = min(d2, end_of_last_week)
 
                         # Si l'intervalle est valide
                         if real_start <= real_end:
