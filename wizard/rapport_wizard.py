@@ -33,8 +33,8 @@ class RapportWizard(models.TransientModel):
         conges = self.env["hr.leave"].search([
             ('employee_id', '=', self.id),
             ('state', 'in', ['validate1', 'validate']),
-            ('request_date_from', '<=', fin_mois_dernier.date()),  # ensure .date()
-            ('request_date_to', '>=', debut_ce_mois.date()),
+            ('request_date_from', '<=', fin_mois_dernier),  # ensure .date()
+            ('request_date_to', '>=', debut_ce_mois),
         ])
         # Convertir les congés en dates journalières
         for c in conges:
@@ -42,8 +42,8 @@ class RapportWizard(models.TransientModel):
                 d1 = c.request_date_from
                 d2 = c.request_date_to
                 # Limiter aux bornes de la semaine dernière
-                real_start = max(d1, debut_ce_mois.date())
-                real_end = min(d2, fin_mois_dernier.date())
+                real_start = max(d1, debut_ce_mois)
+                real_end = min(d2, fin_mois_dernier)
 
                 # Si l'intervalle est valide
                 if real_start <= real_end:
