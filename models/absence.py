@@ -1,5 +1,5 @@
 from odoo import models, fields, api
-from datetime import timedelta
+from datetime import timedelta, datetime, time
 from odoo.fields import Date
 
 
@@ -49,26 +49,28 @@ class Absence(models.Model):
                         if not isinstance(date_debut, int) and not isinstance(date_fin, int):
                             participants_liste.extend([date_debut + timedelta(days=i) for i in
                                                   range((date_fin - date_debut).days + 1)])
+                start_dt = datetime.combine(start_of_last_week, time.min)  # 00:00:00
+                end_dt = datetime.combine(end_of_last_week, time.max)  # 23:59:59
+
+                # Recherche des jours fériés dans la période
                 fetes = self.env["resource.calendar.leaves"].sudo().search([
-                    ('date_from', '<=', end_of_last_week),
-                    ('date_to', '>=', start_of_last_week),
+                    ('date_from', '<=', end_dt),
+                    ('date_to', '>=', start_dt),
                 ])
 
                 fete_listes = []
 
                 for fete in fetes:
-                    # Conversion en date pour éviter les erreurs datetime
-                    fd = fete.date_from.date() if hasattr(fete.date_from, 'date') else fete.date_from
-                    fe = fete.date_to.date() if hasattr(fete.date_to, 'date') else fete.date_to
-                    nom_fete = fete.name  # ou fete.holiday_status_id.name selon ton modèle
+                    # Conversion en date simple
+                    fd = fete.date_from.date()
+                    fe = fete.date_to.date()
+                    nom_fete = fete.name
 
-                    # Intersection entre l'intervalle férié et la période demandée
+                    # Intersection
                     real_start = max(fd, start_of_last_week)
                     real_end = min(fe, end_of_last_week)
 
-                    # Sécurisation : seulement si l'intervalle est valide
                     if real_start <= real_end:
-                        # Génération des jours
                         for i in range((real_end - real_start).days + 1):
                             jour = real_start + timedelta(days=i)
                             fete_listes.append([jour, nom_fete])
