@@ -49,19 +49,29 @@ class Absence(models.Model):
                         if not isinstance(date_debut, int) and not isinstance(date_fin, int):
                             participants_liste.extend([date_debut + timedelta(days=i) for i in
                                                   range((date_fin - date_debut).days + 1)])
-                fetes = self.env["resource.calendar.leaves"].sudo().search([])
-                fete_listes = []
-                for fete in fetes:
-                    fd = fete.date_from
-                    fe = fete.date_to
-                    print("------------------------------------------------------------------")
-                    print(f"-Les jours date de debut: {fd}--------------date de fin: {fe}-----")
-                    print("___________________________________________________________________")
-                    nom_fete = fete.party_id.name
-                    fete_listes.extend(
-                        [fd + timedelta(days=i), nom_fete] for i in range((fe - fd).days + 1)
-                    )
+                fetes = self.env["resource.calendar.leaves"].sudo().search([
+                    ('date_from', '<=', end_of_last_week),
+                    ('date_to', '>=', start_of_last_week),
+                ])
 
+                fete_listes = []
+
+                for fete in fetes:
+                    # Conversion en date pour éviter les erreurs datetime
+                    fd = fete.date_from.date() if hasattr(fete.date_from, 'date') else fete.date_from
+                    fe = fete.date_to.date() if hasattr(fete.date_to, 'date') else fete.date_to
+                    nom_fete = fete.name  # ou fete.holiday_status_id.name selon ton modèle
+
+                    # Intersection entre l'intervalle férié et la période demandée
+                    real_start = max(fd, start_of_last_week)
+                    real_end = min(fe, end_of_last_week)
+
+                    # Sécurisation : seulement si l'intervalle est valide
+                    if real_start <= real_end:
+                        # Génération des jours
+                        for i in range((real_end - real_start).days + 1):
+                            jour = real_start + timedelta(days=i)
+                            fete_listes.append([jour, nom_fete])
                 # conges = self.env['hr.employee'].get_day_of_hollidays(employee.matricule, end_of_last_week, start_of_last_week)
                 conge_listes = []
 
