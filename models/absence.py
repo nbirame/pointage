@@ -54,6 +54,9 @@ class Absence(models.Model):
                 for fete in fetes:
                     fd = fete.date_from
                     fe = fete.date_to
+                    print("------------------------------------------------------------------")
+                    print(f"-Les jours date de debut: {fd}--------------date de fin: {fe}-----")
+                    print("___________________________________________________________________")
                     nom_fete = fete.party_id.name
                     fete_listes.extend(
                         [fd + timedelta(days=i), nom_fete] for i in range((fe - fd).days + 1)
