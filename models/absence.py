@@ -80,7 +80,7 @@ class Absence(models.Model):
                         print("_______________________________________________")
                         for i in range((real_end - real_start).days + 1):
                             jour = real_start + timedelta(days=i)
-                            fete_listes.append([jour, nom_fete])
+                            fete_listes.append(jour)
 
                 # conges = self.env['hr.employee'].get_day_of_hollidays(employee.matricule, end_of_last_week, start_of_last_week)
                 conge_listes = []
