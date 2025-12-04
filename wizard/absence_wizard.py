@@ -28,8 +28,8 @@ class AbsenceWizard(models.TransientModel):
         conges = self.env["hr.leave"].search([
             ('employee_id', '=', matricule),
             ('state', 'in', ['validate1', 'validate']),
-            ('request_date_from', '<=', end_date.date()),  # ensure .date()
-            ('request_date_to', '>=', start_date.date()),
+            ('request_date_from', '<=', end_date),  # ensure .date()
+            ('request_date_to', '>=', start_date),
         ])
         # Convertir les congés en dates journalières
         for c in conges:
@@ -37,8 +37,8 @@ class AbsenceWizard(models.TransientModel):
                 d1 = c.request_date_from
                 d2 = c.request_date_to
                 # Limiter aux bornes de la semaine dernière
-                real_start = max(d1, start_date.date())
-                real_end = min(d2, end_date.date())
+                real_start = max(d1, start_date)
+                real_end = min(d2, end_date)
 
                 # Si l'intervalle est valide
                 if real_start <= real_end:
