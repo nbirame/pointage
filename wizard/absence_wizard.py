@@ -84,26 +84,26 @@ class AbsenceWizard(models.TransientModel):
             if participants:
                 number_day_of_atelier = 0
                 for agent in participants:
-                    if (agent.date_from >= self.start_date and agent.date_to <= self.end_date) and (
+                    if (agent.date_start >= self.start_date and agent.date_end <= self.end_date) and (
                             agent.employee_id.id == employee.id):
-                        number_day_of_atelier += self.nombre_jours_sans_weekend(agent.date_from,
-                                                                                agent.date_to)
+                        number_day_of_atelier += self.nombre_jours_sans_weekend(agent.date_start,
+                                                                                agent.date_end)
                         number_of_days_absence_legal += number_day_of_atelier
                         total_number_of_working_hours = int(
                             (self.nombre_jours_sans_weekend(self.start_date,
                                                             self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
-                    elif agent.date_from >= self.start_date and agent.date_to >= self.end_date and (
+                    elif agent.date_start >= self.start_date and agent.date_end >= self.end_date and (
                             agent.employee_id.id == employee.id):
-                        number_day_of_atelier += self.nombre_jours_sans_weekend(agent.date_from,
+                        number_day_of_atelier += self.nombre_jours_sans_weekend(agent.date_start,
                                                                                 self.end_date)
                         number_of_days_absence_legal += number_day_of_atelier
                         total_number_of_working_hours = int(
                             (self.nombre_jours_sans_weekend(self.start_date,
                                                             self.end_date) - number_of_days_absence_legal) * heure_travail.worked_hours)
                     elif (agent.employee_id.id == employee.id) and (
-                            agent.date_from <= self.start_date and agent.date_to <= self.end_date):
+                            agent.date_start <= self.start_date and agent.date_to <= self.end_date):
                         number_day_of_atelier += self.nombre_jours_sans_weekend(self.start_date,
-                                                                                agent.date_to)
+                                                                                agent.date_end)
                         number_of_days_absence_legal += number_day_of_atelier
                         total_number_of_working_hours = int(
                             (self.nombre_jours_sans_weekend(self.start_date,
