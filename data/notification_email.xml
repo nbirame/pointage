@@ -504,7 +504,7 @@
             border: 1px solid #000;
         }
         th {
-            background-color: #800000;
+            background-color: #1A428A;
             color: white;
         }
         td {

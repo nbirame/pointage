@@ -34,9 +34,9 @@ class Absence(models.Model):
                 equipe = self.env["mission.equipe"].search([('employee_id', '=', employee.id)])
                 for agant in equipe:
                     if (agant.mission_id.state == "en_cours" or agant.mission_id.state == "terminer") and ((
-                                                                                                                         agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour <= single_date) or (
-                                                                                                                         agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour >= single_date) or (
-                                                                                                                         agant.mission_id.date_depart <= single_date and agant.mission_id.date_retour <= single_date)):
+                                                                                                             agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour <= single_date) or (
+                                                                                                             agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour >= single_date) or (
+                                                                                                             agant.mission_id.date_depart <= single_date and agant.mission_id.date_retour <= single_date)):
                         date_debut = agant.mission_id.date_depart
                         date_fin = agant.mission_id.date_retour
                         missions.extend([date_debut + timedelta(days=i) for i in
@@ -64,20 +64,10 @@ class Absence(models.Model):
                     # Conversion en date simple
                     fd = fete.date_from.date()
                     fe = fete.date_to.date()
-                    nom_fete = fete.name
-                    print("----------------------------------------------")
-                    print(f"Liste de ferier: {nom_fete} du {fd} au {fe}")
-                    print("_______________________________________________")
                     # Intersection
                     real_start = max(fd, start_of_last_week)
                     real_end = min(fe, end_of_last_week)
-                    print("---------------------Avant le if------------------------")
-                    print(f"Liste de ferier: {real_start} du {real_end}")
-                    print("_______________________________________________")
                     if real_start <= real_end:
-                        print("---------------------Dans le if-------------------------")
-                        print(f"Liste de ferier: {real_start} du {real_end}")
-                        print("_______________________________________________")
                         for i in range((real_end - real_start).days + 1):
                             jour = real_start + timedelta(days=i)
                             fete_listes.append(jour)
@@ -127,7 +117,7 @@ class Absence(models.Model):
                             'employee_id': employee.id,
                             'day_absence': single_date,
                             'state': 'justifier',
-                            'reason': 'En atelié'
+                            'reason': 'En atelier'
                         })
                     elif single_date in missions:
                         self.create({
