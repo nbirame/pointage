@@ -398,22 +398,22 @@ class Agent(models.Model):
                         for i in range((real_end - real_start).days + 1)
                     )
 
-                # ---- Ateliers ----
-                participants_listes = set()
-                participants = self.env["pointage.atelier"].search([
-                    ('employee_id', '=', self.id),
-                    ('date_end', '>=', debut_mois_dernier.date()),
-                    ('date_start', '<=', fin_mois_dernier.date()),
-                ])
-                for atelier in participants:
-                    date_debut = atelier.date_start.date() if isinstance(atelier.date_start,
-                                                                         datetime) else atelier.date_start
-                    date_fin = atelier.date_end.date() if isinstance(atelier.date_end, datetime) else atelier.date_end
-                    real_start = max(date_debut,debut_mois_dernier.date())
-                    real_end = min(date_fin, fin_mois_dernier.date())
-                    if real_start <= real_end:
-                        for i in range((real_end - real_start).days + 1):
-                            participants_listes.add(real_start + timedelta(days=i))
+        # ---- Ateliers ----
+        participants_listes = set()
+        participants = self.env["pointage.atelier"].search([
+            ('employee_id', '=', self.id),
+            ('date_end', '>=', debut_mois_dernier.date()),
+            ('date_start', '<=', fin_mois_dernier.date()),
+        ])
+        for atelier in participants:
+            date_debut = atelier.date_start.date() if isinstance(atelier.date_start,
+                                                                 datetime) else atelier.date_start
+            date_fin = atelier.date_end.date() if isinstance(atelier.date_end, datetime) else atelier.date_end
+            real_start = max(date_debut,debut_mois_dernier.date())
+            real_end = min(date_fin, fin_mois_dernier.date())
+            if real_start <= real_end:
+                for i in range((real_end - real_start).days + 1):
+                    participants_listes.add(real_start + timedelta(days=i))
 
         # Récup Congés
         # conge_listes = self.get_hollidays(fin_mois_dernier, debut_mois_dernier)
