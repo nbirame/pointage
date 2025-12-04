@@ -65,15 +65,23 @@ class Absence(models.Model):
                     fd = fete.date_from.date()
                     fe = fete.date_to.date()
                     nom_fete = fete.name
-
+                    print("----------------------------------------------")
+                    print(f"Liste de ferier: {nom_fete} du {fd} au {fe}")
+                    print("_______________________________________________")
                     # Intersection
                     real_start = max(fd, start_of_last_week)
                     real_end = min(fe, end_of_last_week)
-
+                    print("---------------------Avant le if------------------------")
+                    print(f"Liste de ferier: {real_start} du {real_end}")
+                    print("_______________________________________________")
                     if real_start <= real_end:
+                        print("---------------------Dans le if-------------------------")
+                        print(f"Liste de ferier: {real_start} du {real_end}")
+                        print("_______________________________________________")
                         for i in range((real_end - real_start).days + 1):
                             jour = real_start + timedelta(days=i)
                             fete_listes.append([jour, nom_fete])
+
                 # conges = self.env['hr.employee'].get_day_of_hollidays(employee.matricule, end_of_last_week, start_of_last_week)
                 conge_listes = []
 
