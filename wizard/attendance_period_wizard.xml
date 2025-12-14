@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_attendance_period_wizard_form" model="ir.ui.view">
+        <field name="name">quarantre.wizard.form</field>
+        <field name="model">quarantre.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Sélection de la période">
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+
+                <footer>
+                    <button
+                        string="Générer le rapport"
+                        type="object"
+                        name="print_generate_report"
+                        class="btn-primary"
+                    />
+                    <button string="Annuler" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_attendance_period_wizard" model="ir.actions.act_window">
+        <field name="name">Rapport 40 heures</field>
+        <field name="res_model">quarantre.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+</odoo>

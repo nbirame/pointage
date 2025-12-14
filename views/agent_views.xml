@@ -124,6 +124,11 @@
                         type="action"
                         icon="fa-print"
                         class="oe_highlight"/>
+                <button name="%(pointage.action_attendance_period_wizard)d"
+                        string="40 heures"
+                        type="action"
+                        icon="fa-print"
+                        class="oe_highlight"/>
 
             </div>
 

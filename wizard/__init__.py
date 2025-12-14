@@ -5,3 +5,4 @@ from . import rapport_wizard
 from . import presence_report_wizard
 from . import absence_wizard
 from . import later_wizard
+from . import attendance_period_wizard

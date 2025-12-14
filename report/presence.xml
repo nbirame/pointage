@@ -57,6 +57,14 @@
             <field name="report_file">pointage.report_later_wizard</field>
             <field name="print_report_name">'Retards'</field>
         </record>
+        <record id="report_pointage_40heures_wizard" model="ir.actions.report">
+            <field name="name">Rapport 40 heures</field>
+            <field name="model">quarantre.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pointage.report_40hreure_wizard</field>
+            <field name="report_file">pointage.report_40hreure_wizard</field>
+            <field name="print_report_name">'Quarantre Heures'</field>
+        </record>
     </data>
     <!--<report
             string="Présence"

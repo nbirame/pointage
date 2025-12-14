@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_40hreure_wizard">
+        <div class="header" style="margin-top: 0px;">
+            <img src="/pointage/static/src/img/fon.png" alt="Logo" class="w-910 h-3"/>
+        </div>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="object">
+                <t t-call="web.external_layout">
+                    <div class="page" t-if="object.get_employees_under_40_hours()">
+                        <h3 style="text-align:center;color:#1A428A;margin-top:50px;">
+                            Récaputilative des agents ayant enregistré au moins de 40 heures durant la période du
+                            <span t-esc="object.date_from" t-options='{"widget": "date"}'/>
+                            au <span t-esc="object.date_to" t-options='{"widget": "date"}'/>.
+                        </h3>
+                        <table class="table table-bordered" width="590" border="1" cellpadding="0" cellspacing="0"
+                               style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                            <thead>
+                                <tr t-if="object.get_employees_under_40_hours()[0]">
+                                    <th>N*</th>
+                                    <th>AGENT</th>
+                                    <th>Nombre d'heures</th>
+                                    <th>Ecart</th>
+                                    <!--<t t-foreach="range(2, len(object.get_late_tree_day_of_week_wizard()[0]))" t-as="col_index">
+                                        <th>Date <span t-esc="col_index - 1"/></th>
+                                    </t>-->
+                                </tr>
+                            </thead>
+                            <tbody t-foreach="object.get_employees_under_40_hours()" t-as="quarantre">
+                                <tr>
+                                    <td>
+                                       <span t-esc="quarantre_index+1"/>
+                                    </td>
+
+                                    <td>
+                                        <span t-esc="quarantre['employee']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="quarantre['hours_done']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="quarantre['gap']"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-right">
+                            Fait à Dakar, le
+                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                        </p>
+                        <h6 class="text-right">
+                            La Directrice des Ressources Humaines
+                        </h6>
+                    </div>
+                    <div t-else="">
+                        <h3 style="text-align:center;color:#1A428A;margin-top:50px;">
+                            Il n'y a pas d'agent ayant moins de quarantres heures
+                            <span t-esc="object.date_from" t-options='{"widget": "date"}'/>
+                            au <span t-esc="object.date_to" t-options='{"widget": "date"}'/>.
+                        </h3>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>
