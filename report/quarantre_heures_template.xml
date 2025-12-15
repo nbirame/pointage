@@ -44,15 +44,6 @@
                                     <td>
                                         <span t-esc="quarantre['gap']"/>
                                     </td>
-                                    <td>
-                                        <span t-esc="quarantre['conge']"/>
-                                    </td>
-                                    <td>
-                                        <span t-esc="quarantre['mission']"/>
-                                    </td>
-                                    <td>
-                                        <span t-esc="quarantre['atelier']"/>
-                                    </td>
                                 </tr>
                             </tbody>
                         </table>
