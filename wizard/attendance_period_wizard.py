@@ -73,8 +73,8 @@ class QuarantreWizard(models.TransientModel):
             conges = self.env["hr.leave"].search([
                 ('employee_id', '=', emp.id),
                 ('state', 'in', ['validate1', 'validate']),
-                ('request_date_from', '<=', self.date_from),  # ensure .date()
-                ('request_date_to', '>=', self.date_to),
+                ('request_date_from', '<=', self.date_to),  # ensure .date()
+                ('request_date_to', '>=', self.date_from),
             ])
             # Convertir les congés en dates journalières
             for c in conges:
