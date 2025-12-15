@@ -77,20 +77,20 @@ class QuarantreWizard(models.TransientModel):
                 ('request_date_to', '>=', self.date_to),
             ])
             # Convertir les congés en dates journalières
-            for c in conges:
-                if c.request_date_from and c.request_date_to:
-                    d1 = c.request_date_from
-                    d2 = c.request_date_to
-                    # Limiter aux bornes de la semaine dernière
-                    real_start = max(d1, self.date_from)
-                    real_end = min(d2, self.date_to)
-
-                    # Si l'intervalle est valide
-                    if real_start <= real_end:
-                        conge_listes.extend(
-                            real_start + timedelta(days=i)
-                            for i in range((real_end - real_start).days + 1)
-                         )
+            # for c in conges:
+            #     if c.request_date_from and c.request_date_to:
+            #         d1 = c.request_date_from
+            #         d2 = c.request_date_to
+            #         # Limiter aux bornes de la semaine dernière
+            #         real_start = max(d1, self.date_from)
+            #         real_end = min(d2, self.date_to)
+            #
+            #         # Si l'intervalle est valide
+            #         if real_start <= real_end:
+            #             conge_listes.extend(
+            #                 real_start + timedelta(days=i)
+            #                 for i in range((real_end - real_start).days + 1)
+            #              )
             # fetes = self.env["vacances.ferier"].sudo().search([])
             # fete_listes = []
             # for f in fetes:
@@ -102,13 +102,13 @@ class QuarantreWizard(models.TransientModel):
             #         for i in range((fe - fd).days + 1)
             #     )
             # fete_dates = {f[0]: f[1] for f in fete_listes}
-            nombre_heure_fait = total_hours + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes))
+            nombre_heure_fait = total_hours + 8*(conges+ len(mission_listes)+len(participants_listes))
             if nombre_heure_fait < 40:
                 result.append({
                     'employee': emp.name,
                     'hours_done': nombre_heure_fait,
                     'gap': round(40 - nombre_heure_fait, 2),
-                    'conge':len(conge_listes),
+                    'conge':conges,
                     'mission': len(mission_listes),
                     'atelier': len(participants_listes)
                 })
