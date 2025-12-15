@@ -77,20 +77,20 @@ class QuarantreWizard(models.TransientModel):
                 ('request_date_to', '>=', self.date_to),
             ])
             # Convertir les congés en dates journalières
-            # for c in conges:
-            #     if c.request_date_from and c.request_date_to:
-            #         d1 = c.request_date_from
-            #         d2 = c.request_date_to
-            #         # Limiter aux bornes de la semaine dernière
-            #         real_start = max(d1, self.date_from)
-            #         real_end = min(d2, self.date_to)
-            #
-            #         # Si l'intervalle est valide
-            #         if real_start <= real_end:
-            #             conge_listes.extend(
-            #                 real_start + timedelta(days=i)
-            #                 for i in range((real_end - real_start).days + 1)
-            #              )
+            for c in conges:
+                if c.request_date_from and c.request_date_to:
+                    d1 = c.request_date_from
+                    d2 = c.request_date_to
+                    # Limiter aux bornes de la semaine dernière
+                    real_start = max(d1, self.date_from)
+                    real_end = min(d2, self.date_to)
+
+                    # Si l'intervalle est valide
+                    if real_start <= real_end:
+                        conge_listes.extend(
+                            real_start + timedelta(days=i)
+                            for i in range((real_end - real_start).days + 1)
+                         )
             # fetes = self.env["vacances.ferier"].sudo().search([])
             # fete_listes = []
             # for f in fetes:
@@ -108,7 +108,7 @@ class QuarantreWizard(models.TransientModel):
                     'employee': emp.name,
                     'hours_done': nombre_heure_fait,
                     'gap': round(40 - nombre_heure_fait, 2),
-                    'conge':conges,
+                    'conge':len(conge_listes),
                     'mission': len(mission_listes),
                     'atelier': len(participants_listes)
                 })
