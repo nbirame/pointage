@@ -21,6 +21,9 @@
                                     <th>AGENT</th>
                                     <th>Nombre d'heures</th>
                                     <th>Ecart</th>
+                                    <th>Conge</th>
+                                    <th>Mission</th>
+                                    <th>Atelier</th>
                                     <!--<t t-foreach="range(2, len(object.get_late_tree_day_of_week_wizard()[0]))" t-as="col_index">
                                         <th>Date <span t-esc="col_index - 1"/></th>
                                     </t>-->
@@ -40,6 +43,15 @@
                                     </td>
                                     <td>
                                         <span t-esc="quarantre['gap']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="quarantre['conge']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="quarantre['mission']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="quarantre['atelier']"/>
                                     </td>
                                 </tr>
                             </tbody>

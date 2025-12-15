@@ -108,6 +108,9 @@ class QuarantreWizard(models.TransientModel):
                     'employee': emp.name,
                     'hours_done': nombre_heure_fait,
                     'gap': round(40 - nombre_heure_fait, 2),
+                    'conge':len(conge_listes),
+                    'mission': len(mission_listes),
+                    'atelier': len(participants_listes)
                 })
 
         return result
