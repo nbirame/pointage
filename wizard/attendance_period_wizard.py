@@ -1,4 +1,5 @@
 from odoo import models, fields
+from datetime import datetime, timedelta, time
 
 class QuarantreWizard(models.TransientModel):
     _name = 'quarantre.wizard'
@@ -25,6 +26,7 @@ class QuarantreWizard(models.TransientModel):
         employees = Employee.search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG'), ('agence_id.name', '=', 'SIEGE')])
 
         for emp in employees:
+            nombre_heure_fait = 0
             attendances = Attendance.search([
                 ('employee_id', '=', emp.id),
                 ('check_in', '>=', self.date_from),
@@ -33,15 +35,83 @@ class QuarantreWizard(models.TransientModel):
 
             total_hours = sum(att.worked_hours for att in attendances)
             total_hours = round(total_hours, 2)
+            mission_listes = []
+            equipes = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
+            for eq in equipes:
+                if eq.mission_id.state in ("en_cours", "terminer") and eq.mission_id.date_depart:
+                    dstart = eq.mission_id.date_depart
+                    dend = eq.mission_id.date_retour
+                    # Calculer l'intersection
+                    real_start = max(dstart, self.date_from)
+                    real_end = min(dend, self.date_to)
+                    if real_start <= real_end:
+                        mission_listes.extend(
+                            real_start + timedelta(days=i)
+                            for i in range((real_end - real_start).days + 1)
+                        )
 
-            if total_hours < 40:
+            participants_listes = []
+            participants = self.env["pointage.atelier"].search([('employee_id', '=', self.id)])
+            if participants:
+                for p in participants:
+                    if p.date_start and p.date_end:
+                        d1 = p.date_start.date()
+                        d2 = p.date_end.date()
+                        real_start = max(d1, self.date_from)
+                        real_end = min(d2, self.date_to)
+
+                        if real_start <= real_end:
+                            participants_listes.extend(
+                                real_start + timedelta(days=i)
+                                for i in range((real_end - real_start).days + 1)
+                            )
+
+            # conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
+            conge_listes = []
+
+            # Récupérer uniquement les congés qui chevauchent la période
+            conges = self.env["hr.leave"].search([
+                ('employee_id', '=', self.id),
+                ('state', 'in', ['validate1', 'validate']),
+                ('request_date_from', '<=', self.date_from),  # ensure .date()
+                ('request_date_to', '>=', self.date_to),
+            ])
+            # Convertir les congés en dates journalières
+            for c in conges:
+                if c.request_date_from and c.request_date_to:
+                    d1 = c.request_date_from
+                    d2 = c.request_date_to
+                    # Limiter aux bornes de la semaine dernière
+                    real_start = max(d1, self.date_from)
+                    real_end = min(d2, self.date_to)
+
+                    # Si l'intervalle est valide
+                    if real_start <= real_end:
+                        conge_listes.extend(
+                            real_start + timedelta(days=i)
+                            for i in range((real_end - real_start).days + 1)
+                         )
+            # fetes = self.env["vacances.ferier"].sudo().search([])
+            # fete_listes = []
+            # for f in fetes:
+            #     fd = f.date_star
+            #     fe = f.date_end
+            #     nom_fete = f.party_id.name
+            #     fete_listes.extend(
+            #         [fd + timedelta(days=i), nom_fete]
+            #         for i in range((fe - fd).days + 1)
+            #     )
+            # fete_dates = {f[0]: f[1] for f in fete_listes}
+            nombre_heure_fait = total_hours + len(conge_listes)+ len(mission_listes)+len(participants_listes)
+            if nombre_heure_fait < 40:
                 result.append({
                     'employee': emp.name,
-                    'hours_done': total_hours,
-                    'gap': round(40 - total_hours, 2),
+                    'hours_done': nombre_heure_fait,
+                    'gap': round(40 - nombre_heure_fait, 2),
                 })
 
         return result
 
     def print_generate_report(self):
         return self.env.ref("pointage.report_pointage_40heures_wizard").report_action(self)
+
