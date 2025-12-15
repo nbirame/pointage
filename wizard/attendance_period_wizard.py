@@ -36,7 +36,7 @@ class QuarantreWizard(models.TransientModel):
             total_hours = sum(att.worked_hours for att in attendances)
             total_hours = round(total_hours, 2)
             mission_listes = []
-            equipes = self.env["mission.equipe"].search([('employee_id', '=', self.id)])
+            equipes = self.env["mission.equipe"].search([('employee_id', '=', emp.id)])
             for eq in equipes:
                 if eq.mission_id.state in ("en_cours", "terminer") and eq.mission_id.date_depart:
                     dstart = eq.mission_id.date_depart
@@ -51,7 +51,7 @@ class QuarantreWizard(models.TransientModel):
                         )
 
             participants_listes = []
-            participants = self.env["pointage.atelier"].search([('employee_id', '=', self.id)])
+            participants = self.env["pointage.atelier"].search([('employee_id', '=', emp.id)])
             if participants:
                 for p in participants:
                     if p.date_start and p.date_end:
@@ -71,7 +71,7 @@ class QuarantreWizard(models.TransientModel):
 
             # Récupérer uniquement les congés qui chevauchent la période
             conges = self.env["hr.leave"].search([
-                ('employee_id', '=', self.id),
+                ('employee_id', '=', emp.id),
                 ('state', 'in', ['validate1', 'validate']),
                 ('request_date_from', '<=', self.date_from),  # ensure .date()
                 ('request_date_to', '>=', self.date_to),
