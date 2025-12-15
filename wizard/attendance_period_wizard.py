@@ -70,7 +70,7 @@ class QuarantreWizard(models.TransientModel):
             conge_listes = []
 
             # Récupérer uniquement les congés qui chevauchent la période
-            conges = self.env["hr.leave"].search([
+            conges = self.env["hr.leave"].search_count([
                 ('employee_id', '=', emp.id),
                 ('state', 'in', ['validate1', 'validate']),
                 ('request_date_from', '<=', self.date_from),  # ensure .date()
