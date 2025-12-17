@@ -729,5 +729,29 @@
                         ]]>
             </field>
         </record>
+        <record id="email_template_pointage_notification_report_40heure" model="mail.template">
+            <field name="name">Rapport moins de 40 heures</field>
+            <field name="email_from">fongip@fongip.sn</field>
+            <field name="email_to">{{object.get_drh()}}</field>
+            <field name="subject">Rapport agents ayant moins de 40 heures du {{object.last_week_start_date().strftime( '%d-%m-%Y')}} au {{object.last_week_end_date().strftime( '%d-%m-%Y')}}</field>
+            <field name="report_name">Rapport Pointage</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="report_template" ref="pointage.report_pointage_presence_40heures"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+            <t t-call="web.html_container">
+                    <div>Bonjour <span t-out="object.name or ''"></span>, <br/>
+                       <p>Veuillez trouver ci-joint la fiche des agents ayant moins de 40 heures pour la période du
+                       <t t-esc="object.last_week_start_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>
+                       au <t t-esc="object.last_week_end_date().strftime( '%Y-%m-%d')" t-options="{'widget': 'date'}"/>.
+
+                        <p>
+                            Cordialement.
+                        </p>
+                    </div>
+                    </t>
+                        ]]>
+            </field>
+        </record>
     </data>
 </odoo>

@@ -9,12 +9,26 @@
       <change beforePath="$PROJECT_DIR$/../mission" beforeDir="false" afterPath="$PROJECT_DIR$/../mission" afterDir="false" />
       <change beforePath="$PROJECT_DIR$" beforeDir="false" afterPath="$PROJECT_DIR$" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/__manifest__.py" beforeDir="false" afterPath="$PROJECT_DIR$/__manifest__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/notification_email.xml" beforeDir="false" afterPath="$PROJECT_DIR$/data/notification_email.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/presence.xml" beforeDir="false" afterPath="$PROJECT_DIR$/report/presence.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report/quarantre_heures_template.xml" beforeDir="false" afterPath="$PROJECT_DIR$/report/quarantre_heures_template.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/agent_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/views/agent_views.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wizard/attendance_period_wizard.py" beforeDir="false" afterPath="$PROJECT_DIR$/wizard/attendance_period_wizard.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../vacances" beforeDir="false" afterPath="$PROJECT_DIR$/../vacances" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -31,11 +45,12 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/test-fongip/vacances&quot;
+    &quot;last_opened_file_path&quot;: &quot;D:/Business/pointage/report&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Business\pointage\report" />
       <recent name="D:\Business\pointage\static\src\img" />
     </key>
   </component>

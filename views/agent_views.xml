@@ -129,6 +129,11 @@
                         type="action"
                         icon="fa-print"
                         class="oe_highlight"/>
+                <button name="action_send_email_notify_40_heures_drh"
+                        string="Notification 40H"
+                        type="object"
+                        icon="fa-bell"
+                        class="oe_stat_button"/>
 
             </div>
 

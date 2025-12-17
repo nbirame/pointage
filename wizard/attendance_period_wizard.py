@@ -26,7 +26,6 @@ class QuarantreWizard(models.TransientModel):
         employees = Employee.search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG'), ('agence_id.name', '=', 'SIEGE')])
 
         for emp in employees:
-            nombre_heure_fait = 0
             attendances = Attendance.search([
                 ('employee_id', '=', emp.id),
                 ('check_in', '>=', self.date_from),

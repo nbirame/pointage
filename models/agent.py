@@ -786,3 +786,89 @@ class Agent(models.Model):
 
     def send_notify_late_week_of_agent(self):
         self.send_email_notification_agent("email_template_pointage_notification_retard_agent")
+
+    def get_employees_under_40_hours(self):
+        Attendance = self.env['hr.attendance']
+        Employee = self.env['hr.employee']
+
+        result = []
+
+        employees = Employee.search([('job_title', '!=', 'SG'), ('job_title', '!=', 'AG'), ('agence_id.name', '=', 'SIEGE')])
+
+        for emp in employees:
+            attendances = Attendance.search([
+                ('employee_id', '=', emp.id),
+                ('check_in', '>=', self.last_week_start_date()),
+                ('check_out', '<=', self.last_week_end_date()),
+            ])
+
+            total_hours = sum(att.worked_hours for att in attendances)
+            total_hours = round(total_hours, 2)
+            mission_listes = []
+            equipes = self.env["mission.equipe"].search([('employee_id', '=', emp.id)])
+            for eq in equipes:
+                if eq.mission_id.state in ("en_cours", "terminer") and eq.mission_id.date_depart:
+                    dstart = eq.mission_id.date_depart
+                    dend = eq.mission_id.date_retour
+                    # Calculer l'intersection
+                    real_start = max(dstart, self.last_week_start_date())
+                    real_end = min(dend, self.last_week_end_date())
+                    if real_start <= real_end:
+                        mission_listes.extend(
+                            real_start + timedelta(days=i)
+                            for i in range((real_end - real_start).days + 1)
+                        )
+
+            participants_listes = []
+            participants = self.env["pointage.atelier"].search([('employee_id', '=', emp.id)])
+            if participants:
+                for p in participants:
+                    if p.date_start and p.date_end:
+                        d1 = p.date_start.date()
+                        d2 = p.date_end.date()
+                        real_start = max(d1, self.last_week_start_date())
+                        real_end = min(d2, self.last_week_end_date())
+
+                        if real_start <= real_end:
+                            participants_listes.extend(
+                                real_start + timedelta(days=i)
+                                for i in range((real_end - real_start).days + 1)
+                            )
+
+            # conge_listes = self.get_hollidays(fin_semaine_derniere, debut_semaine_derniere)
+            conge_listes = []
+
+            # Récupérer uniquement les congés qui chevauchent la période
+            conges = self.env["hr.leave"].search([
+                ('employee_id', '=', emp.id),
+                ('state', 'in', ['validate1', 'validate']),
+                ('request_date_from', '<=', self.last_week_end_date()),  # ensure .date()
+                ('request_date_to', '>=', self.last_week_start_date()),
+            ])
+            # Convertir les congés en dates journalières
+            for c in conges:
+                if c.request_date_from and c.request_date_to:
+                    d1 = c.request_date_from
+                    d2 = c.request_date_to
+                    # Limiter aux bornes de la semaine dernière
+                    real_start = max(d1, self.last_week_start_date())
+                    real_end = min(d2, self.last_week_end_date())
+
+                    # Si l'intervalle est valide
+                    if real_start <= real_end:
+                        conge_listes.extend(
+                            real_start + timedelta(days=i)
+                            for i in range((real_end - real_start).days + 1)
+                         )
+            nombre_heure_fait = total_hours  + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes))
+            if nombre_heure_fait < 40:
+                result.append({
+                    'employee': emp.name,
+                    'hours_done': nombre_heure_fait,
+                    'gap': round(40 - nombre_heure_fait, 2),
+                })
+
+        return result
+
+    def action_send_email_notify_40_heures_drh(self):
+        self.send_email_notify("email_template_pointage_notification_report_40heure")

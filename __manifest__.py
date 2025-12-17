@@ -51,6 +51,7 @@
         'views/agence_views.xml',
         'views/absence_view.xml',
         'views/justification_view.xml',
+        'report/quarantre_heures_template_notify.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
