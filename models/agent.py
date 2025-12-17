@@ -788,10 +788,8 @@ class Agent(models.Model):
         self.send_email_notification_agent("email_template_pointage_notification_retard_agent")
 
     def get_employees_under_40_hours(self):
-        aujourdhui = datetime.now()
-        jour_semaine = aujourdhui.weekday()
-        debut_semaine_derniere = aujourdhui - timedelta(days=(jour_semaine + 7))
-        fin_semaine_derniere = debut_semaine_derniere + timedelta(days=4)
+        start_last_week_naive = datetime.combine(self.last_week_start_date(), time(0, 0, 0))
+        end_last_week_naive = datetime.combine(self.last_week_end_date(), time(23, 59, 59))
         Attendance = self.env['hr.attendance']
         Employee = self.env['hr.employee']
 
@@ -865,8 +863,8 @@ class Agent(models.Model):
                             for i in range((real_end - real_start).days + 1)
                          )
             fetes = self.env["vacances.ferier"].sudo().search([
-                ('date_star', '<=', fin_semaine_derniere),
-                ('date_end', '>=', debut_semaine_derniere),
+                ('date_star', '<=', end_last_week_naive),
+                ('date_end', '>=', start_last_week_naive),
             ])
 
             # 2️⃣ Liste des jours fériés de la semaine
@@ -874,8 +872,8 @@ class Agent(models.Model):
 
             for f in fetes:
                 # on borne la fête à la semaine
-                start = max(f.date_star, debut_semaine_derniere)
-                end = min(f.date_end, fin_semaine_derniere)
+                start = max(f.date_star, start_last_week_naive)
+                end = min(f.date_end, end_last_week_naive)
 
                 for i in range((end - start).days + 1):
                     fete_listes.append((
