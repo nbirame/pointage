@@ -1,6 +1,5 @@
 from odoo import models, fields, api
 from datetime import timedelta, datetime, time
-from odoo.fields import Date
 
 
 class Absence(models.Model):

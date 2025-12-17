@@ -90,25 +90,25 @@ class QuarantreWizard(models.TransientModel):
                             real_start + timedelta(days=i)
                             for i in range((real_end - real_start).days + 1)
                          )
-            # fetes = self.env["vacances.ferier"].sudo().search([
-            #     ('date_star', '<=', self.date_to),
-            #     ('date_end', '>=', self.date_from),
-            # ])
-            #
-            # # 2️⃣ Liste des jours fériés de la semaine
-            # fete_listes = []
-            #
-            # for f in fetes:
-            #     # on borne la fête à la semaine
-            #     start = max(f.date_star, self.date_from)
-            #     end = min(f.date_end, self.date_to)
-            #
-            #     for i in range((end - start).days + 1):
-            #         fete_listes.append((
-            #             start + timedelta(days=i),
-            #             f.party_id.name
-            #         ))
-            nombre_heure_fait = total_hours  + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes))
+            fetes = self.env["vacances.ferier"].sudo().search([
+                ('date_star', '<=', self.last_week_end_date()),
+                ('date_end', '>=', self.last_week_start_date()),
+            ])
+
+            # 2️⃣ Liste des jours fériés de la semaine
+            fete_listes = []
+
+            for f in fetes:
+                # on borne la fête à la semaine
+                start = max(f.date_star, self.last_week_start_date())
+                end = min(f.date_end, self.last_week_end_date())
+
+                for i in range((end - start).days + 1):
+                    fete_listes.append((
+                        start + timedelta(days=i),
+                        f.party_id.name
+                    ))
+            nombre_heure_fait = total_hours  + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
             if nombre_heure_fait < 40:
                 result.append({
                     'employee': emp.name,

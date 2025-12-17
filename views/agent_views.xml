@@ -40,6 +40,20 @@
         <field name="code">model.email_notification_send_woork_month()</field>
         <field name="state">code</field>
     </record>
+    <!-- Planifiez le cron pour exécuter la fonction chaque lundi à 8h du matin pour envoyer le rapport des moins de 40 heures -->
+    <record id="cron_envoyer_40heures_semaine_precedente" model="ir.cron">
+        <field name="name">Envoyer agents ayant moins de 40 heures semaine précédente</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">weeks</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall"
+               eval="(datetime.now() + timedelta(days=(0 - datetime.now().weekday()) % 7, hours=9)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="doall" eval="False"/>
+        <field name="code">model.action_send_email_notify_40_heures_drh()</field>
+        <field name="state">code</field>
+    </record>
     <record id="view_agent_form_inherit_hr_attendance" model="ir.ui.view">
         <field name="name">hr.employee</field>
         <field name="model">hr.employee</field>
