@@ -90,18 +90,25 @@ class QuarantreWizard(models.TransientModel):
                             real_start + timedelta(days=i)
                             for i in range((real_end - real_start).days + 1)
                          )
-            # fetes = self.env["vacances.ferier"].sudo().search([])
-            # fete_listes = []
-            # for f in fetes:
-            #     fd = f.date_star
-            #     fe = f.date_end
-            #     nom_fete = f.party_id.name
-            #     fete_listes.extend(
-            #         [fd + timedelta(days=i), nom_fete]
-            #         for i in range((fe - fd).days + 1)
-            #     )
-            # fete_dates = {f[0]: f[1] for f in fete_listes}
-            nombre_heure_fait = total_hours  + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes))
+            fetes = self.env["vacances.ferier"].sudo().search([
+                ('date_star', '<=', self.date_to),
+                ('date_end', '>=', self.date_from),
+            ])
+
+            # 2️⃣ Liste des jours fériés de la semaine
+            fete_listes = []
+
+            for f in fetes:
+                # on borne la fête à la semaine
+                start = max(f.date_star, self.date_from)
+                end = min(f.date_end, self.date_to)
+
+                for i in range((end - start).days + 1):
+                    fete_listes.append((
+                        start + timedelta(days=i),
+                        f.party_id.name
+                    ))
+            nombre_heure_fait = total_hours  + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
             if nombre_heure_fait < 40:
                 result.append({
                     'employee': emp.name,
