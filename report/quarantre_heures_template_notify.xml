@@ -40,7 +40,9 @@
                                         <span t-esc="quarantre['hours_done']" t-options="{'widget': 'float_time'}"/>
                                     </td>
                                     <td>
-                                        <span t-esc="quarantre['heure_to']" t-options="{'widget': 'float_time'}"/>
+                                        <span t-esc="quarantre.get('heure_to', 40.0)"
+                                          t-options="{'widget': 'float_time'}"/>
+
                                     </td>
                                     <td>
                                         <span t-esc="quarantre['gap']" t-options="{'widget': 'float_time'}"/>
