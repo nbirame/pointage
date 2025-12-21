@@ -110,7 +110,7 @@ class QuarantreWizard(models.TransientModel):
                     ))
             nombre_heure_fait = total_hours  # + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
             nombre_heure_a_faire = 40  - 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
-            print(f"Nombre d'heure a faire-------------{nombre_heure_a_faire}------------------------")
+            print(f"Nombre d'heure a faire-------------{nombre_heure_a_faire}- durant la periode du {self.last_week_start_date()}-----au {self.last_week_end_date()}------------------")
             if nombre_heure_fait < nombre_heure_a_faire:
                 result.append({
                     'employee': emp.name,
