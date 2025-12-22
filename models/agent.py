@@ -879,12 +879,15 @@ class Agent(models.Model):
                         f.party_id.name
                     ))
 
-            nombre_heure_fait = total_hours  + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
+            nombre_heure_fait = total_hours  # + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
+            nombre_heure_a_faire = 40 - 8 * (len(conge_listes) + len(mission_listes) + len(participants_listes) + len(fete_listes))
+            # nombre_heure_fait = total_hours  + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
             if nombre_heure_fait < 40:
                 result.append({
                     'employee': emp.name,
                     'hours_done': nombre_heure_fait,
-                    'gap': round(40 - nombre_heure_fait, 2),
+                    'gap': round(nombre_heure_a_faire - nombre_heure_fait, 2),
+                    'heure_to': nombre_heure_a_faire,
                 })
 
         return result
