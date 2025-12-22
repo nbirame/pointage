@@ -53,8 +53,8 @@ class Absence(models.Model):
 
                 # Recherche des jours fériés dans la période
                 fetes = self.env["vacances.ferier"].sudo().search([
-                    ('date_from', '<=', end_of_last_week),
-                    ('date_to', '>=', start_of_last_week),
+                    ('date_star', '<=', end_of_last_week),
+                    ('date_end', '>=', start_of_last_week),
                 ])
 
                 fete_listes = []
