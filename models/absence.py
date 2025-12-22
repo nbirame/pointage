@@ -169,7 +169,7 @@ class Absence(models.Model):
                             'state': 'justifier',
                             'reason': 'En atelier'
                         })
-                    elif single_date in missions:
+                    elif single_date in mission_liste:
                         self.create({
                             'employee_id': employee.id,
                             'day_absence': single_date,
