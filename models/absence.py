@@ -60,49 +60,6 @@ class Absence(models.Model):
                                     for i in range((real_end - real_start).days + 1)
                                 )
 
-
-                # missions = []
-                # participants_liste = []
-                # equipe = self.env["mission.equipe"].search([('employee_id', '=', employee.id)])
-                # for agant in equipe:
-                #     if (agant.mission_id.state == "en_cours" or agant.mission_id.state == "terminer") and ((
-                #                                                                                              agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour <= single_date) or (
-                #                                                                                              agant.mission_id.date_depart >= single_date and agant.mission_id.date_retour >= single_date) or (
-                #                                                                                              agant.mission_id.date_depart <= single_date and agant.mission_id.date_retour <= single_date)):
-                #         date_debut = agant.mission_id.date_depart
-                #         date_fin = agant.mission_id.date_retour
-                #         missions.extend([date_debut + timedelta(days=i) for i in
-                #                          range((date_fin - date_debut).days + 1)])
-                # participants = self.env["pointage.atelier"].search([('employee_id', '=', employee.id)])
-                # if participants:
-                #     for participant in participants:
-                #         date_debut = participant.date_start
-                #         date_fin = participant.date_end
-                #         if not isinstance(date_debut, int) and not isinstance(date_fin, int):
-                #             participants_liste.extend([date_debut + timedelta(days=i) for i in
-                #                                   range((date_fin - date_debut).days + 1)])
-                # start_dt = datetime.combine(start_of_last_week, time.min)  # 00:00:00
-                # end_dt = datetime.combine(end_of_last_week, time.max)  # 23:59:59
-
-                # Recherche des jours fériés dans la période
-                # fetes = self.env["vacances.ferier"].sudo().search([
-                #     ('date_star', '<=', end_of_last_week),
-                #     ('date_end', '>=', start_of_last_week),
-                # ])
-                #
-                # fete_listes = []
-                #
-                # for fete in fetes:
-                #     # Conversion en date simple
-                #     fd = fete.date_star
-                #     fe = fete.date_end
-                #     # Intersection
-                #     real_start = max(fd, start_of_last_week)
-                #     real_end = min(fe, end_of_last_week)
-                #     if real_start <= real_end:
-                #         for i in range((real_end - real_start).days + 1):
-                #             jour = real_start + timedelta(days=i)
-                #             fete_listes.append(jour)
                 fetes = self.env["vacances.ferier"].sudo().search([
                     ('date_star', '<=', end_of_last_week),
                     ('date_end', '>=', start_of_last_week),
