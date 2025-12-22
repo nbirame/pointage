@@ -882,7 +882,7 @@ class Agent(models.Model):
             nombre_heure_fait = total_hours  # + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
             nombre_heure_a_faire = 40 - 8 * (len(conge_listes) + len(mission_listes) + len(participants_listes) + len(fete_listes))
             # nombre_heure_fait = total_hours  + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
-            if nombre_heure_fait < 40:
+            if nombre_heure_fait < nombre_heure_a_faire:
                 result.append({
                     'employee': emp.name,
                     'hours_done': nombre_heure_fait,
