@@ -29,7 +29,7 @@ class Absence(models.Model):
         for single_date in (start_of_last_week + timedelta(n) for n in range(5)):
             for employee in employees:
 
-                mission_listes = []
+                mission_liste = []
                 equipes = self.env["mission.equipe"].search([('employee_id', '=', employee.id)])
                 for eq in equipes:
                     if eq.mission_id.state in ("en_cours", "terminer") and eq.mission_id.date_depart:
@@ -39,12 +39,12 @@ class Absence(models.Model):
                         real_start = max(dstart, start_of_last_week)
                         real_end = min(dend, end_of_last_week)
                         if real_start <= real_end:
-                            mission_listes.extend(
+                            mission_liste.extend(
                                 real_start + timedelta(days=i)
                                 for i in range((real_end - real_start).days + 1)
                             )
 
-                participants_listes = []
+                participants_liste = []
                 participants = self.env["pointage.atelier"].search([('employee_id', '=', employee.id)])
                 if participants:
                     for p in participants:
@@ -55,7 +55,7 @@ class Absence(models.Model):
                             real_end = min(d2, end_of_last_week)
 
                             if real_start <= real_end:
-                                participants_listes.extend(
+                                participants_liste.extend(
                                     real_start + timedelta(days=i)
                                     for i in range((real_end - real_start).days + 1)
                                 )
