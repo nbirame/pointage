@@ -147,8 +147,8 @@ class QuarantreWizard(models.TransientModel):
                 result.append({
                     'employee': emp.name,
                     'hours_done': nombre_heure_fait,
-                    'heure_to': nombre_heure_a_faire,
                     'gap': round(nombre_heure_a_faire - nombre_heure_fait, 2),
+                    'heure_to': nombre_heure_a_faire,
                 })
 
         return result
