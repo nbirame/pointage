@@ -52,17 +52,17 @@ class Absence(models.Model):
                 end_dt = datetime.combine(end_of_last_week, time.max)  # 23:59:59
 
                 # Recherche des jours fériés dans la période
-                fetes = self.env["resource.calendar.leaves"].sudo().search([
-                    ('date_from', '<=', end_dt),
-                    ('date_to', '>=', start_dt),
+                fetes = self.env["vacances.ferier"].sudo().search([
+                    ('date_from', '<=', end_of_last_week),
+                    ('date_to', '>=', start_of_last_week),
                 ])
 
                 fete_listes = []
 
                 for fete in fetes:
                     # Conversion en date simple
-                    fd = fete.date_from.date()
-                    fe = fete.date_to.date()
+                    fd = fete.date_star
+                    fe = fete.date_end
                     # Intersection
                     real_start = max(fd, start_of_last_week)
                     real_end = min(fe, end_of_last_week)
