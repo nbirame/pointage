@@ -123,8 +123,8 @@ class QuarantreWizard(models.TransientModel):
                             for i in range((real_end - real_start).days + 1)
                          )
             fetes = self.env["vacances.ferier"].sudo().search([
-                ('date_star', '<=', self.last_week_end_date()),
-                ('date_end', '>=', self.last_week_start_date()),
+                ('date_star', '<=', self.date_to),
+                ('date_end', '>=', self.date_from),
             ])
 
             # 2️⃣ Liste des jours fériés de la semaine
@@ -132,8 +132,8 @@ class QuarantreWizard(models.TransientModel):
 
             for f in fetes:
                 # on borne la fête à la semaine
-                start = max(f.date_star, self.last_week_start_date())
-                end = min(f.date_end, self.last_week_end_date())
+                start = max(f.date_star, self.date_from)
+                end = min(f.date_end, self.date_to)
 
                 for i in range((end - start).days + 1):
                     fete_listes.append((
@@ -142,7 +142,7 @@ class QuarantreWizard(models.TransientModel):
                     ))
             nombre_heure_fait = total_hours  # + 8*(len(conge_listes)+ len(mission_listes)+len(participants_listes) +len(fete_listes))
             nombre_heure_a_faire = 40  - 8*(len(conge_listes)+ len(mission_liste)+len(participants_liste) +len(fete_listes))
-            print(f"Nombre d'heure a faire-------------{nombre_heure_a_faire}- durant la periode du {self.last_week_start_date()}-----au {self.last_week_end_date()}------------------")
+            # print(f"Nombre d'heure a faire-------------{nombre_heure_a_faire}- durant la periode du {self.last_week_start_date()}-----au {self.last_week_end_date()}------------------")
             if nombre_heure_fait < nombre_heure_a_faire:
                 result.append({
                     'employee': emp.name,
