@@ -19,7 +19,8 @@
                                 <tr t-if="object.get_employees_under_40_hours()[0]">
                                     <th>N*</th>
                                     <th>AGENT</th>
-                                    <th>Nombre d'heures</th>
+                                    <th>Nombre d'heures effctué</th>
+                                    <th>Nombre d'heures à faire</th>
                                     <th>Ecart</th>
                                     <!--<t t-foreach="range(2, len(object.get_late_tree_day_of_week_wizard()[0]))" t-as="col_index">
                                         <th>Date <span t-esc="col_index - 1"/></th>
@@ -37,6 +38,9 @@
                                     </td>
                                     <td>
                                         <span t-esc="quarantre['hours_done']" t-options="{'widget': 'float_time'}"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="quarantre['heure_to']" t-options="{'widget': 'float_time'}"/>
                                     </td>
                                     <td>
                                         <span t-esc="quarantre['gap']" t-options="{'widget': 'float_time'}"/>
