@@ -28,13 +28,13 @@
                     <button string="Remettre en Brouillon"
                         name="action_draft"
                         type="object"
-                        states="draft"
+                        states="confirm"
                         class="oe_highlight btn btn-warning"/>
                     <button string="Confirmé"
                         name="action_confirm"
                         type="object"
-                        states="confirm"
-                        class="oe_highlight btn btn-warning"/>
+                        states="draft"
+                        class="oe_highlight btn btn-success"/>
                     <button string="DRH"
                         name="action_drh"
                         type="object"
@@ -43,13 +43,13 @@
                     <button string="Validé"
                         name="action_validate"
                         type="object"
-                        class="oe_highlight btn btn-warning"/>
+                        class="oe_highlight btn btn-success"/>
                     <button string="Refusé"
                         name="action_refuser"
                         type="object"
                         states="drh"
-                        class="oe_highlight btn btn-warning" groups="pointage.group_pointage_drh"/>
-                    <field name="state" widget="statusbar" statusbar_visible="brouillon,confirmer,drh,validate"/>
+                        class="oe_highlight btn btn-danger" groups="pointage.group_pointage_drh"/>
+                    <field name="state" widget="statusbar" statusbar_visible="brouillon,confirm,drh,validate"/>
                 </header>
                 <form string="Fiche participant atelier">
                     <sheet>
