@@ -23,6 +23,7 @@ class Atelier(models.Model):
     file_atelier = fields.Binary(string="Justificatif Atelier", store=True)
     state = fields.Selection([
         ('draft', 'Brouillon'),
+        ('refuser', 'Refusé'),
         ('confirm', 'Confirmé'),
         ('drh', 'drh'),
         ('validate', 'validé'),
@@ -42,6 +43,9 @@ class Atelier(models.Model):
 
     def action_confirm(self):
         self.write({'state': 'drh'})
+
+    def action_refuser(self):
+        self.write({'state': 'refuser'})
 
     def action_drh(self):
         self.write({'state': 'validate'})
