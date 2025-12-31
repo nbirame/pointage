@@ -20,6 +20,16 @@ class Atelier(models.Model):
         string="Atelier",
         required=True
     )
+    file_atelier = fields.Binary(string="Justificatif Atelier", store=True)
+    state = fields.Selection([
+        ('draft', 'Brouillon'),
+        ('confirm', 'Confirmé'),
+        ('drh', 'drh'),
+        ('validate', 'validé'),
+    ],
+    string= "Statut" ,
+    default= "confirm" ,
+    help = "Le statut actuel de l'atelier")
     _order = 'id desc'
 
     @api.depends("employee_id")
@@ -27,5 +37,16 @@ class Atelier(models.Model):
         for record in self:
             record.poste = record.employee_id.job_title
 
+    def action_draft(self):
+        self.write({'state': 'draft'})
+
+    def action_confirm(self):
+        self.write({'state': 'drh'})
+
+    def action_drh(self):
+        self.write({'state': 'validate'})
+
+    def action_validate(self):
+        self.write({'state': 'validate'})
 
 

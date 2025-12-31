@@ -24,6 +24,33 @@
             <field name="name">pointage.atelier.form</field>
             <field name="model">pointage.atelier</field>
             <field name="arch" type="xml">
+                <header>
+                    <button string="Remettre en Brouillon"
+                        name="action_draft"
+                        type="object"
+                        states="draft"
+                        class="oe_highlight btn btn-warning"/>
+                    <button string="Confirmé"
+                        name="action_confirm"
+                        type="object"
+                        states="confirm"
+                        class="oe_highlight btn btn-warning"/>
+                    <button string="DRH"
+                        name="action_drh"
+                        type="object"
+                        states="drh"
+                        class="oe_highlight btn btn-warning" groups="pointage.group_pointage_drh"/>
+                    <button string="Validé"
+                        name="action_validate"
+                        type="object"
+                        class="oe_highlight btn btn-warning"/>
+                    <button string="Refusé"
+                        name="action_refuser"
+                        type="object"
+                        states="drh"
+                        class="oe_highlight btn btn-warning" groups="pointage.group_pointage_drh"/>
+                    <field name="state" widget="statusbar" statusbar_visible="brouillon,confirmer,directeur,drh,sg,valider"/>
+                </header>
                 <form string="Fiche participant atelier">
                     <sheet>
                         <group>
@@ -34,6 +61,9 @@
                         <group>
                             <field name="date_start"/>
                             <field name="date_end"/>
+                        </group>
+                        <group>
+                            <field name="file_atelier"/>
                         </group>
                         <notebook>
                           <page name="page_lines" string="AGENT">
