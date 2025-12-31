@@ -35,15 +35,15 @@
                         type="object"
                         states="draft"
                         class="oe_highlight btn btn-success"/>
-                    <button string="DRH"
+                    <button string="Validé"
                         name="action_drh"
                         type="object"
-                        states="drh"
-                        class="oe_highlight btn btn-warning" groups="pointage.group_pointage_drh"/>
-                    <button string="Validé"
+                        states="confirm"
+                        class="oe_highlight btn btn-success" groups="pointage.group_pointage_drh"/>
+                    <!--<button string="Validé"
                         name="action_validate"
                         type="object"
-                        class="oe_highlight btn btn-success"/>
+                        class="oe_highlight btn btn-success"/>-->
                     <button string="Refusé"
                         name="action_refuser"
                         type="object"
