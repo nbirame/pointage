@@ -38,7 +38,7 @@
                     <button string="Validé"
                         name="action_drh"
                         type="object"
-                        states="confirm"
+                        states="drh"
                         class="oe_highlight btn btn-success" groups="pointage.group_pointage_drh"/>
                     <!--<button string="Validé"
                         name="action_validate"
