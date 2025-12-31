@@ -35,6 +35,11 @@
                         type="object"
                         states="draft"
                         class="oe_highlight btn btn-success"/>
+                    <button string="Confirmé"
+                        name="action_confirm"
+                        type="object"
+                        states="confirm"
+                        class="oe_highlight btn btn-success"/>
                     <button string="Validé"
                         name="action_drh"
                         type="object"
